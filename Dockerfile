@@ -1,7 +1,8 @@
-FROM node:12 as BUILDAPP
+FROM node:12-alpine as BUILDAPP
 
 # Define working directory
 WORKDIR /app
+COPY . /app
 
 # Build the app
 RUN npm install

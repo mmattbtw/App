@@ -1,3 +1,5 @@
+import 'zone.js';
+import 'zone.js/dist/long-stack-trace-zone.js';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 

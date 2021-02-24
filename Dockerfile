@@ -1,3 +1,10 @@
-FROM nginx:1.19.7-alpine
-COPY nginx.conf /etc/nginx.conf
-COPY /dist/seventv-app /usr/share/nginx/html
+FROM node:12 as BUILDAPP
+
+# Define working directory
+WORKDIR /app
+
+# Build the app
+RUN npm install
+RUN npm run build
+
+RUN echo PagMan!

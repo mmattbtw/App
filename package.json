@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --prod",
     "dockerize": "ng build --prod && docker build . -t registry.digitalocean.com/xiantis/7tv-app",
     "deploy": "docker push registry.digitalocean.com/xiantis/7tv-app",
     "test": "ng test",

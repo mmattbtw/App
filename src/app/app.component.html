@@ -1,0 +1,11 @@
+
+<main class="theme-dark">
+
+	<div class="app-content h-100">
+		<app-navigation></app-navigation>
+
+		<div [style.height]="viewportService.getContentHeight('viewport')">
+			<router-outlet></router-outlet>
+		</div>
+	</div>
+</main>

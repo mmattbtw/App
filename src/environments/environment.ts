@@ -6,9 +6,9 @@ export const environment = {
 	name: 'dev',
 	production: false,
 	serviceWorker: true,
-	origin: '7tv.app',
-	apiUrl: 'https://api.7tv.app',
-	wsUrl: 'wss://api.7tv.app'
+	origin: 'localhost',
+	apiUrl: 'http://localhost:3000',
+	wsUrl: 'wss://localhost:3000'
 };
 
 /*

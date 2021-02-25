@@ -1,0 +1,23 @@
+.twitch-button {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	font-size: 14px;
+
+	.twitch-icon {
+		border: currentColor solid;
+		border-width: 0;
+		border-right-width: 1px;
+
+		padding-right: .1em;
+		padding-left: .1em;
+		margin-right: .1em;
+
+		mat-icon {
+			transform: scale(.685);
+		}
+	}
+}

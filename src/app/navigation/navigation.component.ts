@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AppService } from 'src/app/service/app.service';
+import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
 import { environment } from 'src/environments/environment';
@@ -29,14 +29,16 @@ export class NavigationComponent implements OnInit {
 		{
 			name: 'emotes',
 			path: '/emotes',
-			icon: 'emoji_emotions'
+			icon: 'zulul',
+			svg: true
 		}
 	] as NavigationComponent.NavButton[];
 
 	constructor(
 		public viewportService: ViewportService,
 		public themingService: ThemingService,
-		public appService: AppService
+		public appService: AppService,
+		public clientService: ClientService
 	) { }
 
 	/**
@@ -54,6 +56,7 @@ export namespace NavigationComponent {
 	export interface NavButton {
 		name: string;
 		icon: string;
+		svg?: boolean;
 		path: string;
 		selected?: boolean;
 	}

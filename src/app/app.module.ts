@@ -1,5 +1,7 @@
 import 'zone.js';
 import 'zone.js/dist/long-stack-trace-zone.js';
+import {} from 'rxjs';
+import {} from 'rxjs/operators';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -12,13 +14,16 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { MaterialModule } from 'src/app/material.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
+import { TwitchButtonComponent } from './util/twitch-button/twitch-button.component';
+import { CallbackGuard } from './navigation/callback.guard';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		HomeComponent,
 		HighlightDirective,
-		NavigationComponent
+		NavigationComponent,
+		TwitchButtonComponent
 	],
 	imports: [
 		BrowserModule,
@@ -28,7 +33,9 @@ import { HttpClientModule } from '@angular/common/http';
 		MaterialModule,
 		NgbModule
 	],
-	providers: [],
+	providers: [
+		CallbackGuard
+	],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }

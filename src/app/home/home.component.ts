@@ -1,10 +1,23 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
 	selector: 'app-home',
 	templateUrl: './home.component.html',
-	styleUrls: ['./home.component.scss']
+	styleUrls: ['./home.component.scss'],
+	animations: [
+		trigger('browserIcon', [
+			transition(':enter', [
+				style({ transform: 'scale(0)' }),
+				animate('100ms', style({ transform: 'scale(1)' }))
+			]),
+			transition(':leave', [
+				style({ transform: 'scale(1)' }),
+				animate('100ms', style({ transform: 'scale(0)' }))
+			])
+		])
+	]
 })
 export class HomeComponent implements OnInit {
 	browserIcons = [
@@ -24,7 +37,7 @@ export class HomeComponent implements OnInit {
 			name: 'Contact'
 		},
 		{
-			name: 'Developers'
+			name: 'GitHub'
 		},
 		{
 			name: 'Privacy Policy'

@@ -21,9 +21,14 @@
 	<div class="nav-button-list">
 		<div [routerLink]="btn.path" [routerLinkActive]="['selected']" [routerLinkActiveOptions]="{ exact: true }" matRipple class="nav-button d-flex flex-grow-1 align-items-center" *ngFor="let btn of navButtons">
 			<!-- Icon -->
-			<mat-icon class="_icon" [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''">
-				{{btn.icon}}
-			</mat-icon>
+			<div [ngSwitch]="btn.svg" class="_icon">
+				<mat-icon class=" d-flex align-self-center" *ngSwitchDefault [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''">
+					{{btn.icon}}
+				</mat-icon>
+
+				<mat-icon *ngSwitchCase="true" [svgIcon]="btn.icon" [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''"></mat-icon>
+			</div>
+			<div class="mx-1"></div>
 
 			<!-- Name -->
 			<span class="_name d-none d-md-block">
@@ -34,6 +39,21 @@
 			<div class="_select_indicator" routerLinkActive="selected">
 				<div class="_line"></div>
 			</div>
+		</div>
+	</div>
+
+	<!-- Login / Current User -->
+	<div [ngSwitch]="clientService.isAuthenticated() | async">
+		<!-- Button -->
+		<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
+
+		<!-- Display Auth user -->
+		<div class="signed-in-user d-flex flex-row align-items-center" *ngSwitchCase="true">
+			<div class="signed-in-avatar" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
+				<img [src]="clientService.getAvatarURL() | async">
+			</div>
+			<div class="mx-1"></div>
+			<span>{{this.clientService.getUsername() | async}}</span>
 		</div>
 	</div>
 </mat-toolbar>

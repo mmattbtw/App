@@ -4,12 +4,12 @@ FROM node:12-alpine as BUILDAPP
 WORKDIR /app
 COPY . /app
 
-# Build the app
-RUN npm install
-RUN npm run build
-
 # Get typings
 RUN apk add git
 RUN git clone https://github.com/SevenTV/Typings.git
+
+# Build the app
+RUN npm install
+RUN npm run build
 
 RUN echo PagMan!

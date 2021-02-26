@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { ColorDirective } from 'src/app/directive/highlight.directive';
 
 const modules = [
 	MatToolbarModule,
@@ -18,10 +19,13 @@ const modules = [
 ];
 
 @NgModule({
-	declarations: [],
+	declarations: [
+		ColorDirective
+	],
 	imports: [...modules],
 	exports: [
-		...modules
+		...modules,
+		ColorDirective
 	]
 })
 

@@ -1,0 +1,26 @@
+.emotes {
+	padding: 1em;
+}
+
+.emotes-heading {
+	margin-bottom: 1em;
+}
+
+.emotes-sidebar {
+
+	min-width: 220px;
+	max-width: 50%;
+
+	._heading {
+		padding: .75em;
+	}
+
+	._filters {
+		min-height: 30px;
+		padding: 1em;
+	}
+}
+
+.emotes-list div {
+	max-height: 80vh;
+}

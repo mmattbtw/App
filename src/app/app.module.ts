@@ -9,7 +9,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HighlightDirective } from './directive/highlight.directive';
 import { NavigationComponent } from './navigation/navigation.component';
 import { MaterialModule } from 'src/app/material.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -21,7 +20,6 @@ import { CallbackGuard } from './navigation/callback.guard';
 	declarations: [
 		AppComponent,
 		HomeComponent,
-		HighlightDirective,
 		NavigationComponent,
 		TwitchButtonComponent
 	],

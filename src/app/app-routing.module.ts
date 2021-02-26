@@ -12,6 +12,10 @@ const routes: Routes = [
 		path: 'about',
 		loadChildren: () => import('src/app/about/about.module').then(m => m.AboutModule)
 	},
+	{
+		path: 'emotes',
+		loadChildren: () => import('src/app/emotes/emotes.module').then(m => m.EmotesModule)
+	},
 
 	{
 		path: 'callback',

@@ -4,7 +4,7 @@ import * as Color from 'color';
 @Directive({
 	selector: '[appColor]'
 })
-export class HighlightDirective implements OnInit {
+export class ColorDirective implements OnInit {
 	@Input() appColor: string | Color = '';
 	@Input() isBackground = false;
 

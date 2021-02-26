@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { asyncScheduler, EMPTY, scheduled } from 'rxjs';
-import { map, mergeAll, switchMap, switchMapTo, tap } from 'rxjs/operators';
+import { map, mergeAll, switchMapTo, tap } from 'rxjs/operators';
 import { LoggerService } from 'src/app/service/logger.service';
 import { OAuthService } from 'src/app/service/oauth.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -34,7 +34,6 @@ export class TwitchButtonComponent implements OnInit {
 	}
 
 	open(): void {
-		console.log('hi');
 		scheduled([
 			this.oauthService.openAuthorizeWindow<API.TwitchUser>().pipe(
 				tap(data => this.clientService.pushData(data))

@@ -1,0 +1,42 @@
+<div class="emotes container">
+	<div class="row emotes-heading">
+		<!-- Title -->
+		<div class="col-6"></div>
+
+		<!-- Buttons -->
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<button mat-raised-button [disabled]="!(clientService.isAuthenticated() | async)">
+					<mat-icon>add</mat-icon>
+					ADD EMOTE
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<!-- Sidebar -->
+		<div class="emotes-sidebar col-lg-3 col-xl-3">
+			<!-- Heading -->
+			<div class="_heading mat-elevation-z3" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+				Search Emotes
+			</div>
+
+			<!-- Filters -->
+			<div class="_filters mat-elevation-z1" [appColor]="themingService.bg.darken(.12)" [isBackground]="true">
+				WORK IN PROGRESS
+			</div>
+		</div>
+
+		<!-- Emote List -->
+		<div class="col emotes-list">
+			<div class="d-flex flex-wrap align-items-start justify-content-center">
+				<app-emote-card *ngFor="let s of test">
+
+				</app-emote-card>
+			</div>
+
+		</div>
+	</div>
+
+</div>

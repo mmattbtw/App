@@ -26,14 +26,16 @@ export class CallbackGuard implements CanActivate {
 
 		// Find params
 		const params = new URLSearchParams(this.windowRef.getNativeWindow().location.search);
-		this.logger.info(`Received data from redirect query`, params.get('data'));
+		this.logger.info(`Received data from redirect query`, params.get('token'));
 
 		// Send message back to parent window
 		(this.windowRef.getNativeWindow()
 			.opener as Window)
 			?.postMessage({
 				type: 'oauthCallback',
-				data: params.get('data')
+				data: {
+					token: params.get('token')
+				}
 			}, this.windowRef.getNativeWindow().location.origin);
 
 		// Close this child window

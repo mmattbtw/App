@@ -1,15 +1,16 @@
 
 
 import { Injectable } from '@angular/core';
-import { API } from '@typings/API';
+import { DataStructure } from '@typings/DataStructure';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { LoggerService } from 'src/app/service/logger.service';
 
 @Injectable({providedIn: 'root'})
 export class ClientService {
+	private token = '';
 	private authState = new BehaviorSubject<boolean>(false);
-	private data = new BehaviorSubject<API.TwitchUser | null>(null);
+	private data = new BehaviorSubject<DataStructure.TwitchUser | null>(null);
 
 	constructor(
 		private logger: LoggerService
@@ -39,11 +40,21 @@ export class ClientService {
 	 *
 	 * @param data Twitch User data
 	 */
-	pushData(data: API.TwitchUser): void {
+	pushData(data: DataStructure.TwitchUser | null): void {
 		this.data.next(data);
-		this.setAuthState(true);
+		this.setAuthState(!!data);
 
-		this.logger.info(`Signed in as ${data.display_name}`);
+		if (data !== null) this.logger.info(`Signed in as ${data.display_name}.`);
+		else this.logger.info('Signed out.');
+	}
+
+	setToken(token: string | null): void {
+		localStorage.setItem('access_token', token ?? '');
+
+		this.token = token ?? '';
+	}
+	getToken(): string {
+		return this.token;
 	}
 
 	/**
@@ -65,6 +76,5 @@ export class ClientService {
 	 */
 	logout(): void {
 		this.data.next(null);
-		this.setAuthState(false);
 	}
 }

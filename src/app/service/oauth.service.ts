@@ -33,8 +33,7 @@ export class OAuthService {
 			const listener = (ev: MessageEvent): void => {
 				if (ev.data.type !== 'oauthCallback') return undefined;
 
-				console.log(ev.data);
-				observer.next(JSON.parse(ev.data.data));
+				observer.next(ev.data.data);
 				nativeWin.removeEventListener('message', listener);
 				return undefined;
 			};
@@ -52,7 +51,10 @@ export class OAuthService {
 				if (!childWin || !childWin.closed) return undefined;
 				this.windowClosed.next();
 				clearInterval(interval);
-				observer.complete();
+
+				setTimeout(() => {
+					observer.complete();
+				}, 50);
 
 				return undefined;
 			}, 200);

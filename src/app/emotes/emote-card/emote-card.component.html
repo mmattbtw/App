@@ -1,7 +1,7 @@
-<div class="emote-card mat-elevation-z2" 
+<div class="emote-card mat-elevation-z2" [@hovering]="{ value: hover | async, params: { borderColor: borderColor } }"
 	[style.height.em]="size"
 	[style.width.em]="size"
-	[style.border-color]="themingService.bg.lighten(.2)"
-	[appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+	[style.border-color]="borderColor"
+	[appColor]="themingService.bg.darken(.1)" [isBackground]="true">
 
 </div>

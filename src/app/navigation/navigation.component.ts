@@ -45,7 +45,7 @@ export class NavigationComponent implements OnInit {
 	 * Whether the current environment is production
 	 */
 	get isEnvironmentProd(): boolean {
-		return environment.name === 'prod';
+		return environment.production === true;
 	}
 
 	ngOnInit(): void {}

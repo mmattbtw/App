@@ -1,0 +1,48 @@
+.action-bar {
+	border-radius: 4px;
+}
+
+.emote-form {
+	min-height: 50vh;
+}
+
+.emote-upload-box {
+	label { cursor: pointer;}
+	label input { display: none; }
+
+	display: flex;
+	justify-content: flex-end !important;
+
+	height: 128px;
+	width: 128px;
+
+
+	img {
+		width: 128px;
+		max-height: 128px;
+		border-radius: 25% !important;
+		border-style: dashed;
+		border-width: 3px;
+	}
+
+	._upload-error {
+		display: flex;
+		width: 128px;
+		word-wrap: break-word;
+		color: rgb(255, 70, 70);
+		margin: 5px;
+	}
+
+	.add-emote-cta {
+		display: flex;
+		height: 100%;
+		width: calc(100% - 32px);
+		position: absolute;
+		align-items: center;
+		justify-content: center;
+
+		mat-icon {
+			transform: scale(2);
+		}
+	}
+}

@@ -1,0 +1,61 @@
+<div class="container h-100" [@open]>
+	<!-- Action Bar  -->
+	<div class="d-flex flex-row align-items-center action-bar mat-elevation-z2 mb-1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+		<button mat-icon-button [routerLink]="['../']">
+			<mat-icon> arrow_back </mat-icon>
+		</button>
+
+		<span>Submit Emote</span>
+	</div>
+
+	<form [formGroup]="form" class="d-flex flex-column emote-form p-3"  [appColor]="themingService.bg.lighten(.12)" [isBackground]="true">
+		<!-- Upload Emote -->
+		<div class="emote-upload-section row">
+			<div class="col-4">
+				<h2>Upload Emote</h2>
+				<span class="text-muted">
+					Pick the largest size you have, 7TV will perform the resizing for you
+				</span>
+			</div>
+
+			<div class="col-8 d-flex justify-content-end align-items-center">
+				<!-- Emote Upload Box -->
+				<div class="col-12 col-md-4 emote-upload-box">
+					<label for="edit-emote">
+						<input hidden formControlName="emote"> 
+						<input type="file" accept="image/png, image/jpeg, image/gif" name="edit-emote" id="edit-emote" (change)="uploadEmote($event.target)" />
+						<div class="add-emote-cta" *ngIf="!emoteControl.dirty"> <!-- Add call to action icon -->
+							<mat-icon>add</mat-icon>
+						</div>
+						<img #emoteImg [src]="emoteFormService.uploadedEmote | async"
+							[style.border-color]="(emoteControl.dirty && emoteControl.valid) ? 'lime' : (emoteControl.pristine) ? 'inherit' : 'red'"
+							matTooltip="Edit Emote">
+
+						<!-- Uplaod Button -->
+						<div class="d-flex mt-1 justify-content-center" *ngIf="!!(emoteFormService.uploadedEmote | async) && emoteControl.dirty">
+							<button mat-stroked-button color="primary" (click)="emoteFormService.uploadEmote()">
+								<mat-icon>file_upload</mat-icon>
+								UPLOAD
+							</button>
+						</div>
+					</label>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="mt-5"></div>
+
+		<!-- Emote Details Form -->
+		<div class="mt-2 row">
+			<span class="text-danger col-12" *ngIf="!(emoteFormService.emoteData | async)">
+				You must upload an emote before editing metadata
+			</span>
+
+			<mat-form-field class="col-12 col-md-6" appearance="outline">
+				<mat-label> Emote Name </mat-label>
+				<input formControlName="name" matInput>
+			</mat-form-field>
+		</div>
+	</form>
+</div>

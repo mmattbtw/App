@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/DataStructure';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { iif, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { environment } from 'src/environments/environment';
 
@@ -29,25 +29,44 @@ export class RestService {
 			GetCurrent: () => this.createRequest<DataStructure.TwitchUser>('get', '/users/@me', { auth: true })
 		};
 	}
+
+	get Emotes() {
+		return {
+			Upload: (data: FormData, length: number) => this.createRequest<DataStructure.Emote>('post', '/emotes', {
+				body: data,
+				auth: true
+			})
+		};
+	}
 	// tslint:enable:typedef
 
 	private createRequest<T>(method: RestService.Method, route: string, options?: Partial<RestService.CreateRequestOptions>): Observable<HttpResponse<T>> {
-		return this.httpService[method](this.BASE + route, {
+		const uri = this.BASE + route;
+		const opt = {
 			observe: 'response',
 			headers: {
 				Authorization: options?.auth ? `Bearer ${this.clientService.getToken()}` : '',
 				...(options?.headers ?? {})
 			}
-		}).pipe(map(x => x as HttpResponse<T>));
+		} as any;
+
+		return of(method).pipe(
+			switchMap(m => iif(() => m === 'get',
+				this.httpService.get(uri, opt),
+				this.httpService[m as RestService.BodyMethod](uri, options?.body ?? {}, opt)
+			))
+		).pipe(map((x: any) => x as HttpResponse<T>));
 	}
 }
 
 export namespace RestService {
 	export type Method = 'get' | 'patch' | 'post' | 'put';
+	export type BodyMethod = 'patch' | 'post' | 'put';
 
 	export interface CreateRequestOptions {
-		headers: HttpHeaders;
+		headers: { [key: string]: string };
 		auth: boolean;
+		body?: any;
 	}
 
 	export namespace Result {

@@ -6,7 +6,7 @@
 		<!-- Buttons -->
 		<div class="col-6">
 			<div class="d-flex justify-content-end">
-				<button mat-raised-button [disabled]="!(clientService.isAuthenticated() | async)">
+				<button mat-raised-button [disabled]="!(clientService.isAuthenticated() | async)" [routerLink]="['/emotes', 'create']">
 					<mat-icon>add</mat-icon>
 					ADD EMOTE
 				</button>
@@ -29,15 +29,8 @@
 		</div>
 
 		<!-- Emote List -->
-		<div class="col emotes-list">
-			<div class="d-flex flex-wrap align-items-start justify-content-center" [@emotes]="emotes | async">
-				<div (click)="selectEmote(emoteEl, null)" #emoteEl *ngFor="let s of emotes | async" class="is-emote-card">
-					<app-emote-card>
-
-					</app-emote-card>
-				</div>
-
-			</div>
+		<div class="col">
+			<router-outlet></router-outlet>
 		</div>
 	</div>
 

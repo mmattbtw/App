@@ -6,18 +6,24 @@ import { EmotesComponent } from 'src/app/emotes/emotes.component';
 import { MaterialModule } from 'src/app/material.module';
 import { EmoteCardComponent } from './emote-card/emote-card.component';
 import { EmoteComponent } from './emote/emote.component';
+import { EmoteCreateComponent } from './emote-create/emote-create.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { EmoteListComponent } from './emote-list/emote-list.component';
 
 @NgModule({
 	imports: [
 		CommonModule,
 		EmotesRouterModule,
-		MaterialModule
+		MaterialModule,
+		ReactiveFormsModule
 	],
 	exports: [],
 	declarations: [
 		EmotesComponent,
 		EmoteCardComponent,
-		EmoteComponent
+		EmoteComponent,
+		EmoteCreateComponent,
+		EmoteListComponent
 	],
 	providers: [],
 })

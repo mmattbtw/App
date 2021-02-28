@@ -19,7 +19,7 @@ import { ThemingService } from 'src/app/service/theming.service';
 	]
 })
 export class EmoteCardComponent implements OnInit, OnDestroy {
-	@Input() size = 8;
+	@Input() size = 10;
 
 	borderColor = this.themingService.bg.lighten(.2).hex();
 	hover = new BehaviorSubject<boolean | null>(false);

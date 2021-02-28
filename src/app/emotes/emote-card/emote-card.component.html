@@ -1,7 +1,7 @@
-<div class="emote-card mat-elevation-z2" [@hovering]="{ value: hover | async, params: { borderColor: borderColor } }"
+<div class="emote-card mat-elevation-z2" matRipple [@hovering]="{ value: hover | async, params: { borderColor: borderColor } }"
 	[style.height.em]="size"
 	[style.width.em]="size"
 	[style.border-color]="borderColor"
 	[appColor]="themingService.bg.darken(.1)" [isBackground]="true">
-
+	<img src="https://cdn.discordapp.com/emojis/695171992688787518.png?v=1&size=128">
 </div>

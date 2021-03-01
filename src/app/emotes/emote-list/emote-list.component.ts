@@ -4,7 +4,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { DataStructure } from '@typings/DataStructure';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 
@@ -88,6 +88,8 @@ export class EmoteListComponent implements OnInit {
 	onPageEvent(ev: PageEvent): void {
 		this.getEmotes(ev.pageIndex + 1, ev.pageSize).pipe(
 			toArray(),
+			tap(() => this.emotes.next([])),
+			delay(200),
 			tap(emotes => this.emotes.next(emotes))
 		).subscribe();
 	}

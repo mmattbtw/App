@@ -1,5 +1,6 @@
 
 
+import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DataStructure } from '@typings/DataStructure';
@@ -15,24 +16,57 @@ export class EmoteFormService {
 	});
 	uploadedEmote = new BehaviorSubject('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAANSURBVBhXY2BgYGAAAAAFAAGKM+MAAAAAAElFTkSuQmCC');
 	uploadError = new BehaviorSubject('');
-
 	emoteData = new BehaviorSubject<DataStructure.Emote | null>(null);
+
+	uploading = new BehaviorSubject(false);
+	uploadStatus = new BehaviorSubject('');
+	uploadProgress = new BehaviorSubject<number | null>(null);
 
 	constructor(
 		private restService: RestService
 	) { }
 
+	/**
+	 * Upload the emote file to the server and wait for emote data to be returned
+	 */
 	uploadEmote(): void {
-		const formData = new FormData();
+		const formData = new FormData(); // Append file to form data
 		formData.append('file', this.form.get('emote')?.value);
 
-		this.restService.Emotes.Upload(formData, 0).pipe(
+		this.uploading.next(true); // Set uploading state as true
+		this.restService.Emotes.Upload(formData, 0).pipe( // Begin upload
+			tap(progress => {
+				if (progress instanceof HttpResponse) return undefined; // Send progress updates
+				switch (progress.loaded >= (progress.total ?? 1)) {
+					case true:
+						this.uploadStatus.next('Waiting for server...');
+						break;
+					case false:
+						const perc = (progress.total ?? 1) / progress.loaded || 100;
+						this.uploadStatus.next(`${perc}% uploaded`);
+						this.uploadProgress.next(perc);
+						break;
+				}
+
+				return undefined;
+			}),
+
+			RestService.onlyResponse(),
 			tap(res => this.emoteData.next(res.body)),
+			tap(res => this.uploadedEmote.next(this.restService.CDN.Emote(String(res.body?._id), 4))),
 			tap(() => this.form.enable()),
 			tap(res => this.form.patchValue({
 				name: res.body?.name
 			}))
-		).subscribe();
+		).subscribe({
+			complete(): void { done(); },
+			error(): void { done(); }
+		});
+
+		const done = () => {
+			this.uploading.next(false);
+			this.uploadStatus.next('');
+		};
 	}
 
 }

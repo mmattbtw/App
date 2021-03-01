@@ -10,33 +10,57 @@
 
 	<form [formGroup]="form" class="d-flex flex-column emote-form p-3"  [appColor]="themingService.bg.lighten(.12)" [isBackground]="true">
 		<!-- Upload Emote -->
-		<div class="emote-upload-section row">
-			<div class="col-4">
+		<div class="emote-upload-section d-flex flex-column-reverse flex-lg-row">
+			<div class="col-12 col-lg-7 mt-2">
 				<h2>Upload Emote</h2>
 				<span class="text-muted">
 					Pick the largest size you have, 7TV will perform the resizing for you
 				</span>
+				<div class="my-4"></div>
+
+				<!-- Emote Details Form -->
+				<div class="row emote-details" [class.locked]="!(isUploaded() | async)" [style.border-color]="themingService.bg.darken(.2)">
+					<div class="col-12 d-flex justify-content-end mt-2 mr-2" *ngIf="!(isUploaded() | async)">
+						<span class="text-danger col-12">
+							You must upload an emote before editing metadata
+						</span>
+
+						<mat-icon color="warn">lock</mat-icon>
+					</div>
+
+					<mat-form-field class="col-12 col-md-6" appearance="outline">
+						<mat-label> Emote Name </mat-label>
+						<input formControlName="name" matInput>
+					</mat-form-field>
+				</div>
 			</div>
 
-			<div class="col-8 d-flex justify-content-end align-items-center">
+			<div class="col-12 col-lg-5 d-flex justify-content-center align-items-center">
 				<!-- Emote Upload Box -->
 				<div class="col-12 col-md-4 emote-upload-box">
 					<label for="edit-emote">
 						<input hidden formControlName="emote"> 
-						<input type="file" accept="image/png, image/jpeg, image/gif" name="edit-emote" id="edit-emote" (change)="uploadEmote($event.target)" />
-						<div class="add-emote-cta" *ngIf="!emoteControl.dirty"> <!-- Add call to action icon -->
-							<mat-icon>add</mat-icon>
-						</div>
+						<input type="file" accept="image/png, image/jpeg, image/gif" name="edit-emote" id="edit-emote" (change)="uploadEmote($event.target)" [disabled]="(isUploading() | async) || (isUploaded() | async)" />
 						<img #emoteImg [src]="emoteFormService.uploadedEmote | async"
 							[style.border-color]="(emoteControl.dirty && emoteControl.valid) ? 'lime' : (emoteControl.pristine) ? 'inherit' : 'red'"
 							matTooltip="Edit Emote">
 
 						<!-- Uplaod Button -->
-						<div class="d-flex mt-1 justify-content-center" *ngIf="!!(emoteFormService.uploadedEmote | async) && emoteControl.dirty">
-							<button mat-stroked-button color="primary" (click)="emoteFormService.uploadEmote()">
-								<mat-icon>file_upload</mat-icon>
+						<div class="d-flex flex-column mt-2 justify-content-center" *ngIf="!(isUploaded() | async) && !!(emoteFormService.uploadedEmote | async) && emoteControl.dirty">
+							<button mat-stroked-button color="primary" (click)="emoteFormService.uploadEmote()" [disabled]="emoteFormService.uploading | async">
+								<div class="d-inline-flex" [ngSwitch]="isUploading() | async">
+									<mat-icon *ngSwitchCase="false">file_upload</mat-icon>
+									<mat-spinner *ngSwitchCase="true" [diameter]="24"></mat-spinner>
+								</div>
+								
 								UPLOAD
 							</button>
+							
+							<!-- Progress indicator -->
+							<div *ngIf="isUploading() | async" class="mt-2">
+								<span class="text-center"> {{emoteFormService.uploadStatus | async}} </span>
+								<mat-progress-bar [value]="emoteFormService.uploadProgress | async"></mat-progress-bar>
+							</div>
 						</div>
 					</label>
 
@@ -45,17 +69,5 @@
 		</div>
 
 		<div class="mt-5"></div>
-
-		<!-- Emote Details Form -->
-		<div class="mt-2 row">
-			<span class="text-danger col-12" *ngIf="!(emoteFormService.emoteData | async)">
-				You must upload an emote before editing metadata
-			</span>
-
-			<mat-form-field class="col-12 col-md-6" appearance="outline">
-				<mat-label> Emote Name </mat-label>
-				<input formControlName="name" matInput>
-			</mat-form-field>
-		</div>
 	</form>
 </div>

@@ -9,6 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ColorDirective } from 'src/app/directive/highlight.directive';
 
 const modules = [
@@ -19,7 +21,9 @@ const modules = [
 	MatButtonModule,
 	MatDividerModule,
 	MatFormFieldModule,
-	MatInputModule
+	MatInputModule,
+	MatProgressSpinnerModule,
+	MatProgressBarModule
 ];
 
 @NgModule({

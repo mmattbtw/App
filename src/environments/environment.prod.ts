@@ -4,5 +4,6 @@ export const environment = {
 	serviceWorker: true,
 	origin: '7tv.app',
 	apiUrl: 'https://api.7tv.app',
+	cdnUrl: 'https://cdn.7tv.app',
 	wsUrl: 'wss://api.7tv.app'
 };

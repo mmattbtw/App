@@ -41,6 +41,7 @@ export class AppComponent {
 				filter(x => typeof x === 'string'),
 				tap(tok => clientService.setToken(tok)),
 				switchMap(() => restService.Users.GetCurrent()),
+				RestService.onlyResponse(),
 				tap(res => clientService.pushData(res.body))
 			).subscribe({
 				error: err => loggerService.error('Could\'nt sign in as user', err)

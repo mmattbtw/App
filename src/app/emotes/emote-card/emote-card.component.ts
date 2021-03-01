@@ -1,7 +1,9 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { DataStructure } from '@typings/DataStructure';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
@@ -20,6 +22,7 @@ import { ThemingService } from 'src/app/service/theming.service';
 })
 export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() size = 10;
+	@Input() emote: DataStructure.Emote | null = null;
 
 	borderColor = this.themingService.bg.lighten(.2).hex();
 	hover = new BehaviorSubject<boolean | null>(false);
@@ -31,10 +34,19 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	onMouseLeave(): void { this.hover.next(false); }
 
 	constructor(
+		private restService: RestService,
 		public themingService: ThemingService
 	) { }
 
 	ngOnInit(): void {
+	}
+
+	getEmoteURL(): string {
+		return this.restService.CDN.Emote(String(this.emote?._id), 3);
+	}
+
+	getTooltip(): string {
+		return (this.emote?.name.length ?? 0) >= 13 ? (this.emote?.name ?? '') : '';
 	}
 
 	ngOnDestroy(): void {

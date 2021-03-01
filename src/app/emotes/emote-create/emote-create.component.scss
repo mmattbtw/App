@@ -4,6 +4,10 @@
 
 .emote-form {
 	min-height: 50vh;
+
+	.emote-details.locked {
+		border: 1px solid;
+	}
 }
 
 .emote-upload-box {
@@ -11,11 +15,6 @@
 	label input { display: none; }
 
 	display: flex;
-	justify-content: flex-end !important;
-
-	height: 128px;
-	width: 128px;
-
 
 	img {
 		width: 128px;
@@ -34,14 +33,11 @@
 	}
 
 	.add-emote-cta {
-		display: flex;
-		height: 100%;
-		width: calc(100% - 32px);
 		position: absolute;
-		align-items: center;
-		justify-content: center;
 
 		mat-icon {
+			position: relative;
+			bottom: 150;
 			transform: scale(2);
 		}
 	}

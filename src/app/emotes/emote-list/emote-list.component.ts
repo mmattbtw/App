@@ -1,8 +1,10 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group } from '@angular/animations';
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { DataStructure } from '@typings/DataStructure';
+import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { map, mergeAll, take, takeUntil, toArray } from 'rxjs/operators';
+import { RestService } from 'src/app/service/rest.service';
 
 @Component({
 	selector: 'app-emote-list',
@@ -49,9 +51,10 @@ import { take, takeUntil } from 'rxjs/operators';
 export class EmoteListComponent implements OnInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
-	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<{}[]>;
+	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<DataStructure.Emote[]>;
 
 	constructor(
+		private restService: RestService,
 		private renderer: Renderer2,
 		private router: Router,
 	) { }
@@ -66,8 +69,19 @@ export class EmoteListComponent implements OnInit {
 		}, 775);
 	}
 
+	getEmotes(): Observable<DataStructure.Emote> {
+		return this.restService.Emotes.List().pipe(
+			RestService.onlyResponse(),
+			map(res => res.body ?? []),
+			mergeAll()
+		);
+	}
+
 	ngOnInit(): void {
-		this.emotes.next([...Array(16).keys()] as number[]);
+		this.getEmotes().pipe(
+			toArray(),
+			map(emotes => this.emotes.next(emotes))
+		).subscribe();
 	}
 
 }

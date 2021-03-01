@@ -1,8 +1,8 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { EmoteFormService } from 'src/app/emotes/emote-create/emote-form.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -35,6 +35,13 @@ export class EmoteCreateComponent implements OnInit {
 	get form(): FormGroup { return this.emoteFormService.form; }
 	get emoteControl(): FormControl { return this.emoteFormService.form.get('emote') as FormControl; }
 
+	isUploaded(): Observable<boolean> {
+		return this.emoteFormService.emoteData.asObservable().pipe(
+			map(data => data === null ? false : true)
+		);
+	}
+	isUploading(): Observable<boolean> { return this.emoteFormService.uploading.asObservable(); }
+
 	ngOnInit(): void {}
 
 	uploadEmote(target: EventTarget | null): void {
@@ -47,7 +54,7 @@ export class EmoteCreateComponent implements OnInit {
 		reader.onload = (e: ProgressEvent) => {
 			this.emoteFormService.uploadedEmote.next(String((e.target as { result?: string; }).result));
 
-			// Verify the avatar is not too large
+			// Verify the emote is not too large
 			if (typeof reader.result === 'string' && reader.result.length > 2500000) {
 				this.emoteFormService.uploadError.next('File must be under 2.5MB');
 

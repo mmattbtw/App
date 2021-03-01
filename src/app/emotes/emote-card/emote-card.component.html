@@ -3,5 +3,15 @@
 	[style.width.em]="size"
 	[style.border-color]="borderColor"
 	[appColor]="themingService.bg.darken(.1)" [isBackground]="true">
-	<img src="https://cdn.discordapp.com/emojis/695171992688787518.png?v=1&size=128">
+
+	<div class="title-banner" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
+		<span class="text-truncate px-2" [matTooltip]="getTooltip()" matTooltipPosition="above"> {{emote?.name}} </span>
+	</div>
+	<div class="title-banner submitter" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
+		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.owner_name}} </span>
+	</div>
+
+	<div class="img-wrapper">
+		<img [src]="getEmoteURL()">
+	</div>
 </div>

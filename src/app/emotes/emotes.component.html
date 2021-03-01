@@ -14,22 +14,23 @@
 		</div>
 	</div>
 
-	<div class="row">
+	<div class="row justify-content-center justify-content-lg-start">
 		<!-- Sidebar -->
-		<div class="emotes-sidebar col-lg-3 col-xl-3">
+		<div class="emotes-sidebar col-9 col-lg-3 col-xl-3">
 			<!-- Heading -->
-			<div class="_heading mat-elevation-z3" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+			<div class="_heading mat-elevation-z3 w-100" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
 				Search Emotes
 			</div>
 
 			<!-- Filters -->
-			<div class="_filters mat-elevation-z1" [appColor]="themingService.bg.darken(.12)" [isBackground]="true">
+			<div class="_filters mat-elevation-z1 w-100" [appColor]="themingService.bg.darken(.12)" [isBackground]="true">
 				WORK IN PROGRESS
 			</div>
 		</div>
+		<div class="col-12 d-block d-lg-none my-3"></div>
 
 		<!-- Emote List -->
-		<div class="col">
+		<div class="col-12 col-lg-9">
 			<router-outlet></router-outlet>
 		</div>
 	</div>

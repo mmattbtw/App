@@ -1,11 +1,11 @@
 
 
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { DataStructure } from '@typings/DataStructure';
 import { BehaviorSubject } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 
 @Injectable({providedIn: 'root'})
@@ -60,10 +60,11 @@ export class EmoteFormService {
 			}))
 		).subscribe({
 			complete(): void { done(); },
-			error(): void { done(); }
+			error(err: HttpErrorResponse): void { done(err); }
 		});
 
-		const done = () => {
+		const done = (err?: HttpErrorResponse) => {
+			if (err) this.uploadError.next(err.error);
 			this.uploading.next(false);
 			this.uploadStatus.next('');
 		};

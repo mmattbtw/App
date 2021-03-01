@@ -41,11 +41,13 @@ export class ClientService {
 	 * @param data Twitch User data
 	 */
 	pushData(data: DataStructure.TwitchUser | null): void {
-		this.data.next(data);
-		this.setAuthState(!!data);
-
-		if (data !== null) this.logger.info(`Signed in as ${data.display_name}.`);
-		else this.logger.info('Signed out.');
+		if (!!data?._id) {
+			this.data.next(data);
+			this.setAuthState(!!data);
+			this.logger.info(`Signed in as ${data.display_name}.`);
+		} else {
+			this.logger.info('Signed out.');
+		}
 	}
 
 	setToken(token: string | null): void {

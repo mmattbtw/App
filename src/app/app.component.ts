@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { iconList } from 'src/app/icons-register';
 import { ClientService } from 'src/app/service/client.service';
@@ -42,9 +42,13 @@ export class AppComponent {
 				tap(tok => clientService.setToken(tok)),
 				switchMap(() => restService.Users.GetCurrent()),
 				RestService.onlyResponse(),
+				switchMap(res => !!res.body?._id ? of(res) : throwError('Unknown Account')),
 				tap(res => clientService.pushData(res.body))
 			).subscribe({
-				error: err => loggerService.error('Could\'nt sign in as user', err)
+				error: err => {
+					loggerService.error('Could\'nt sign in as user', err);
+					localStorage.removeItem('access_token');
+				}
 			});
 		}
 	}

@@ -1,9 +1,14 @@
-<div class="col emotes-list">
-	<div class="d-flex flex-wrap align-items-start justify-content-center" [@emotes]="emotes | async">
-		<div (click)="selectEmote(emoteEl, null)" #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
+<div class="col p-2 emotes-list">
+	<div class="d-flex flex-wrap align-items-start justify-content-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
+		<div (click)="selectEmote(emoteEl, emote)" #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
 			<app-emote-card [emote]="emote">
 
 			</app-emote-card>
 		</div>
 	</div>
+
+	<mat-paginator (page)="onPageEvent($event)"
+		[length]="totalEmotes | async" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]">
+
+	</mat-paginator>
 </div>

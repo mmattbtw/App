@@ -1,10 +1,12 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group } from '@angular/animations';
 import { Component, OnInit, Renderer2 } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { DataStructure } from '@typings/DataStructure';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { map, mergeAll, take, takeUntil, toArray } from 'rxjs/operators';
+import { map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
+import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
 	selector: 'app-emote-list',
@@ -52,29 +54,42 @@ export class EmoteListComponent implements OnInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
 	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<DataStructure.Emote[]>;
+	totalEmotes = new BehaviorSubject<number>(0);
 
 	constructor(
 		private restService: RestService,
 		private renderer: Renderer2,
 		private router: Router,
+		public themingService: ThemingService
 	) { }
 
-	selectEmote(el: any, emote: any): void {
+	selectEmote(el: any, emote: DataStructure.Emote): void {
 		this.selecting.next(true);
 		this.renderer.addClass(el, 'selected-emote-card');
 		this.emotes.next([]);
 
 		setTimeout(() => {
-			this.router.navigate(['emotes', 0]);
+			this.router.navigate(['emotes', emote._id]);
 		}, 775);
 	}
 
-	getEmotes(): Observable<DataStructure.Emote> {
-		return this.restService.Emotes.List().pipe(
+	getEmotes(page = 1, pageSize = 16): Observable<DataStructure.Emote> {
+		return this.restService.Emotes.List(page, pageSize).pipe(
 			RestService.onlyResponse(),
-			map(res => res.body ?? []),
+			tap(res => this.totalEmotes.next(res.body?.total_estimated_size ?? 0)),
+			map(res => res.body?.emotes ?? []),
 			mergeAll()
 		);
+	}
+
+	/**
+	 * Handle pagination changes
+	 */
+	onPageEvent(ev: PageEvent): void {
+		this.getEmotes(ev.pageIndex + 1, ev.pageSize).pipe(
+			toArray(),
+			tap(emotes => this.emotes.next(emotes))
+		).subscribe();
 	}
 
 	ngOnInit(): void {

@@ -44,6 +44,7 @@
 						<img #emoteImg [src]="emoteFormService.uploadedEmote | async"
 							[style.border-color]="(emoteControl.dirty && emoteControl.valid) ? 'lime' : (emoteControl.pristine) ? 'inherit' : 'red'"
 							matTooltip="Edit Emote">
+						<mat-error> {{emoteFormService.uploadError | async}} </mat-error>
 
 						<!-- Uplaod Button -->
 						<div class="d-flex flex-column mt-2 justify-content-center" *ngIf="!(isUploaded() | async) && !!(emoteFormService.uploadedEmote | async) && emoteControl.dirty">

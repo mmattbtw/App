@@ -18,12 +18,13 @@ export const routes: Routes = [
 			{
 				path: 'create',
 				component: EmoteCreateComponent
-			},
-			{
-				path: ':emote',
-				component: EmoteComponent
 			}
 		]
+	},
+
+	{
+		path: ':emote',
+		component: EmoteComponent
 	}
 ];
 

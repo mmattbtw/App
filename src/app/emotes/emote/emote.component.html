@@ -1,1 +1,34 @@
-<p>emote works!</p>
+<div class="container p-2 h-100">
+	<!-- Heading -->
+	<div class="w-100 p-2 mat-elevation-z2 d-inline-flex justify-content-between" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+		<!-- Emote Name / Back arrow -->
+		<div class="d-inline-block">
+			<button mat-icon-button class="ml-2" [routerLink]="['../']">
+				<mat-icon>arrow_back</mat-icon>
+			</button>
+			<img [style.height.em]="1" [src]="emote?.getURL() | async">
+
+			<span class="ml-2"> {{emote?.getName() | async}} </span>
+		</div>
+
+		<!-- Emote Owner -->
+		<div class="d-flex align-items-center">
+			<span>Added by</span>
+			<span class="ml-1"> {{emote?.getOwnerName() | async}} </span>
+		</div>
+	</div>
+	
+	<!-- Preview sizes -->
+	<div class="d-flex flex-row align-items-center justify-content-center sizes-preview mt-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true" *ngIf="emote?.getName() | async">
+		<!-- Size -->
+		<div class="size-preview d-flex flex-column justify-content-end align-items-center" [style.height.px]="MAX_HEIGHT" *ngFor="let size of getSizes() | async">
+			<img [src]="size.url">
+
+			<span class="mt-2"> {{size.scope}}x </span>
+		</div>
+	</div>
+	<div class="my-2"></div>
+	<div [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+
+	</div>
+</div>

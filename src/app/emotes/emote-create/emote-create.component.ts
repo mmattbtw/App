@@ -25,7 +25,6 @@ import { ThemingService } from 'src/app/service/theming.service';
 	changeDetection: ChangeDetectionStrategy.Default
 })
 export class EmoteCreateComponent implements OnInit {
-
 	constructor(
 		private loggerService: LoggerService,
 		public themingService: ThemingService,

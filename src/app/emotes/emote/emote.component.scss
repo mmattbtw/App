@@ -1,0 +1,11 @@
+
+.sizes-preview {
+	min-height: 16em;
+
+	.size-preview {
+		margin: 1em;
+
+		img { width: 100% }
+		span { text-align: center; }
+	}
+}

@@ -43,15 +43,18 @@ export class EmoteComponent implements OnInit {
 		{ // Make this emote global (Moderator only)
 			label: 'make global', color: this.themingService.accent, icon: 'star',
 			condition: this.clientService.getRank().pipe(
-				map(rank => rank >= Constants.Users.Rank.MODERATOR)
-			)
+				switchMap(rank => (this.emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
+				map(({ isGlobal, rank }) => !isGlobal && rank >= Constants.Users.Rank.MODERATOR)
+			),
+			click: (emote) => emote.edit({ global: true })
 		},
 		{ // Remove this emote's global status (Moderator only)
-			label: 'revoke global', color: this.themingService.accent.negate(),
+			label: 'revoke global', color: this.themingService.accent.negate(), icon: 'star_half',
 			condition: this.clientService.getRank().pipe(
 				switchMap(rank => (this.emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
 				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
-			)
+			),
+			click: (emote) => emote.edit({ global: false })
 		},
 		{ // Delete this emote
 			label: 'Delete', color: this.themingService.warning, icon: 'delete',

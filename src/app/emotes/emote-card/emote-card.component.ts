@@ -1,9 +1,11 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject } from 'rxjs';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
+import { WindowRef } from 'src/app/service/window.service';
 
 @Component({
 	selector: 'app-emote-card',
@@ -32,8 +34,19 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	@HostListener('mouseleave')
 	onMouseLeave(): void { this.hover.next(false); }
 
+	@HostListener('auxclick', ['$event'])
+	onMiddleCLick(ev: MouseEvent): void {
+		if (ev.button === 1) {
+			const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(this.emote?._id)]));
+
+			this.windowRef.getNativeWindow().open(url, '_blank');
+		}
+	}
+
 	constructor(
 		private restService: RestService,
+		private router: Router,
+		private windowRef: WindowRef,
 		public themingService: ThemingService
 	) { }
 

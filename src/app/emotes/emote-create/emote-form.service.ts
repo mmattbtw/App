@@ -3,7 +3,7 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { DataStructure } from '@typings/DataStructure';
+import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
@@ -64,7 +64,7 @@ export class EmoteFormService {
 		});
 
 		const done = (err?: HttpErrorResponse) => {
-			if (err) this.uploadError.next(err.error);
+			if (err) this.uploadError.next(err.error?.error ?? err.error);
 			this.uploading.next(false);
 			this.uploadStatus.next('');
 		};

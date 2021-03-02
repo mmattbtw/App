@@ -5,7 +5,7 @@ import * as Color from 'color';
 	selector: '[appColor]'
 })
 export class ColorDirective implements OnInit {
-	@Input() appColor: string | Color = '';
+	@Input() appColor: string | Color | undefined = '';
 	@Input() isBackground = false;
 
 	/**

@@ -2,7 +2,7 @@ import { trigger, transition, query, style, stagger, animate, keyframes, group }
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { DataStructure } from '@typings/DataStructure';
+import { DataStructure } from '@typings/typings/DataStructure';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';

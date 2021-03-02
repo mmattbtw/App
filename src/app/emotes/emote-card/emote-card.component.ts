@@ -1,8 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
-import { DataStructure } from '@typings/DataStructure';
+import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 

@@ -9,6 +9,7 @@ import { EmoteComponent } from './emote/emote.component';
 import { EmoteCreateComponent } from './emote-create/emote-create.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EmoteListComponent } from './emote-list/emote-list.component';
+import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 
 @NgModule({
 	imports: [
@@ -23,7 +24,8 @@ import { EmoteListComponent } from './emote-list/emote-list.component';
 		EmoteCardComponent,
 		EmoteComponent,
 		EmoteCreateComponent,
-		EmoteListComponent
+		EmoteListComponent,
+		EmoteRenameDialogComponent
 	],
 	providers: [],
 })

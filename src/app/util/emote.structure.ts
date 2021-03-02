@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { DataStructure } from '@typings/DataStructure';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Constants } from '@typings/src/Constants';
+import { DataStructure } from '@typings/typings/DataStructure';
+import { BehaviorSubject, noop, Observable, throwError } from 'rxjs';
+import { map, mapTo, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 
 
@@ -32,6 +33,12 @@ export class EmoteStructure {
 		);
 	}
 
+	getOwnerID(): Observable<string | undefined> {
+		return this.data.pipe(
+			map(d => !!d?.owner ? String(d.owner) : undefined)
+		);
+	}
+
 	getOwnerName(): Observable<string | undefined> {
 		return this.data.pipe(
 			map(d => d?.owner_name)
@@ -41,6 +48,45 @@ export class EmoteStructure {
 	getURL(size = 3): Observable<string | undefined> {
 		return this.data.pipe(
 			map(d => this.restService.CDN.Emote(String(d?._id), size))
+		);
+	}
+
+	/**
+	 * Whether or not the emote is global
+	 */
+	isGlobal(): Observable<boolean> {
+		return this.data.pipe(
+			map(d => d?.global ?? false)
+		);
+	}
+
+	/**
+	 * Whether a given user can edit this emote
+	 */
+	canEdit(userID: string, rank?: number): Observable<boolean> {
+		return this.data.pipe(
+			map(d => String(d?.owner)),
+			map(ownerID => userID === ownerID || (rank ?? 0) >= Constants.Users.Rank.MODERATOR)
+		);
+	}
+
+	edit(body: any): Observable<EmoteStructure> {
+		return this.restService.Emotes.Edit(String(this.id), body).pipe(
+			RestService.onlyResponse(),
+			tap(res => this.data.next(res.body)),
+			mapTo(this)
+		);
+	}
+
+	/**
+	 * Delete this emote
+	 */
+	delete(): Observable<void> {
+		if (!this.id) return throwError(Error('Cannot delete unknown emote'));
+
+		return this.restService.Emotes.Delete(this.id).pipe(
+			RestService.onlyResponse(),
+			mapTo(undefined)
 		);
 	}
 }

@@ -1,3 +1,4 @@
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -25,6 +26,7 @@ export class AppComponent {
 		restService: RestService,
 		clientService: ClientService,
 		loggerService: LoggerService,
+		private overlayRef: OverlayContainer,
 		public viewportService: ViewportService
 	) {
 		for (const iconRef of iconList) {
@@ -51,5 +53,11 @@ export class AppComponent {
 				}
 			});
 		}
+
+		this.setTheme();
+	}
+
+	setTheme(): void {
+		this.overlayRef.getContainerElement().classList.add('theme-dark');
 	}
 }

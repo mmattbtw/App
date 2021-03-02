@@ -1,7 +1,8 @@
 
 
 import { Injectable } from '@angular/core';
-import { DataStructure } from '@typings/DataStructure';
+import { Constants } from '@typings/src/Constants';
+import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { LoggerService } from 'src/app/service/logger.service';
@@ -15,6 +16,12 @@ export class ClientService {
 	constructor(
 		private logger: LoggerService
 	) {}
+
+	getID(): Observable<string | null> {
+		return this.data.pipe(
+			map(data => !!data?._id  ? String(data._id) : null)
+		);
+	}
 
 	/**
 	 * Get the username of the client user
@@ -57,6 +64,15 @@ export class ClientService {
 	}
 	getToken(): string {
 		return this.token;
+	}
+
+	/**
+	 * Get the user's rank
+	 */
+	getRank(): Observable<Constants.Users.Rank> {
+		return this.data.pipe(
+			map(data => data?.rank ?? Constants.Users.Rank.DEFAULT)
+		);
 	}
 
 	/**

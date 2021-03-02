@@ -5,7 +5,7 @@ import { map, mergeAll, switchMap, switchMapTo, tap } from 'rxjs/operators';
 import { LoggerService } from 'src/app/service/logger.service';
 import { OAuthService } from 'src/app/service/oauth.service';
 import { ThemingService } from 'src/app/service/theming.service';
-import { DataStructure } from '@typings/DataStructure';
+import { DataStructure } from '@typings/typings/DataStructure';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 

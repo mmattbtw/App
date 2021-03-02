@@ -51,6 +51,8 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "verbose": true,
+              "lazyModules": [],
               "budgets": [
                 {
                   "type": "initial",

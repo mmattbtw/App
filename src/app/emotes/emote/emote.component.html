@@ -9,6 +9,9 @@
 			<img [style.height.em]="1" [src]="emote?.getURL() | async">
 
 			<span class="ml-2"> {{emote?.getName() | async}} </span>
+			<button mat-icon-button (click)="rename()" *ngIf="canEdit() | async">
+				<mat-icon>edit</mat-icon>
+			</button>
 		</div>
 
 		<!-- Emote Owner -->
@@ -28,7 +31,20 @@
 		</div>
 	</div>
 	<div class="my-2"></div>
-	<div [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
 
+	<!-- Interactions -->
+	<div class="d-flex flex-column p-2" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+		<h3>Manage Emote</h3>
+		<div class="d-flex flex-row flex-wrap" *ngIf="emote">
+			<div class="interact-button my-1" *ngFor="let i of interactions">
+				<button mat-button (click)="onInteract(i)" [appColor]="i.color" [isBackground]="true" *ngIf="i.condition === undefined || (i.condition | async) && !i.disabled" class="mx-1">
+					<div class="d-inline-flex align-items-center" [appColor]="i.color?.isLight() ? 'black' : 'white'">
+						<mat-icon *ngIf="i.icon"> {{i.icon}} </mat-icon>
+						<div class="mx-1"></div>
+						<span>{{ i.label | uppercase }}</span>
+					</div>
+				</button>
+			</div>
+		</div>
 	</div>
 </div>

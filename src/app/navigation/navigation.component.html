@@ -19,25 +19,32 @@
 
 	<!-- Navigation Buttons -->
 	<div class="nav-button-list">
-		<div [routerLink]="btn.path" [routerLinkActive]="['selected']" [routerLinkActiveOptions]="{ exact: true }" matRipple class="nav-button d-flex flex-grow-1 align-items-center" *ngFor="let btn of navButtons">
-			<!-- Icon -->
-			<div [ngSwitch]="btn.svg" class="_icon">
-				<mat-icon class=" d-flex align-self-center" *ngSwitchDefault [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''">
-					{{btn.icon}}
-				</mat-icon>
+		<div [routerLink]="btn.path" [routerLinkActive]="['selected']"
+			[routerLinkActiveOptions]="{ exact: true }"
+			matRipple
+			class="nav-button"
+			*ngFor="let btn of navButtons">
 
-				<mat-icon *ngSwitchCase="true" [svgIcon]="btn.icon" [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''"></mat-icon>
-			</div>
-			<div class="mx-1"></div>
+			<div class="d-flex flex-grow-1 align-items-center" *ngIf="!btn.condition || (btn.condition | async)">
+				<!-- Icon -->
+				<div [ngSwitch]="btn.svg" class="_icon" [appColor]="btn.color">
+					<mat-icon class=" d-flex align-self-center" *ngSwitchDefault [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''">
+						{{btn.icon}}
+					</mat-icon>
 
-			<!-- Name -->
-			<span class="_name d-none d-md-block">
-				{{btn.name | uppercase}}
-			</span>
+					<mat-icon *ngSwitchCase="true" [svgIcon]="btn.icon" [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''"></mat-icon>
+				</div>
+				<div class="mx-1"></div>
 
-			<!-- Select Indicator -->
-			<div class="_select_indicator" routerLinkActive="selected">
-				<div class="_line"></div>
+				<!-- Name -->
+				<span class="_name d-none d-md-block">
+					{{btn.name | uppercase}}
+				</span>
+
+				<!-- Select Indicator -->
+				<div class="_select_indicator" routerLinkActive="selected">
+					<div class="_line"></div>
+				</div>
 			</div>
 		</div>
 	</div>

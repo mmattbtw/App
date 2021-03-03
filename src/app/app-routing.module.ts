@@ -16,6 +16,10 @@ const routes: Routes = [
 		path: 'emotes',
 		loadChildren: () => import('src/app/emotes/emotes.module').then(m => m.EmotesModule)
 	},
+	{
+		path: 'admin',
+		loadChildren: () => import('src/app/admin/admin.module').then(m => m.AdminModule)
+	},
 
 	{
 		path: 'callback',

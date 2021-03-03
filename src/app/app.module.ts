@@ -17,15 +17,17 @@ import { TwitchButtonComponent } from './util/twitch-button/twitch-button.compon
 import { CallbackGuard } from './navigation/callback.guard';
 import { TagSystemComponent } from './util/tag-system/tag-system.component';
 import { UserNameComponent } from './util/user-name/user-name.component';
+import { AdminComponent } from './admin/admin.component';
+import { UtilModule } from 'src/app/util/util.module';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		HomeComponent,
 		NavigationComponent,
-		TwitchButtonComponent,
 		TagSystemComponent,
-		UserNameComponent
+		UserNameComponent,
+		AdminComponent
 	],
 	imports: [
 		BrowserModule,
@@ -33,6 +35,7 @@ import { UserNameComponent } from './util/user-name/user-name.component';
 		BrowserAnimationsModule,
 		HttpClientModule,
 		MaterialModule,
+		UtilModule,
 		NgbModule
 	],
 	providers: [

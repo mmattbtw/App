@@ -1,0 +1,15 @@
+.admin-sidebar {
+	display: flex;
+	border-right: solid 4px;
+
+	span {
+		font-size: 16px;
+	}
+
+	.sidebar-item {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+		padding: 1em;
+	}
+}

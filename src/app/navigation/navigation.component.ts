@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Constants } from '@typings/src/Constants';
+import { Observable } from 'rxjs';
+import { filter, map, mapTo } from 'rxjs/operators';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -31,6 +34,15 @@ export class NavigationComponent implements OnInit {
 			path: '/emotes',
 			icon: 'zulul',
 			svg: true
+		},
+		{
+			name: '',
+			path: '/admin',
+			color: this.themingService.primary,
+			condition: this.clientService.getRank().pipe(
+				map(rank => rank >= Constants.Users.Rank.MODERATOR ? true : false)
+			),
+			icon: 'build'
 		}
 	] as NavigationComponent.NavButton[];
 
@@ -59,5 +71,7 @@ export namespace NavigationComponent {
 		svg?: boolean;
 		path: string;
 		selected?: boolean;
+		color?: string;
+		condition?: Observable<boolean>;
 	}
 }

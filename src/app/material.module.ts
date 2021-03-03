@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { ColorDirective } from 'src/app/directive/highlight.directive';
 
 const modules = [
@@ -27,7 +28,8 @@ const modules = [
 	MatProgressSpinnerModule,
 	MatProgressBarModule,
 	MatPaginatorModule,
-	MatDialogModule
+	MatDialogModule,
+	MatMenuModule
 ];
 
 @NgModule({

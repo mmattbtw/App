@@ -1,15 +1,15 @@
-<div class="emote-card mat-elevation-z2" matRipple [@hovering]="{ value: hover | async, params: { borderColor: emote?.global ? globalBorderColor : borderColor } }"
+<div class="emote-card mat-elevation-z2" matRipple [@hovering]="{ value: hover | async, params: { borderColor: (emote?.isGlobal() | async) ? globalBorderColor : borderColor } }"
 	[style.height.em]="size"
 	[style.width.em]="size"
 	[appColor]="themingService.bg.darken(.1)" [isBackground]="true"
-	[class.global]="emote?.global"
+	[class.global]="emote?.isGlobal() | async"
 	[class.hovering]="hover | async">
 
 	<div class="title-banner" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
-		<span class="text-truncate px-2" [matTooltip]="getTooltip()" matTooltipPosition="above"> {{emote?.name}} </span>
+		<span class="text-truncate px-2" [matTooltip]="(getTooltip() | async ) || ''" matTooltipPosition="above"> {{emote?.getName() | async}} </span>
 	</div>
 	<div class="title-banner submitter" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
-		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.owner_name}} </span>
+		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.getName() | async}} </span>
 	</div>
 
 	<div class="img-wrapper">
@@ -18,8 +18,9 @@
 </div>
 
 <!-- Global Emote Indicator -->
-<div class="d-flex justify-content-center global-indicator" *ngIf="emote?.global" [matTooltip]="'Global Emote'">
+<div class="d-flex justify-content-center global-indicator" *ngIf="emote?.isGlobal() | async" [matTooltip]="'Global Emote'">
 	<div class="d-inline-flex justify-content-center align-items-center" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
 		<mat-icon [appColor]="globalBorderColor">star</mat-icon>
 	</div>
 </div>
+<div *ngIf="contextMenu" [matMenuTriggerFor]="contextMenu" #contextMenuTrigger></div>

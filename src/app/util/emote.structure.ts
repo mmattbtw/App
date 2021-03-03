@@ -51,7 +51,7 @@ export class EmoteStructure {
 		);
 	}
 
-	getTags():Observable<string[] | undefined> {
+	getTags(): Observable<string[] | undefined> {
 		return this.data.pipe(
 			map(d => d?.tags)
 		);

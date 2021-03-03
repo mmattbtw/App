@@ -2,12 +2,13 @@ import { trigger, transition, query, style, stagger, animate, keyframes, group, 
 import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { DataStructure } from '@typings/typings/DataStructure';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
+import { WindowRef } from 'src/app/service/window.service';
+import { EmoteStructure } from 'src/app/util/emote.structure';
 
 @Component({
 	selector: 'app-emote-list',
@@ -60,35 +61,51 @@ import { ThemingService } from 'src/app/service/theming.service';
 export class EmoteListComponent implements OnInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
-	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<DataStructure.Emote[]>;
+	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
 	totalEmotes = new BehaviorSubject<number>(0);
+	contextEmote: EmoteStructure | null = null;
 
-	@ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
+	pageOptions: EmoteListComponent.PersistentPageOptions | undefined;
+
+	contextMenuOptions = [
+		{
+			label: 'Open in New Tab',
+			icon: 'open_in_new',
+			click: emote => {
+				const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
+
+				this.windowRef.getNativeWindow().open(url, '_blank');
+			}
+		}
+	] as EmoteListComponent.ContextMenuButtons[];
 
 	constructor(
 		private restService: RestService,
 		private renderer: Renderer2,
 		private router: Router,
+		private windowRef: WindowRef,
 		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }
 
-	selectEmote(el: any, emote: DataStructure.Emote): void {
+	selectEmote(el: any, emote: EmoteStructure): void {
 		this.selecting.next(true);
 		this.renderer.addClass(el, 'selected-emote-card');
 		this.emotes.next([]);
 
 		setTimeout(() => {
-			this.router.navigate(['emotes', emote._id]);
+			this.router.navigate(['emotes', emote.getID()]);
 		}, 775);
 	}
 
-	getEmotes(page = 1, pageSize = 16): Observable<DataStructure.Emote> {
+	getEmotes(page = 1, pageSize = 16): Observable<EmoteStructure> {
 		return this.restService.Emotes.List(page, pageSize).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.totalEmotes.next(res.body?.total_estimated_size ?? 0)),
 			map(res => res.body?.emotes ?? []),
-			mergeAll()
+			mergeAll(),
+			map(data => new EmoteStructure(this.restService).pushData(data))
 		);
 	}
 
@@ -96,6 +113,14 @@ export class EmoteListComponent implements OnInit {
 	 * Handle pagination changes
 	 */
 	onPageEvent(ev: PageEvent): void {
+		// Save page options to localstorage
+		const pageOptions = {
+			page: ev.pageIndex,
+			pageSize: ev.pageSize,
+			length: ev.length
+		} as EmoteListComponent.PersistentPageOptions;
+		localStorage.setItem('pagination', JSON.stringify(pageOptions));
+
 		this.getEmotes(ev.pageIndex + 1, ev.pageSize).pipe(
 			toArray(),
 			tap(() => this.emotes.next([])),
@@ -105,11 +130,39 @@ export class EmoteListComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		console.log(this.paginator);
-		this.getEmotes().pipe(
-			toArray(),
-			map(emotes => this.emotes.next(emotes))
-		).subscribe();
+		// Get persisted page options?
+		const pageOptions = localStorage.getItem('pagination');
+		if (!!pageOptions) { // If persistence options found set the page
+			const o = JSON.parse(pageOptions) as EmoteListComponent.PersistentPageOptions; // Parse JSON from localStorage
+
+			this.paginator?.page.next({
+				pageIndex: o.page,
+				pageSize: o.pageSize,
+				length: o.length,
+			});
+			this.pageOptions = o;
+		} else {
+			this.getEmotes().pipe(
+				toArray(),
+				map(emotes => this.emotes.next(emotes))
+			).subscribe();
+		}
 	}
 
+}
+
+export namespace EmoteListComponent {
+	export interface ContextMenuButtons {
+		label: string;
+		icon: string;
+		color?: string;
+		click: (emote: EmoteStructure) => void;
+		condition?: Observable<boolean>;
+	}
+
+	export interface PersistentPageOptions {
+		pageSize: number;
+		page: number;
+		length: number;
+	}
 }

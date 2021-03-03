@@ -1,11 +1,14 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
+import { EmoteStructure } from 'src/app/util/emote.structure';
 
 @Component({
 	selector: 'app-emote-card',
@@ -23,7 +26,10 @@ import { WindowRef } from 'src/app/service/window.service';
 })
 export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() size = 10;
-	@Input() emote: DataStructure.Emote | null = null;
+	@Input() emote: EmoteStructure | null = null;
+	@Input() contextMenu: MatMenu | undefined;
+	@Output() openContext = new EventEmitter<EmoteStructure>();
+	@ViewChild(MatMenuTrigger) contextMenuTrigger: MatMenuTrigger | undefined;
 
 	borderColor = this.themingService.bg.lighten(.2).hex();
 	globalBorderColor = this.themingService.accent.hex();
@@ -42,7 +48,7 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	@HostListener('auxclick', ['$event'])
 	onMiddleCLick(ev: MouseEvent): void {
 		if (ev.button === 1) {
-			const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(this.emote?._id)]));
+			const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(this.emote?.getID())]));
 
 			this.windowRef.getNativeWindow().open(url, '_blank');
 		}
@@ -54,6 +60,10 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	@HostListener('contextmenu', ['$event'])
 	onRightClick(ev: MouseEvent): void {
 		ev.preventDefault(); // Stop the default context menu from opening
+
+		if (!!this.emote) this.openContext.next(this.emote);
+		this.contextMenuTrigger?.openMenu();
+		console.log(this.contextMenuTrigger);
 	}
 
 	constructor(
@@ -64,14 +74,17 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	) { }
 
 	ngOnInit(): void {
+		console.log(this.contextMenu);
 	}
 
 	getEmoteURL(): string {
-		return this.restService.CDN.Emote(String(this.emote?._id), 3);
+		return this.restService.CDN.Emote(String(this.emote?.getID()), 3);
 	}
 
-	getTooltip(): string {
-		return (this.emote?.name.length ?? 0) >= 13 ? (this.emote?.name ?? '') : '';
+	getTooltip(): Observable<string | undefined> {
+		return this.emote?.getName().pipe(
+			map(name => (name?.length ?? 0) >= 14 ? name : '')
+		) ?? EMPTY;
 	}
 
 	ngOnDestroy(): void {

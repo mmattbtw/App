@@ -7,7 +7,7 @@
 		</div>
 	</div>
 
-	<mat-paginator (page)="onPageEvent($event)"
+	<mat-paginator #paginator (page)="onPageEvent($event)" [@fadeout]="selecting | async"
 		[showFirstLastButtons]="true"
 		[length]="totalEmotes | async" [pageSize]="16" [pageSizeOptions]="[8, 16, 32, 64]">
 

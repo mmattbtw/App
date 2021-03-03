@@ -1,6 +1,6 @@
 .emote-card {
 	cursor: pointer;
-	border: groove 1px;
+	border: groove 2px;
 	border-color: transparent;
 	border-radius: 3px;
 
@@ -42,4 +42,29 @@
 		}
 	}
 
+	&.global {
+		border: 0px;
+		border-bottom: solid 2px;
+	}
+
+}
+
+.global-indicator {
+	cursor: default;
+	position: relative;
+	height: 0;
+
+	:first-child {
+		position: absolute;
+		height: 1.5em;
+		width: 3em;
+		padding-top: 4px;
+		text-align: center;
+		border-bottom-left-radius: 33%;
+		border-bottom-right-radius: 33%;
+
+		mat-icon {
+			transform: scale(.75);
+		}
+	}
 }

@@ -1,10 +1,11 @@
-import { trigger, transition, query, style, stagger, animate, keyframes, group } from '@angular/animations';
-import { Component, OnInit, Renderer2 } from '@angular/core';
-import { PageEvent } from '@angular/material/paginator';
+import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
+import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 
@@ -14,6 +15,12 @@ import { ThemingService } from 'src/app/service/theming.service';
 	styleUrls: ['./emote-list.component.scss'],
 	styles: ['.selected-emote-card { opacity: 0 }'],
 	animations: [
+		trigger('fadeout', [
+			state('true', style({ transform: 'translateY(200%)', opacity: 0 })),
+
+			transition('* => true', animate('100ms'))
+		]),
+
 		trigger('emotes', [
 			transition('* => *', [
 				query('.is-emote-card:enter', [
@@ -29,7 +36,7 @@ import { ThemingService } from 'src/app/service/theming.service';
 				group([
 					query('.is-emote-card:not(.selected-emote-card):leave', [
 						style({ opacity: 1 }),
-						stagger(-11.5, [
+						stagger(-9.25, [
 							animate('200ms', style({ transform: 'scale(0)' }))
 						])
 					], { optional: true }),
@@ -56,10 +63,13 @@ export class EmoteListComponent implements OnInit {
 	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<DataStructure.Emote[]>;
 	totalEmotes = new BehaviorSubject<number>(0);
 
+	@ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+
 	constructor(
 		private restService: RestService,
 		private renderer: Renderer2,
 		private router: Router,
+		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }
 
@@ -95,6 +105,7 @@ export class EmoteListComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		console.log(this.paginator);
 		this.getEmotes().pipe(
 			toArray(),
 			map(emotes => this.emotes.next(emotes))

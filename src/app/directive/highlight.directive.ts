@@ -7,6 +7,7 @@ import * as Color from 'color';
 export class ColorDirective implements OnInit {
 	@Input() appColor: string | Color | undefined = '';
 	@Input() isBackground = false;
+	@Input() isBorder = false;
 
 	/**
 	 * Give a color or background color to an element
@@ -16,7 +17,11 @@ export class ColorDirective implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.el.nativeElement.style[this.isBackground ? 'backgroundColor' : 'color'] = String(this.appColor);
+		if (this.isBorder) {
+			this.el.nativeElement.style.borderColor = String(this.appColor);
+		} else {
+			this.el.nativeElement.style[this.isBackground ? 'backgroundColor' : 'color'] = String(this.appColor);
+		}
 	}
 
 }

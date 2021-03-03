@@ -26,14 +26,19 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() emote: DataStructure.Emote | null = null;
 
 	borderColor = this.themingService.bg.lighten(.2).hex();
+	globalBorderColor = this.themingService.accent.hex();
 	hover = new BehaviorSubject<boolean | null>(false);
 
+	// Listen for hover states
 	@HostListener('mouseenter')
 	onMouseEnter(): void { this.hover.next(true); }
 
 	@HostListener('mouseleave')
 	onMouseLeave(): void { this.hover.next(false); }
 
+	/**
+	 * Middle Mouse Click: open in new tab
+	 */
 	@HostListener('auxclick', ['$event'])
 	onMiddleCLick(ev: MouseEvent): void {
 		if (ev.button === 1) {
@@ -41,6 +46,14 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 
 			this.windowRef.getNativeWindow().open(url, '_blank');
 		}
+	}
+
+	/**
+	 * On Right Click: open quick actions menu
+	 */
+	@HostListener('contextmenu', ['$event'])
+	onRightClick(ev: MouseEvent): void {
+		ev.preventDefault(); // Stop the default context menu from opening
 	}
 
 	constructor(

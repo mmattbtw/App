@@ -1,21 +1,32 @@
-import { HttpResponse } from '@angular/common/http';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
-import * as Color from 'color';
-import { asyncScheduler, EMPTY, from, Observable, of, scheduled } from 'rxjs';
-import { filter, map, mapTo, mergeAll, switchMap, tap, toArray } from 'rxjs/operators';
+import { EMPTY, from, Observable, of } from 'rxjs';
+import { filter, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
+import * as Color from 'color';
 
 @Component({
 	selector: 'app-emote',
 	templateUrl: './emote.component.html',
-	styleUrls: ['./emote.component.scss']
+	styleUrls: ['./emote.component.scss'],
+	animations: [
+		trigger('open', [
+			transition(':enter', [
+				animate(500, keyframes([
+					style({ opacity: 0, offset: 0 }),
+					style({ opacity: 0, offset: .75 }),
+					style({ opacity: 1, offset: 1 })
+				]))
+			])
+		])
+	]
 })
 export class EmoteComponent implements OnInit {
 	/** The maximum height an emote can be. This tells where the scope text should be placed */
@@ -31,8 +42,7 @@ export class EmoteComponent implements OnInit {
 			label: 'add to channel', color: this.themingService.primary.desaturate(0.4), icon: 'add_circle',
 			condition: this.clientService.getID().pipe(
 				mapTo(true)
-			),
-			disabled: true
+			)
 		},
 		// { // Remove from channel
 		// 	label: 'remove from channel', color: this.themingService.primary.desaturate(0.4).negate(), icon: 'remove_circle',
@@ -63,8 +73,7 @@ export class EmoteComponent implements OnInit {
 				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY)
 			),
 
-			click: (emote) => this.restService.Emotes.Delete(String(emote.getID())).pipe(
-				RestService.onlyResponse(),
+			click: (emote) => emote.delete().pipe(
 				// Emote deleted: quit this page
 				tap(() => this.router.navigate(['/emotes']))
 			)

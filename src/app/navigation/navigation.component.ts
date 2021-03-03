@@ -3,7 +3,6 @@ import { Constants } from '@typings/src/Constants';
 import { Observable } from 'rxjs';
 import { filter, map, mapTo } from 'rxjs/operators';
 import { AppService } from 'src/app/service/app.service';
-import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
 import { environment } from 'src/environments/environment';
@@ -50,7 +49,6 @@ export class NavigationComponent implements OnInit {
 		public viewportService: ViewportService,
 		public themingService: ThemingService,
 		public appService: AppService,
-		public clientService: ClientService
 	) { }
 
 	/**

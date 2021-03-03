@@ -1,0 +1,25 @@
+.signed-in-user {
+	span {
+		font-size: .75em;
+	}
+	
+
+	.signed-in-avatar {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-color: currentColor;
+		border-style: solid;
+		border-width: 1px;
+		border-radius: 50%;
+		height: 32px;
+		width: 32px;
+		
+	
+		img {
+			height: 100%;
+			width: 100%;
+			clip-path: circle(15px at center);
+		}
+	}
+}

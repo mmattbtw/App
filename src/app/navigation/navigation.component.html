@@ -49,18 +49,5 @@
 		</div>
 	</div>
 
-	<!-- Login / Current User -->
-	<div [ngSwitch]="clientService.isAuthenticated() | async">
-		<!-- Button -->
-		<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
-
-		<!-- Display Auth user -->
-		<div class="signed-in-user d-flex flex-row align-items-center" *ngSwitchCase="true">
-			<div class="signed-in-avatar" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
-				<img id="ava" [src]="clientService.getAvatarURL() | async">
-			</div>
-			<div class="mx-1"></div>
-			<span [appColor]="((clientService.getRank() | async) || 0) >= 1 ? themingService.primary : undefined ">{{this.clientService.getUsername() | async}}</span>
-		</div>
-	</div>
+	<app-user-name></app-user-name>
 </mat-toolbar>

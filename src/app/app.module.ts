@@ -13,10 +13,7 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { MaterialModule } from 'src/app/material.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
-import { TwitchButtonComponent } from './util/twitch-button/twitch-button.component';
 import { CallbackGuard } from './navigation/callback.guard';
-import { TagSystemComponent } from './util/tag-system/tag-system.component';
-import { UserNameComponent } from './util/user-name/user-name.component';
 import { AdminComponent } from './admin/admin.component';
 import { UtilModule } from 'src/app/util/util.module';
 
@@ -25,8 +22,6 @@ import { UtilModule } from 'src/app/util/util.module';
 		AppComponent,
 		HomeComponent,
 		NavigationComponent,
-		TagSystemComponent,
-		UserNameComponent,
 		AdminComponent
 	],
 	imports: [

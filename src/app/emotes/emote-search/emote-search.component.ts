@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { asyncScheduler, BehaviorSubject, EMPTY, scheduled } from 'rxjs';
-import { map, mergeAll, mergeMap, tap, throttleTime } from 'rxjs/operators';
+import { map, mergeAll, mergeMap, take, tap, throttleTime } from 'rxjs/operators';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
@@ -44,7 +44,12 @@ export class EmoteSearchComponent implements OnInit {
 	 * This method is used by the mode menu
 	 */
 	changeSearchMode(opt: EmoteSearchComponent.ModeMenuOption): void {
-		this.selectedSearchMode.next(opt);
+
+		this.selectedSearchMode.pipe(
+			take(1),
+			tap(mode => { delete this.current[mode.id as keyof EmoteSearchComponent.SearchChange]; }),
+			tap(o => this.selectedSearchMode.next(opt))
+		).subscribe();
 	}
 
 	handleEnterPress(ev: KeyboardEvent | Event): void {
@@ -56,7 +61,7 @@ export class EmoteSearchComponent implements OnInit {
 	ngOnInit(): void {
 		scheduled([
 			this.form.get('name')?.valueChanges.pipe( // Look for changes to the name input form field
-				mergeMap((value: string) => this.selectedSearchMode.pipe(map(mode => ({ mode, value })))),
+				mergeMap((value: string) => this.selectedSearchMode.pipe(take(1), map(mode => ({ mode, value })))),
 				map(({ value, mode }) => ({ [mode.id]: value })) // Map SearchMode to value
 			) ?? EMPTY,
 

@@ -47,7 +47,6 @@ export class TwitchButtonComponent implements OnInit {
 			this.restService.Auth.GetURL().pipe(
 				RestService.onlyResponse(),
 				map(res => res.body?.url as string),
-				tap(res => console.log(res)),
 				tap(url => this.oauthService.navigateTo(url))
 			)
 		], asyncScheduler).pipe(

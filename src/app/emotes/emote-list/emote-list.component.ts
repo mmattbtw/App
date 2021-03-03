@@ -26,7 +26,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 		trigger('emotes', [
 			transition('* => *', [
 				query('.is-emote-card:enter', [
-					style({ opacity: 0, transform: 'translateX(-20em) translateY(-20em)' }),
+					style({ opacity: 0, transform: 'translateX(5em) translateY(-20em)' }),
 					stagger(21, [
 						animate('475ms ease-in-out', keyframes([
 							style({ opacity: 0, offset: 0.475 }),

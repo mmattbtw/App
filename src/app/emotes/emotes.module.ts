@@ -11,6 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EmoteListComponent } from './emote-list/emote-list.component';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { TagSystemComponent } from 'src/app/util/tag-system/tag-system.component';
+import { EmoteSearchComponent } from './emote-search/emote-search.component';
 
 @NgModule({
 	imports: [
@@ -28,7 +29,8 @@ import { TagSystemComponent } from 'src/app/util/tag-system/tag-system.component
 		EmoteCreateComponent,
 		EmoteListComponent,
 		EmoteRenameDialogComponent,
-		TagSystemComponent
+		TagSystemComponent,
+		EmoteSearchComponent
 	],
 	providers: [],
 })

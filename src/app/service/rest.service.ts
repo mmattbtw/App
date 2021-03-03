@@ -33,8 +33,10 @@ export class RestService {
 
 	get Emotes() {
 		return {
-			List: (page = 1, pageSize = 16) =>
-				this.createRequest<{ emotes: DataStructure.Emote[]; total_estimated_size: number; }>('get', `/emotes?page=${page}&pageSize=${pageSize}`, { auth: true }),
+			List: (page = 1, pageSize = 16, query?: string) =>
+				this.createRequest<
+					{ emotes: DataStructure.Emote[]; total_estimated_size: number; }
+				>('get', `/emotes?page=${page}&pageSize=${pageSize}${query ? `&${query}` : ''}`, { auth: true }),
 			Get: (id: string) => this.createRequest<DataStructure.Emote>('get', `/emotes/${id}`),
 			Upload: (data: FormData, length: number) => this.createRequest<DataStructure.Emote>('post', '/emotes', {
 				body: data,

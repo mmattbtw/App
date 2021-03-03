@@ -37,7 +37,8 @@ export class HomeComponent implements OnInit {
 			name: 'Contact'
 		},
 		{
-			name: 'GitHub'
+			name: 'GitHub',
+			path: 'https://github.com/SevenTV'
 		},
 		{
 			name: 'Privacy Policy'

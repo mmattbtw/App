@@ -9,7 +9,7 @@
 		<span class="text-truncate px-2" [matTooltip]="(getTooltip() | async ) || ''" matTooltipPosition="above"> {{emote?.getName() | async}} </span>
 	</div>
 	<div class="title-banner submitter" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
-		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.getName() | async}} </span>
+		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.getOwnerName() | async}} </span>
 	</div>
 
 	<div class="img-wrapper">

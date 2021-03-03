@@ -1,0 +1,41 @@
+
+<div class="emote-search">
+	<!-- Heading -->
+	<div class="_heading mat-elevation-z3 w-100" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+		Search Emotes
+	</div>
+
+	<!-- Content -->
+	<form [formGroup]="form" class="_filters mat-elevation-z1 w-100" [appColor]="themingService.bg.darken(.12)" [isBackground]="true">
+		<!-- Search by Name -->
+		<div class="_search-by-name">
+			<mat-form-field appearance="outline">
+				<mat-label> Search {{(selectedSearchMode | async)?.label}} </mat-label>
+				<input id="searchbox" type="text" matInput formControlName="name" [(ngModel)]="nameSearchBox" (keyup.enter)="handleEnterPress($event)">
+			</mat-form-field>
+			<button for="searchbox" type="submit" class="d-none"></button>
+			<div class="mx-1"></div>
+
+			<button mat-icon-button [matTooltip]="'Change Search Mode'" [matMenuTriggerFor]="modeMenu">
+				<mat-icon>filter_list</mat-icon>
+			</button>
+		</div>
+
+		<!-- Checkbox for whether or not global emotes should be visible -->
+		<mat-checkbox formControlName="hideGlobal">
+			<mat-label> Hide Global Emotes </mat-label>
+		</mat-checkbox>
+
+		<!-- Display Order -->
+
+
+	</form>
+</div>
+
+<mat-menu #modeMenu="matMenu">
+	<ng-template matMenuContent>
+		<button mat-menu-item *ngFor="let opt of modeMenuOptions" (click)="changeSearchMode(opt)">
+			{{ opt.label }}
+		</button>
+	</ng-template>
+</mat-menu>

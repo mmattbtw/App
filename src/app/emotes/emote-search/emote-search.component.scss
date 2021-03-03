@@ -1,0 +1,25 @@
+.emote-search {
+	._heading {
+		padding: .75em;
+	}
+
+	._filters {
+		display: flex;
+		flex-direction: column;
+		min-height: 30px;
+		padding: 1em;
+
+		._search-by-name {
+			display: inline-flex;
+			align-items: center;
+
+			mat-form-field {
+				width: 80%;
+			}
+			button {
+				position: relative;
+				bottom: 8px;
+			}
+		}
+	}
+}

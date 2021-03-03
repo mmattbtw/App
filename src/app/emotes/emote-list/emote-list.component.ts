@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
+import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.component';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
@@ -99,8 +100,18 @@ export class EmoteListComponent implements OnInit {
 		}, 775);
 	}
 
-	getEmotes(page = 1, pageSize = 16): Observable<EmoteStructure> {
-		return this.restService.Emotes.List(page, pageSize).pipe(
+	handleSearchChange(change: Partial<EmoteSearchComponent.SearchChange>): void {
+		const queryString = Object.keys(change).map(k => `${k}=${change[k as keyof EmoteSearchComponent.SearchChange]}`).join('&');
+		this.getEmotes(undefined, undefined, queryString).pipe(
+			toArray(),
+			tap(() => this.emotes.next([])),
+			delay(50),
+			tap(emotes => this.emotes.next(emotes))
+		).subscribe();
+	}
+
+	getEmotes(page = 1, pageSize = 16, queryString?: string): Observable<EmoteStructure> {
+		return this.restService.Emotes.List(page, pageSize, queryString).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.totalEmotes.next(res.body?.total_estimated_size ?? 0)),
 			map(res => res.body?.emotes ?? []),

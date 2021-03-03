@@ -22,10 +22,9 @@
 
 	<div class="d-flex flex-row footer-options">
 		<span class="d-flex flex-row align-items-center" *ngFor="let btn of footerOptions; let index = index;">
-			<span class="text-muted">{{btn.name}}</span>
+			<a target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
 
 			<div *ngIf="footerOptions.length > (index + 1)" class="mx-1 separator-ball"></div>
 		</span>
-		<!-- <span [style.font-size.em]=".65">if vadikus reads this vi von ZULUL</span> -->
 	</div>
 </div>

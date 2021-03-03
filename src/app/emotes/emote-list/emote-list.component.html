@@ -1,24 +1,43 @@
-<div class="col p-2 emotes-list">
-	<div class="d-flex flex-wrap align-items-start justify-content-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
-		<div (click)="selectEmote(emoteEl, emote)"  #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
-			<app-emote-card [emote]="emote" [contextMenu]="emoteContextMenu" (openContext)="contextEmote = $event">
-
-			</app-emote-card>
-		</div>
+<div class="row justify-content-center justify-content-lg-start">
+	<!-- Sidebar -->
+	<div class="emotes-sidebar col-9 col-lg-3 col-xl-3">
+		<app-emote-search (searchChange)="handleSearchChange($event)"></app-emote-search>
 	</div>
+	<div class="col-12 d-block d-lg-none my-3"></div>
 
-	<mat-paginator #paginator (page)="onPageEvent($event)" [@fadeout]="selecting | async"
-		[showFirstLastButtons]="true" [pageIndex]="pageOptions?.page" [length]="pageOptions?.length"
-		[length]="totalEmotes | async" [pageSize]="16" [pageSizeOptions]="[8, 16, 32, 64]">
+	<!-- Emote List -->
+	<div class="col-12 col-lg-9">
 
-	</mat-paginator>
+		<div class="col p-2 emotes-list">
+			<!-- List Emote Cards -->
+			<div class="d-flex flex-wrap align-items-start justify-content-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
+				<div (click)="selectEmote(emoteEl, emote)"  #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
+					<app-emote-card [emote]="emote" [contextMenu]="emoteContextMenu" (openContext)="contextEmote = $event">
+		
+					</app-emote-card>
+				</div>
+			</div>
+		
+			<!-- Pagination menu -->
+			<mat-paginator #paginator (page)="onPageEvent($event)" [@fadeout]="selecting | async"
+				[showFirstLastButtons]="true" [pageIndex]="pageOptions?.page" [length]="pageOptions?.length"
+				[length]="totalEmotes | async" [pageSize]="16" [pageSizeOptions]="[8, 16, 32, 64]">
+		
+			</mat-paginator>
+		</div>
+
+		<!--
+			Render the emote context menu
+			This is passed to the emote cards themselves
+		-->
+		<mat-menu #emoteContextMenu="matMenu">
+			<ng-template matMenuContent>
+				<button mat-menu-item *ngFor="let opt of contextMenuOptions" (click)="(!!contextEmote && opt.click) ? opt.click(contextEmote) : undefined">
+					<mat-icon> {{opt.icon}} </mat-icon>
+					{{opt.label}}
+				</button>
+			</ng-template>
+		</mat-menu>
+		
+	</div>
 </div>
-
-<mat-menu #emoteContextMenu="matMenu">
-	<ng-template matMenuContent>
-		<button mat-menu-item *ngFor="let opt of contextMenuOptions" (click)="(!!contextEmote && opt.click) ? opt.click(contextEmote) : undefined">
-			<mat-icon> {{opt.icon}} </mat-icon>
-			{{opt.label}}
-		</button>
-	</ng-template>
-</mat-menu>

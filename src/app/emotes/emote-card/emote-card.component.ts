@@ -73,9 +73,7 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 		public themingService: ThemingService
 	) { }
 
-	ngOnInit(): void {
-		console.log(this.contextMenu);
-	}
+	ngOnInit(): void {}
 
 	getEmoteURL(): string {
 		return this.restService.CDN.Emote(String(this.emote?.getID()), 3);

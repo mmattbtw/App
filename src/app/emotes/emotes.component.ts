@@ -8,21 +8,6 @@ import { ThemingService } from 'src/app/service/theming.service';
 	styleUrls: ['./emotes.component.scss']
 })
 export class EmotesComponent implements OnInit {
-	sidebarLinks = [
-		{
-			label: ''
-		},
-		{
-			label: 'Global Emotes'
-		},
-		{
-
-		},
-		{
-
-		}
-	] as EmotesComponent.SidebarLink[];
-
 	constructor(
 		public themingService: ThemingService,
 		public clientService: ClientService

@@ -89,10 +89,12 @@
 		border-radius: 50%;
 		height: 32px;
 		width: 32px;
+		
 	
 		img {
-			height: 75%;
-			width: 75%;
+			height: 100%;
+			width: 100%;
+			clip-path: circle(15px at center);
 		}
 	}
 }

@@ -1,0 +1,48 @@
+/*Emulating 7tv environment*/
+html {
+    background-color: #303030;
+  }
+  
+  /*Tags look*/
+  #tagList {
+    display: flex;
+  }
+  
+  .tag {
+    margin: 1vh;
+    background-color: #486e66;
+    padding: 1vh;
+    border: solid 1px #102b5b;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #ffffff;
+    
+  }
+  
+  .tag:hover {
+    background-color: #e4fffa;
+    border: solid 1px #e4fffa;
+    color: #000000;
+  }
+  
+  /*
+  TAGS AUTOCOMPLETE
+  */
+  
+  #tagArea {
+    background-color: #141417;
+    border: solid 1px #e4fffa;
+    color: #ffffff;
+    padding: 1vh;
+    display: flex;
+  }
+  
+  #addATag {
+    border: none;
+    width: 100%;
+    background-color: #646569;
+  }
+  
+  #addATag:focus {
+    outline: none;
+  }

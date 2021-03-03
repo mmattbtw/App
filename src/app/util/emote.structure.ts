@@ -51,6 +51,12 @@ export class EmoteStructure {
 		);
 	}
 
+	getTags():Observable<string[] | undefined> {
+		return this.data.pipe(
+			map(d => d?.tags)
+		);
+	}
+
 	/**
 	 * Whether or not the emote is global
 	 */

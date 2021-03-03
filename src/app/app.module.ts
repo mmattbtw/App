@@ -15,7 +15,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { TwitchButtonComponent } from './util/twitch-button/twitch-button.component';
 import { CallbackGuard } from './navigation/callback.guard';
-import { TagSystemComponent } from './util/tag-system/tag-system.component';
 import { UserNameComponent } from './util/user-name/user-name.component';
 
 @NgModule({
@@ -24,7 +23,6 @@ import { UserNameComponent } from './util/user-name/user-name.component';
 		HomeComponent,
 		NavigationComponent,
 		TwitchButtonComponent,
-		TagSystemComponent,
 		UserNameComponent
 	],
 	imports: [

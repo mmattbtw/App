@@ -10,13 +10,15 @@ import { EmoteCreateComponent } from './emote-create/emote-create.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EmoteListComponent } from './emote-list/emote-list.component';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
+import { TagSystemComponent } from 'src/app/util/tag-system/tag-system.component';
 
 @NgModule({
 	imports: [
 		CommonModule,
 		EmotesRouterModule,
 		MaterialModule,
-		ReactiveFormsModule
+		ReactiveFormsModule,
+
 	],
 	exports: [],
 	declarations: [
@@ -25,7 +27,8 @@ import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-di
 		EmoteComponent,
 		EmoteCreateComponent,
 		EmoteListComponent,
-		EmoteRenameDialogComponent
+		EmoteRenameDialogComponent,
+		TagSystemComponent
 	],
 	providers: [],
 })

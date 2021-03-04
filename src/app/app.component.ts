@@ -42,7 +42,7 @@ export class AppComponent {
 			of(token).pipe(
 				filter(x => typeof x === 'string'),
 				tap(tok => clientService.setToken(tok)),
-				switchMap(() => restService.Users.GetCurrent()),
+				switchMap(() => restService.Users.Get('@me')),
 				RestService.onlyResponse(),
 				switchMap(res => !!res.body?._id ? of(res) : throwError('Unknown Account')),
 				tap(res => clientService.pushData(res.body))

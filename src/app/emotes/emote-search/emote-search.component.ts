@@ -55,6 +55,7 @@ export class EmoteSearchComponent implements OnInit {
 	handleEnterPress(ev: KeyboardEvent | Event): void {
 		ev.preventDefault();
 
+		(ev.target as HTMLInputElement).blur();
 		this.form.get('name')?.patchValue((ev.target as HTMLInputElement).value);
 	}
 

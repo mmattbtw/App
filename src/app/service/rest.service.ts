@@ -27,7 +27,7 @@ export class RestService {
 
 	get Users() {
 		return {
-			GetCurrent: () => this.createRequest<DataStructure.TwitchUser>('get', '/users/@me', { auth: true })
+			Get: (id: '@me' | string) => this.createRequest<DataStructure.TwitchUser>('get', `/users/${id}`, { auth: id === '@me' })
 		};
 	}
 

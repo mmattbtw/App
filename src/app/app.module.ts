@@ -22,7 +22,7 @@ import { UtilModule } from 'src/app/util/util.module';
 		AppComponent,
 		HomeComponent,
 		NavigationComponent,
-		AdminComponent
+		AdminComponent,
 	],
 	imports: [
 		BrowserModule,

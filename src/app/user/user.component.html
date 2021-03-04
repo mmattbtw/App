@@ -1,0 +1,10 @@
+<p>user works!</p>
+<div class="container">
+<p>{{client.getUsername()|async}}</p>
+<p>{{client.isAuthenticated()|async}}</p>
+
+<div class="ava-container">
+    <img class="avatar" src="{{client.getAvatarURL()|async}}">
+</div>
+<p>{{client.getRank()|async}}</p>
+</div>

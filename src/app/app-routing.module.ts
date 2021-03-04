@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from 'src/app/home/home.component';
+import { UserComponent } from 'src/app/user/user.component';
 import { CallbackGuard } from './navigation/callback.guard';
+
 
 const routes: Routes = [
 	{
@@ -19,6 +21,11 @@ const routes: Routes = [
 	{
 		path: 'admin',
 		loadChildren: () => import('src/app/admin/admin.module').then(m => m.AdminModule)
+	},
+
+	{
+		path: 'user',
+		loadChildren: () => import('src/app/user/user.module').then(m => m.UserModule)
 	},
 
 	{

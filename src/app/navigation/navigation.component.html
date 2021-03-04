@@ -2,9 +2,9 @@
 	<!-- App Title -->
 	<div class="d-flex align-items-center" [routerLink]="['/']">		
 		<div class="no-select app-title" [class.is-loading]="appService.loading">
-			<!-- Logo -->
+			<!-- Logo
 			<div class="_logo"></div>
-			
+		 	-->
 
 			<span class="_text">{{appService.title}}</span>
 
@@ -18,7 +18,7 @@
 	</div>
 
 	<!-- Navigation Buttons -->
-	<div class="nav-button-list">
+	<div class="nav-button-list justify-content-center flex-grow-1">
 		<div [routerLink]="btn.path" [routerLinkActive]="['selected']"
 			[routerLinkActiveOptions]="{ exact: true }"
 			matRipple
@@ -49,5 +49,11 @@
 		</div>
 	</div>
 
-	<app-user-name></app-user-name>
+	<div class="d-inline-flex align-items-center flex-grow-0">
+		<a mat-icon-button target="_blank" href="https://discord.gg/WyqtzzrU9t" matTooltip="Join Discord!">
+			<mat-icon svgIcon="discord"></mat-icon>
+		</a>
+		<div class="mx-md-4"></div>
+		<app-user-name [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
+	</div>
 </mat-toolbar>

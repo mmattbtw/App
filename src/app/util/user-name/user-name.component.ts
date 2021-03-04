@@ -9,7 +9,8 @@ import { ThemingService } from 'src/app/service/theming.service';
 	styleUrls: ['./user-name.component.scss']
 })
 export class UserNameComponent implements OnInit {
-	@Input() showAvatar = 0;
+	@Input() showAvatar = true;
+	@Input() showUsername: boolean | null = true;
 
 
 	constructor(

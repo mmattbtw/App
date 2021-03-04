@@ -4,5 +4,6 @@ export const iconList = [
 	['firefox', 'icons/firefox.svg'],
 	['chatterino', 'icons/chatterino.svg'],
 	['twitch', 'icons/twitch.svg'],
-	['zulul', 'icons/zulul.svg']
+	['zulul', 'icons/zulul.svg'],
+	['discord', 'icons/discord.svg']
 ] as [string, string][];

@@ -9,6 +9,6 @@
             <img id="ava" [src]="clientService.getAvatarURL() | async">
         </div>
         <div class="mx-1"></div>
-        <span [appColor]="((clientService.getRank() | async) || 0) >= 1 ? themingService.primary : undefined ">{{this.clientService.getUsername() | async}}</span>
+        <span *ngIf="showUsername" [appColor]="((clientService.getRank() | async) || 0) >= 1 ? themingService.primary : undefined ">{{this.clientService.getUsername() | async}}</span>
     </div>
 </div>

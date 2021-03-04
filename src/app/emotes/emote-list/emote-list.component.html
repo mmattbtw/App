@@ -32,7 +32,10 @@
 		-->
 		<mat-menu #emoteContextMenu="matMenu">
 			<ng-template matMenuContent>
-				<button mat-menu-item *ngFor="let opt of contextMenuOptions" (click)="(!!contextEmote && opt.click) ? opt.click(contextEmote) : undefined">
+				<button mat-menu-item
+				*ngFor="let opt of contextMenuOptions"
+				[class.d-none]="(!!opt.condition && !!contextEmote) && !(opt.condition(contextEmote) | async)"
+				(click)="(!!contextEmote && opt.click) ? onContextInteract(opt, contextEmote) : undefined">
 					<mat-icon> {{opt.icon}} </mat-icon>
 					{{opt.label}}
 				</button>

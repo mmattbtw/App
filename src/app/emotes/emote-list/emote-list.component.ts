@@ -2,10 +2,12 @@ import { trigger, transition, query, style, stagger, animate, keyframes, group, 
 import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { Constants } from '@typings/src/Constants';
+import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
+import { delay, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.component';
+import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
@@ -76,19 +78,52 @@ export class EmoteListComponent implements OnInit {
 			click: emote => {
 				const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
 
-				this.windowRef.getNativeWindow().open(url, '_blank');
+				return of(this.windowRef.getNativeWindow().open(url, '_blank'));
 			}
+		},
+		{
+			label: 'Copy Link',
+			icon: 'link',
+			click: emote => of(this.windowRef.copyValueToClipboard(''.concat(
+				`${this.windowRef.getNativeWindow().location.host}`, // Get window location.host
+				this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]))
+			)))
+		},
+		{
+			label: 'Make Global',
+			icon: 'star',
+			condition: emote => this.clientService.getRank().pipe(
+				switchMap(rank => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
+				map(({ isGlobal, rank }) => !isGlobal && rank >= Constants.Users.Rank.MODERATOR)
+			),
+			click: (emote) => emote.edit({ global: true })
+		},
+		{
+			label: 'Revoke Global',
+			icon: 'star_half',
+			condition: emote => this.clientService.getRank().pipe(
+				switchMap(rank => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
+				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
+			),
+			click: (emote) => emote.edit({ global: false })
 		}
 	] as EmoteListComponent.ContextMenuButtons[];
 
 	constructor(
 		private restService: RestService,
+		private clientService: ClientService,
 		private renderer: Renderer2,
 		private router: Router,
 		private windowRef: WindowRef,
 		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }
+
+	onContextInteract(button: EmoteListComponent.ContextMenuButtons, emote: EmoteStructure): void {
+		if (typeof button.click === 'function' && !!emote) {
+			button.click(emote).subscribe();
+		}
+	}
 
 	selectEmote(el: any, emote: EmoteStructure): void {
 		this.selecting.next(true);
@@ -167,8 +202,8 @@ export namespace EmoteListComponent {
 		label: string;
 		icon: string;
 		color?: string;
-		click: (emote: EmoteStructure) => void;
-		condition?: Observable<boolean>;
+		click: (emote: EmoteStructure) => Observable<void>;
+		condition?: (emote: EmoteStructure) => Observable<boolean>;
 	}
 
 	export interface PersistentPageOptions {

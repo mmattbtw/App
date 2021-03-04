@@ -106,6 +106,20 @@ export class EmoteListComponent implements OnInit {
 				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
 			),
 			click: (emote) => emote.edit({ global: false })
+		},
+		{
+			label: 'Delete',
+			icon: 'delete',
+			condition: emote => this.clientService.getID().pipe(
+				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
+				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY)
+			),
+			click: emote => emote.delete().pipe(
+				switchMap(() => this.emotes.pipe(
+					take(1),
+					tap(emotes => this.emotes.next(emotes.filter(e => e.getID() !== emote.getID())))
+				))
+			)
 		}
 	] as EmoteListComponent.ContextMenuButtons[];
 

@@ -1,9 +1,10 @@
-<div class="emote-card mat-elevation-z2 ladink" matRipple [@hovering]="{ value: hover | async, params: { borderColor: (emote?.isGlobal() | async) ? globalBorderColor : borderColor } }"
+<div class="emote-card mat-elevation-z2" matRipple [@hovering]="{ value: hover | async, params: { borderColor: (emote?.isGlobal() | async) ? globalBorderColor : borderColor } }"
 	[style.height.em]="size"
 	[style.width.em]="size"
 	[appColor]="themingService.bg.darken(.1)" [isBackground]="true"
 	[class.global]="emote?.isGlobal() | async"
-	[class.hovering]="hover | async">
+	[class.hovering]="hover | async"
+	[class.ladink]="!(emote?.getName() | async)">
 
 	<div class="title-banner" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
 		<span class="text-truncate px-2" [matTooltip]="(getTooltip() | async ) || ''" matTooltipPosition="above"> {{emote?.getName() | async}} </span>

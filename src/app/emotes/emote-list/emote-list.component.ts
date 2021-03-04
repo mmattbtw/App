@@ -4,7 +4,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
-import { delay, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { delay, map, mergeAll, retry, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.component';
 import { ClientService } from 'src/app/service/client.service';
@@ -64,7 +64,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 export class EmoteListComponent implements OnInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
-	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
+	emotes = new BehaviorSubject<any>(Array(16).fill(new EmoteStructure(this.restService))).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
 	totalEmotes = new BehaviorSubject<number>(0);
 	contextEmote: EmoteStructure | null = null;
 
@@ -126,6 +126,8 @@ export class EmoteListComponent implements OnInit {
 	}
 
 	selectEmote(el: any, emote: EmoteStructure): void {
+		if (!emote.getID()) return undefined;
+
 		this.selecting.next(true);
 		this.renderer.addClass(el, 'selected-emote-card');
 		this.emotes.next([]);

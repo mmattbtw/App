@@ -1,4 +1,4 @@
-<div class="emote-card mat-elevation-z2" matRipple [@hovering]="{ value: hover | async, params: { borderColor: (emote?.isGlobal() | async) ? globalBorderColor : borderColor } }"
+<div class="emote-card mat-elevation-z2 ladink" matRipple [@hovering]="{ value: hover | async, params: { borderColor: (emote?.isGlobal() | async) ? globalBorderColor : borderColor } }"
 	[style.height.em]="size"
 	[style.width.em]="size"
 	[appColor]="themingService.bg.darken(.1)" [isBackground]="true"
@@ -13,7 +13,7 @@
 	</div>
 
 	<div class="img-wrapper">
-		<img [src]="getEmoteURL()">
+		<img *ngIf="emote?.getID()" [src]="getEmoteURL()">
 	</div>
 </div>
 

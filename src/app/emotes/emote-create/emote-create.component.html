@@ -8,7 +8,7 @@
 		<span>Submit Emote</span>
 	</div>
 
-	<form [formGroup]="form" class="d-flex flex-column emote-form p-3"  [appColor]="themingService.bg.lighten(.12)" [isBackground]="true">
+	<form [formGroup]="form" class="d-flex flex-column justify-content-between emote-form p-3"  [appColor]="themingService.bg.lighten(.12)" [isBackground]="true">
 		<!-- Upload Emote -->
 		<div class="emote-upload-section d-flex flex-column-reverse flex-lg-row">
 			<div class="col-12 col-lg-7 mt-2">
@@ -19,15 +19,7 @@
 				<div class="my-4"></div>
 
 				<!-- Emote Details Form -->
-				<div class="row emote-details" [class.locked]="!(isUploaded() | async)" [style.border-color]="themingService.bg.darken(.2)">
-					<div class="col-12 d-flex justify-content-end mt-2 mr-2" *ngIf="!(isUploaded() | async)">
-						<span class="text-danger col-12">
-							You must upload an emote before editing metadata
-						</span>
-
-						<mat-icon color="warn">lock</mat-icon>
-					</div>
-
+				<div class="row emote-details" [style.border-color]="themingService.bg.darken(.2)">
 					<mat-form-field class="col-12 col-md-6" appearance="outline">
 						<mat-label> Emote Name </mat-label>
 						<input formControlName="name" matInput>
@@ -56,19 +48,16 @@
 								
 								UPLOAD
 							</button>
-							
-							<!-- Progress indicator -->
-							<div *ngIf="isUploading() | async" class="mt-2">
-								<span class="text-center"> {{emoteFormService.uploadStatus | async}} </span>
-								<mat-progress-bar [value]="emoteFormService.uploadProgress | async"></mat-progress-bar>
-							</div>
 						</div>
 					</label>
-
 				</div>
 			</div>
 		</div>
 
-		<div class="mt-5"></div>
+		<!-- Progress indicator -->
+		<div *ngIf="isUploading() | async" class="mt-2">
+			<h2 class="text-center"> {{emoteFormService.uploadStatus | async}} </h2>
+			<mat-progress-bar [value]="emoteFormService.uploadProgress | async"></mat-progress-bar>
+		</div>
 	</form>
 </div>

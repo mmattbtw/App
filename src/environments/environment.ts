@@ -9,7 +9,7 @@ export const environment = {
 	origin: 'localhost',
 	apiUrl: 'http://localhost:3000',
 	cdnUrl: 'https://cdn.7tv.app/dev',
-	wsUrl: 'wss://localhost:3000'
+	wsUrl: 'ws://localhost:3000'
 };
 
 /*

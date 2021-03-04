@@ -1,9 +1,29 @@
 .container {
-    padding: 4%;
+    margin: 4% auto;
+    padding: 1%;
     display: flex;
+    justify-content: space-between;
+    width: 30%;
+    background-color: #393939;
+}
+
+.ava-container {
+    width: 50%;
+    align-self: flex-end;
+    background-color: #2b2b2b;
+    margin: 3%;
+
+}
+
+.info-container {
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #2b2b2b;
+    margin: 3%;
+    width: 70%;
+
 }
 
 .avatar {
-    width: 20%;
-    display: flex;
+    width: 100%;
 }

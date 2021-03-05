@@ -22,13 +22,16 @@ import { ThemingService } from 'src/app/service/theming.service';
 export class HomeComponent implements OnInit {
 	browserIcons = [
 		{
-			icon: 'chrome'
+			icon: 'chrome',
+			click: () => window.open('https://github.com/SevenTV/SevenTV', '_blank')
 		},
 		{
-			icon: 'firefox'
+			icon: 'firefox',
+			click: () => window.open('https://github.com/SevenTV/SevenTV', '_blank')
 		},
 		{
-			icon: 'chatterino'
+			icon: 'chatterino',
+			click: () => window.open('https://github.com/SevenTV/SevenTV', '_blank')
 		}
 	] as HomeComponent.BrowserIcon[];
 

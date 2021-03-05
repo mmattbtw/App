@@ -12,7 +12,7 @@
 		<!-- Display Brwowser Downloads -->
 		<span class="d-flex flex-row browser-downloads">
 			<div [@browserIcon] matRipple [matRippleCentered]="true" [matRippleUnbounded]="true" [matRippleRadius]="8 * 6" class="browser-icon" *ngFor="let icon of browserIcons" [matTooltip]="'Install on ' + icon.icon">
-				<mat-icon [style.transform]="'scale(2)'" [svgIcon]="icon.icon">
+				<mat-icon [style.transform]="'scale(2)'" [svgIcon]="icon.icon" (click)="icon.click ? icon.click($event) : null">
 
 				</mat-icon>
 			</div>

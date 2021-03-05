@@ -22,7 +22,7 @@
 	</div>
 	
 	<!-- Preview sizes -->
-	<div class="d-flex flex-row align-items-center justify-content-center sizes-preview mt-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true" *ngIf="emote?.getName() | async">
+	<div class="d-flex flex-row align-items-center justify-content-center sizes-preview mt-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
 		<!-- Size -->
 		<div class="size-preview d-flex flex-column justify-content-end align-items-center" [style.height.px]="MAX_HEIGHT" *ngFor="let size of getSizes() | async">
 			<img [src]="size.url">
@@ -33,7 +33,9 @@
 	<div class="my-2"></div>
 
 	<!-- Tags -->
-	<app-tag-system [emote]="emote"></app-tag-system>
+	<div class="p-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+		<app-tag-system [emote]="emote"></app-tag-system>
+	</div>
 
 	<!-- Interactions -->
 	<div class="d-flex flex-column p-2" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
@@ -49,5 +51,6 @@
 				</button>
 			</div>
 		</div>
+		<mat-error> {{(interactError | async)?.toString()}} </mat-error>
 	</div>
 </div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, noop, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, EMPTY, noop, Observable, throwError } from 'rxjs';
 import { map, mapTo, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 
@@ -81,6 +81,32 @@ export class EmoteStructure {
 			RestService.onlyResponse(),
 			tap(res => this.data.next(res.body)),
 			mapTo(this)
+		);
+	}
+
+	/**
+	 * Add this emote to the client user's channel
+	 */
+	addToChannel(): Observable<void> {
+		if (!this.id) return EMPTY;
+
+		return this.restService.Channels.AddEmote(this.id).pipe(
+			RestService.onlyResponse(),
+			tap(res => this.restService.clientService.pushData(res.body)),
+			mapTo(undefined)
+		);
+	}
+
+	/**
+	 * Remove this emote from the client user's channel
+	 */
+	removeFromChannel(): Observable<void> {
+		if (!this.id) return EMPTY;
+
+		return this.restService.Channels.RemoveEmote(this.id).pipe(
+			RestService.onlyResponse(),
+			tap(res => this.restService.clientService.pushData(res.body)),
+			mapTo(undefined)
 		);
 	}
 

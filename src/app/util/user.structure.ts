@@ -1,7 +1,7 @@
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, mergeAll } from 'rxjs/operators';
 
 
 export class UserStructure {
@@ -46,6 +46,15 @@ export class UserStructure {
 	getRank(): Observable<Constants.Users.Rank> {
 		return this.data.pipe(
 			map(data => data?.rank ?? Constants.Users.Rank.DEFAULT)
+		);
+	}
+
+	/**
+	 * Get the user's channel emotes
+	 */
+	getEmotes(): Observable<string[]> {
+		return this.data.pipe(
+			map(data => data?.emotes as string[] ?? [])
 		);
 	}
 }

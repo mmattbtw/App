@@ -3,14 +3,15 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
-import { EMPTY, from, Observable, of } from 'rxjs';
-import { filter, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
+import { asyncScheduler, EMPTY, from, Observable, of, scheduled, Subject, timer } from 'rxjs';
+import { defaultIfEmpty, delay, filter, map, mapTo, mergeAll, mergeMap, switchMap, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import * as Color from 'color';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
 	selector: 'app-emote',
@@ -33,6 +34,15 @@ export class EmoteComponent implements OnInit {
 	MAX_HEIGHT = 128;
 
 	emote: EmoteStructure | undefined;
+	interactError = new Subject<string>().pipe(
+		mergeMap(x => scheduled([
+			of(!!x ? 'ERROR: ' + x : ''),
+			timer(5000).pipe(
+				takeUntil(this.interactError),
+				mapTo('')
+			)
+		], asyncScheduler).pipe(mergeAll()))
+	) as Subject<string>;
 
 	/**
 	 * A list of interaction buttons to be rendered
@@ -40,16 +50,19 @@ export class EmoteComponent implements OnInit {
 	interactions = [
 		{ // Add to channel
 			label: 'add to channel', color: this.themingService.primary.desaturate(0.4), icon: 'add_circle',
-			condition: this.clientService.getID().pipe(
-				mapTo(true)
-			)
+			condition: this.clientService.getEmotes().pipe(
+				switchMap(emotes => this.emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
+				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(this.emote?.getID() as string))
+			),
+			click: emote => emote.addToChannel()
 		},
-		// { // Remove from channel
-		// 	label: 'remove from channel', color: this.themingService.primary.desaturate(0.4).negate(), icon: 'remove_circle',
-		// 	condition: this.clientService.getID().pipe(
-		// 		mapTo(true)
-		// 	)
-		// },
+		{ // Remove from channel
+			label: 'remove from channel', color: this.themingService.primary.desaturate(0.4).negate(), icon: 'remove_circle',
+			condition: this.clientService.getEmotes().pipe(
+				map(emotes => emotes.includes(this.emote?.getID() as string))
+			),
+			click: emote => emote.removeFromChannel()
+		},
 		{ // Make this emote global (Moderator only)
 			label: 'make global', color: this.themingService.accent, icon: 'star',
 			condition: this.clientService.getRank().pipe(
@@ -108,7 +121,10 @@ export class EmoteComponent implements OnInit {
 	 */
 	onInteract(interaction: EmoteComponent.InteractButton): void {
 		if (typeof interaction.click === 'function' && !!this.emote) {
-			interaction.click(this.emote).subscribe();
+			interaction.click(this.emote).subscribe({
+				complete: () => this.interactError.next(''),
+				error: (err: HttpErrorResponse) => this.interactError.next(err.error.error ?? err.error)
+			});
 		}
 	}
 

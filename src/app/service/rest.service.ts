@@ -15,7 +15,7 @@ export class RestService {
 
 	constructor(
 		private httpService: HttpClient,
-		private clientService: ClientService
+		public clientService: ClientService
 	) { }
 
 	// tslint:disable:typedef
@@ -28,6 +28,13 @@ export class RestService {
 	get Users() {
 		return {
 			Get: (id: '@me' | string) => this.createRequest<DataStructure.TwitchUser>('get', `/users/${id}`, { auth: id === '@me' })
+		};
+	}
+
+	get Channels() {
+		return {
+			AddEmote: (emoteId: string, userId = '@me') => this.createRequest<DataStructure.TwitchUser>('put', `/channels/${userId}/emotes/${emoteId}`, { auth: true }),
+			RemoveEmote: (emoteId: string, userId = '@me') => this.createRequest<DataStructure.TwitchUser>('delete', `/channels/${userId}/emotes/${emoteId}`, { auth: true }),
 		};
 	}
 

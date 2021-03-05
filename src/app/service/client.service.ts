@@ -10,6 +10,7 @@ import { UserStructure } from 'src/app/util/user.structure';
 export class ClientService extends UserStructure {
 	private token = '';
 	private authState = new BehaviorSubject<boolean>(false);
+	private isAuth = false;
 
 	constructor(
 		private logger: LoggerService
@@ -25,6 +26,8 @@ export class ClientService extends UserStructure {
 	 */
 	pushData(data: DataStructure.TwitchUser | null): void {
 		super.pushData(data);
+
+		if (this.isAuth) return undefined;
 		if (!!data?._id) {
 			this.setAuthState(!!data);
 			this.logger.info(`Signed in as ${data.display_name}.`);
@@ -46,6 +49,7 @@ export class ClientService extends UserStructure {
 	 * Change the authentication state (if true client will appear as signed in)
 	 */
 	private setAuthState(state: boolean): void {
+		this.isAuth = state;
 		this.authState.next(state);
 	}
 	/**

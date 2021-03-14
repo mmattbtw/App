@@ -1,13 +1,25 @@
 <div class="container">
     <div class="info-container">
-<p>{{client.getUsername()|async}}</p>
-<p>{{client.isAuthenticated()|async}}</p>
-<p>{{client.getRank()|async}}</p>
-<p>user works!</p>
 
-</div>
 
-<div class="ava-container">
-    <img class="avatar" src="{{client.getAvatarURL()|async}}">
-</div>
+        <span [ngSwitch]="client.getRank()|async">
+            <p *ngSwitchDefault="0">User</p>
+
+            <p *ngSwitchCase="1">Moderator</p>
+            <mat-icon class="rank" *ngSwitchCase="100" svgIcon="admin"></mat-icon>
+        </span>
+
+        <p [appColor]="((client.getUsername() | async) || 0) >= 1 ? themingService.primary : undefined" class="user">
+            {{client.getUsername()|async}}</p>
+        <p *ngIf="client.isAuthenticated()|async">This is you :)</p>
+
+        <p>{{client.getRank()|async}}</p>
+
+        <p>user works!</p>
+
+    </div>
+
+    <div class="ava-container">
+        <img class="avatar" src="{{client.getAvatarURL()|async}}">
+    </div>
 </div>

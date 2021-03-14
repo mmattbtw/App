@@ -21,9 +21,21 @@
     background-color: #2b2b2b;
     margin: 3%;
     width: 70%;
-
+    * {
+        margin: 2%;
+    }
 }
 
 .avatar {
     width: 100%;
+}
+
+.rank {
+    padding-top: 12px;
+    margin-right: 1%;
+    display: inline-flex;
+}
+
+.user {
+    display: inline-flex;
 }

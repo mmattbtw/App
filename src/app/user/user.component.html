@@ -1,6 +1,6 @@
 <div class="container">
     <div class="info-container">
-
+        <div class="user-container">
 
         <span [ngSwitch]="client.getRank()|async">
             <p *ngSwitchDefault="0">User</p>
@@ -11,11 +11,12 @@
 
         <p [appColor]="((client.getUsername() | async) || 0) >= 1 ? themingService.primary : undefined" class="user">
             {{client.getUsername()|async}}</p>
+        </div>
         <p *ngIf="client.isAuthenticated()|async">This is you :)</p>
+        <p>Emotes added: 0</p>
+        <p>Other info</p>
+        <p>V1 ZULUL</p>
 
-        <p>{{client.getRank()|async}}</p>
-
-        <p>user works!</p>
 
     </div>
 

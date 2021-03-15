@@ -4,7 +4,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
-import { delay, map, mergeAll, retry, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { delay, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.component';
 import { ClientService } from 'src/app/service/client.service';
@@ -29,7 +29,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 			transition('* => *', [
 				query('.is-emote-card:enter', [
 					style({ opacity: 0, transform: 'translateX(5em) translateY(-20em)' }),
-					stagger(21, [
+					stagger(11, [
 						animate('475ms ease-in-out', keyframes([
 							style({ opacity: 0, offset: 0.475 }),
 							style({ opacity: 1, transform: 'none', offset: 1 })

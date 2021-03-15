@@ -55,9 +55,12 @@
 		</div>
 
 		<!-- Progress indicator -->
-		<div *ngIf="isUploading() | async" class="mt-2">
+		<div *ngIf="(isUploading() | async) || (emoteFormService.processError | async)" class="mt-2">
 			<h2 class="text-center"> {{emoteFormService.uploadStatus | async}} </h2>
-			<mat-progress-bar [value]="emoteFormService.uploadProgress | async"></mat-progress-bar>
+			<mat-error>
+				<h2 class="text-center"> {{emoteFormService.processError | async}} </h2>
+			</mat-error>
+			<mat-progress-bar [value]="emoteFormService.uploadProgress | async" [color]="((emoteFormService.processError | async)?.length) || 0 > 0 ? 'warn' : null"></mat-progress-bar>
 		</div>
 	</form>
 </div>

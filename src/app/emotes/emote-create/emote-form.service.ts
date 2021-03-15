@@ -17,8 +17,9 @@ export class EmoteFormService {
 		name: new FormControl(''),
 		emote: new FormControl('')
 	});
-	uploadedEmote = new BehaviorSubject('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAANSURBVBhXY2BgYGAAAAAFAAGKM+MAAAAAAElFTkSuQmCC');
+	uploadedEmote = new BehaviorSubject(EmoteFormService.DefaultUploadImg);
 	uploadError = new BehaviorSubject('');
+	processError = new BehaviorSubject('');
 	emoteData = new BehaviorSubject<DataStructure.Emote | null>(null);
 
 	uploading = new BehaviorSubject(false);
@@ -51,7 +52,8 @@ export class EmoteFormService {
 				if (progress instanceof HttpResponse || progress instanceof HttpHeaderResponse) return undefined; // Send progress updates
 				switch (progress.loaded >= (progress.total ?? 1)) {
 					case true:
-						this.uploadStatus.next('Processing...');
+						this.uploadStatus.next('Upload complete, waiting for server to begin processing...');
+						this.uploadProgress.next(0);
 						break;
 					case false:
 						const perc = (progress.loaded) / (progress.total ?? 1) || 100;
@@ -84,18 +86,34 @@ export class EmoteFormService {
 				this.logger.info(`<WS> Connected to ${environment.wsUrl}`);
 
 				ws.onmessage = (ev) => {
-					const data = JSON.parse(ev.data);
+					const { tasks, message } = JSON.parse(ev.data)?.payload;
+					let status = message;
 					this.logger.info(`<WS> Message Received: ${ev.data}`);
-					this.uploadStatus.next(data.payload.message);
+
+					if (Array.isArray(tasks)) {
+						const progress = Number((tasks[0] / tasks[1] * 100).toFixed(1));
+						this.logger.info(`Processing Progress: ${progress}%`);
+						this.uploadProgress.next(progress);
+
+						status = `${progress}% ${status}`;
+					}
+					this.uploadStatus.next(status);
 				};
 				ws.onclose = (ev) => {
-					this.logger.info(`<WS> Connection Closed (${ev.code})`);
-					this.uploading.next(false);
-					this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?._id), 4));
-					setTimeout(() => {
-						this.form.reset();
-						this.router.navigate(['/emotes', returnedData?._id]);
-					}, 500);
+					this.logger.info(`<WS> Connection Closed (${ev.code} ${ev.reason})`);
+
+					if (ev.code === 1000) {
+						this.uploading.next(false);
+						this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?._id), 4));
+						setTimeout(() => {
+							this.form.reset();
+							this.router.navigate(['/emotes', returnedData?._id]);
+						}, 200);
+					} else {
+						this.processError.next(`Error: ${ev.reason ?? 'Unknown'}`);
+					}
+
+					this.reset();
 				};
 
 				// Send the message, requesting the server to start sending processing events
@@ -104,4 +122,16 @@ export class EmoteFormService {
 		};
 	}
 
+	reset(): void {
+		this.form.reset();
+		this.uploadedEmote.next(EmoteFormService.DefaultUploadImg);
+		this.uploading.next(false);
+		this.uploadStatus.next('');
+		this.emoteData.next(null);
+	}
+
+}
+
+export namespace EmoteFormService {
+	export const DefaultUploadImg = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAANSURBVBhXY2BgYGAAAAAFAAGKM+MAAAAAAElFTkSuQmCC';
 }

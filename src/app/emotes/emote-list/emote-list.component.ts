@@ -180,6 +180,8 @@ export class EmoteListComponent implements OnInit {
 		return this.restService.Emotes.List(page, pageSize, queryString).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.totalEmotes.next(res.body?.total_estimated_size ?? 0)),
+			tap(() => this.emotes.next([])),
+			delay(200),
 			map(res => res.body?.emotes ?? []),
 			mergeAll(),
 			map(data => new EmoteStructure(this.restService).pushData(data))
@@ -200,8 +202,6 @@ export class EmoteListComponent implements OnInit {
 
 		this.getEmotes(ev.pageIndex + 1, ev.pageSize).pipe(
 			toArray(),
-			tap(() => this.emotes.next([])),
-			delay(200),
 			tap(emotes => this.emotes.next(emotes))
 		).subscribe();
 	}

@@ -44,7 +44,7 @@
 			<span class="mt-2"> {{size.scope}}x </span>
 		</div>
 	</div>
-	<div class="my-2"></div>
+	<div class="my-3"></div>
 
 	<!-- Tags -->
 	<div class="section-container p-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true" *ngIf="hasTags() | async">
@@ -56,7 +56,7 @@
 	</div>
 
 	<!-- Interactions -->
-	<div class="section-container d-flex flex-column p-2" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+	<div class="section-container d-flex flex-column p-2" [appColor]="themingService.bg.darken(.075)" [isBackground]="true" *ngIf="clientService.isAuthenticated() | async">
 		<span class="section-title">Manage Emote</span>
 		<div class="section-content d-flex flex-row flex-wrap" *ngIf="emote">
 			<div class="interact-button my-1" *ngFor="let i of interactions">
@@ -70,5 +70,18 @@
 			</div>
 		</div>
 		<mat-error> {{(interactError | async)?.toString()}} </mat-error>
+	</div>
+	
+	<div class="my-2"></div>
+
+	<!-- Channels Section -->
+	<div class="section-container" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+		<span class="section-title">Channels</span>
+		<div class="section-content">
+			<div>
+				Nothing here
+				<mat-icon [svgIcon]="'zulul'"></mat-icon>
+			</div>
+		</div>
 	</div>
 </div>

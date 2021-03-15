@@ -95,12 +95,12 @@ export class EmoteComponent implements OnInit {
 
 	constructor(
 		private restService: RestService,
-		private clientService: ClientService,
 		private route: ActivatedRoute,
 		private router: Router,
 		private cdr: ChangeDetectorRef,
 		private dialog: MatDialog,
-		public themingService: ThemingService
+		public themingService: ThemingService,
+		public clientService: ClientService
 	) { }
 
 	/**

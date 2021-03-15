@@ -6,20 +6,22 @@
 	[class.hovering]="hover | async"
 	[class.ladink]="!(emote?.getName() | async)">
 
+	<!-- Emote Name Banner -->
 	<div class="title-banner" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
 		<span class="text-truncate px-2" [matTooltip]="(getTooltip() | async ) || ''" matTooltipPosition="above"> {{emote?.getName() | async}} </span>
 	</div>
+	<!-- Submitter sub-banner -->
 	<div class="title-banner submitter" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
 		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.getOwnerName() | async}} </span>
 	</div>
 
-	<div class="img-wrapper" [ngSwitch]="isProcessing() | async" *ngIf="emote?.getID()">
-		<img *ngSwitchCase="false" [src]="getEmoteURL()">
+	<!-- Card Image wrapper (below title) -->
+	<div class="img-wrapper" [ngSwitch]="isProcessing() | async">
+		<img *ngSwitchCase="false" [class.d-none]="!(emote?.getID())" [src]="getEmoteURL()">
 		<div class="is-processing" *ngSwitchCase="true">
 			<mat-spinner [diameter]="32"></mat-spinner>
 			<span>PROCESSING</span>
 		</div>
-
 	</div>
 </div>
 

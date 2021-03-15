@@ -104,7 +104,7 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	isProcessing(): Observable<boolean> {
 		return this.emote?.getStatus().pipe(
 			map(status => status === Constants.Emotes.Status.PROCESSING)
-		) ?? of(true);
+		) ?? of(false);
 	}
 
 	getBorderColor(): Observable<Color> {

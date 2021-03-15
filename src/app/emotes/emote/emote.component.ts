@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { asyncScheduler, EMPTY, from, Observable, of, scheduled, Subject, timer } from 'rxjs';
-import { defaultIfEmpty, delay, filter, map, mapTo, mergeAll, mergeMap, switchMap, takeUntil, tap, toArray } from 'rxjs/operators';
+import { filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -147,6 +147,14 @@ export class EmoteComponent implements OnInit {
 		return this.clientService.getID().pipe(
 			switchMap(id => this.clientService.getRank().pipe(map(rank => ({ id, rank })))),
 			switchMap(({ id, rank }) => this.emote?.canEdit(id as string, rank) ?? EMPTY)
+		);
+	}
+
+	hasTags(): Observable<boolean> {
+		if (!this.emote) return of(false);
+
+		return this.emote.getTags().pipe(
+			map(a => (a ?? []).length > 0)
 		);
 	}
 

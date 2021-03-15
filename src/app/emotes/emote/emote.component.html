@@ -33,14 +33,18 @@
 	<div class="my-2"></div>
 
 	<!-- Tags -->
-	<div class="p-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
-		<app-tag-system [emote]="emote"></app-tag-system>
+	<div class="section-container p-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true" *ngIf="hasTags() | async">
+		<span class="section-title">Tags</span>
+
+		<div class="section-content">
+			<app-tag-system [emote]="emote"></app-tag-system>
+		</div>
 	</div>
 
 	<!-- Interactions -->
-	<div class="d-flex flex-column p-2" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
-		<h3>Manage Emote</h3>
-		<div class="d-flex flex-row flex-wrap" *ngIf="emote">
+	<div class="section-container d-flex flex-column p-2" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+		<span class="section-title">Manage Emote</span>
+		<div class="section-content d-flex flex-row flex-wrap" *ngIf="emote">
 			<div class="interact-button my-1" *ngFor="let i of interactions">
 				<button mat-button (click)="onInteract(i)" [appColor]="i.color" [isBackground]="true" *ngIf="i.condition === undefined || (i.condition | async) && !i.disabled" class="mx-1">
 					<div class="d-inline-flex align-items-center" [appColor]="i.color?.isLight() ? 'black' : 'white'">

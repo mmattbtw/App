@@ -9,3 +9,16 @@
 		span { text-align: center; }
 	}
 }
+
+.section-container {
+	padding: 1em;
+
+	.section-title {
+		margin-left: .5em;
+		font-size: 1.2em;
+	}
+
+	.section-content {
+		margin-top: .44em;
+	}
+}

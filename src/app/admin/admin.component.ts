@@ -11,16 +11,25 @@ export class AdminComponent implements OnInit {
 		{
 			title: 'Users',
 			icon: 'people',
-			description: 'Manage Users'
+			description: 'Manage Users',
+			routerLink: ['/admin', 'users']
+		},
+		{
+			title: 'Audit Logs',
+			description: 'View latest actions taken by users',
+			icon: 'event_note',
+			routerLink: ['/admin', 'audit']
 		},
 		{
 			title: 'Emotes',
-			description: 'Manage Emotes'
+			description: 'Manage Emotes',
+			routerLink: ['/admin', 'emotes']
 		},
 		{
 			title: 'Monitoring',
 			icon: 'monitor',
-			description: 'View traffic and ongoing backend tasks'
+			description: 'View traffic and ongoing backend tasks',
+			routerLink: ['/admin', 'monitor']
 		}
 	] as AdminComponent.SidebarTab[];
 
@@ -38,5 +47,6 @@ export namespace AdminComponent {
 		title: string;
 		icon: string;
 		description: string;
+		routerLink: string[];
 	}
 }

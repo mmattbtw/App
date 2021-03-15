@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminGuard } from 'src/app/admin/admin.guard';
 import { HomeComponent } from 'src/app/home/home.component';
-import { UserComponent } from 'src/app/user/user.component';
 import { CallbackGuard } from './navigation/callback.guard';
 
 
@@ -20,6 +20,7 @@ const routes: Routes = [
 	},
 	{
 		path: 'admin',
+		canLoad: [ AdminGuard ],
 		loadChildren: () => import('src/app/admin/admin.module').then(m => m.AdminModule)
 	},
 
@@ -40,6 +41,7 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [RouterModule.forRoot(routes)],
+	providers: [ AdminGuard ],
 	exports: [RouterModule]
 })
 export class AppRoutingModule { }

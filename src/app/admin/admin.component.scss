@@ -11,5 +11,11 @@
 		align-items: center;
 		cursor: pointer;
 		padding: 1em;
+
+		&.active {
+			border-left-color: currentColor;
+			border-left-width: 3px;
+			border-left-style: solid;
+		}
 	}
 }

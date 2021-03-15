@@ -6,11 +6,13 @@
 
 		<!-- Nav Cards -->
 		<div class="sidebar-content d-flex flex-column">
-			<div class="sidebar-item" matRipple *ngFor="let card of sidebarTabs">
+			<div class="sidebar-item" matRipple *ngFor="let card of sidebarTabs" [routerLink]="card.routerLink" [routerLinkActive]="'active'">
 				<mat-icon> {{card.icon}} </mat-icon>
 				<div class="mx-1"></div>
 				<span>{{ card.title }}</span>
 			</div>
 		</div>
 	</div>
+
+	<router-outlet></router-outlet>
 </div>

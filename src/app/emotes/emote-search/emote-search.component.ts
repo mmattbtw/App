@@ -14,6 +14,7 @@ export class EmoteSearchComponent implements OnInit {
 
 	form = new FormGroup({
 		name: new FormControl('', { updateOn: 'blur' }),
+		globalState: new FormControl(''),
 		hideGlobal: new FormControl(false)
 	});
 	nameSearchBox: string | undefined;

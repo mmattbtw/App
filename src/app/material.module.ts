@@ -15,6 +15,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatRadioModule } from '@angular/material/radio';
 import { ColorDirective } from 'src/app/directive/highlight.directive';
 
 const modules = [
@@ -31,7 +32,8 @@ const modules = [
 	MatProgressBarModule,
 	MatPaginatorModule,
 	MatDialogModule,
-	MatMenuModule
+	MatMenuModule,
+	MatRadioModule
 ];
 
 @NgModule({

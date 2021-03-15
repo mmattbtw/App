@@ -49,7 +49,7 @@ export class EmoteComponent implements OnInit {
 	 */
 	interactions = [
 		{ // Add to channel
-			label: 'add to channel', color: this.themingService.primary.desaturate(0.4), icon: 'add_circle',
+			label: 'add to channel', color: this.themingService.colors.twitch_purple, icon: 'add_circle',
 			condition: this.clientService.getEmotes().pipe(
 				switchMap(emotes => this.emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
 				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(this.emote?.getID() as string))
@@ -57,7 +57,7 @@ export class EmoteComponent implements OnInit {
 			click: emote => emote.addToChannel()
 		},
 		{ // Remove from channel
-			label: 'remove from channel', color: this.themingService.primary.desaturate(0.4).negate(), icon: 'remove_circle',
+			label: 'remove from channel', color: this.themingService.warning.desaturate(0.4).negate(), icon: 'remove_circle',
 			condition: this.clientService.getEmotes().pipe(
 				map(emotes => emotes.includes(this.emote?.getID() as string))
 			),
@@ -156,6 +156,19 @@ export class EmoteComponent implements OnInit {
 		return this.emote.getTags().pipe(
 			map(a => (a ?? []).length > 0)
 		);
+	}
+
+	isProcessing(): Observable<boolean> {
+		return this.emote?.getStatus().pipe(
+			map(status => status === Constants.Emotes.Status.PROCESSING)
+		) ?? of(true);
+	}
+
+	isPendingOrDisabled(): Observable<boolean> {
+		return this.emote?.getStatus().pipe(
+			map(status => status === Constants.Emotes.Status.PENDING || status === Constants.Emotes.Status.DISABLED),
+			tap(st => console.log('hi', st))
+		) ?? of(false);
 	}
 
 	ngOnInit(): void {

@@ -34,6 +34,15 @@
 		justify-content: center;
 		height: 75px;
 
+		.is-processing {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-self: flex-end;
+			align-items: center;
+
+			span { margin-top: 1em; }
+		}
 		img {
 			margin-top: 1em;
 			min-width: 76px;

@@ -13,8 +13,13 @@
 		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.getOwnerName() | async}} </span>
 	</div>
 
-	<div class="img-wrapper">
-		<img *ngIf="emote?.getID()" [src]="getEmoteURL()">
+	<div class="img-wrapper" [ngSwitch]="isProcessing() | async" *ngIf="emote?.getID()">
+		<img *ngSwitchCase="false" [src]="getEmoteURL()">
+		<div class="is-processing" *ngSwitchCase="true">
+			<mat-spinner [diameter]="32"></mat-spinner>
+			<span>PROCESSING</span>
+		</div>
+
 	</div>
 </div>
 

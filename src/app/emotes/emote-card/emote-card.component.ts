@@ -2,8 +2,9 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
+import { Constants } from '@typings/src/Constants';
 import * as Color from 'color';
-import { asapScheduler, BehaviorSubject, EMPTY, Observable, scheduled } from 'rxjs';
+import { asapScheduler, BehaviorSubject, EMPTY, Observable, of, scheduled } from 'rxjs';
 import { defaultIfEmpty, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -98,6 +99,12 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 		return this.emote?.getName().pipe(
 			map(name => (name?.length ?? 0) >= 14 ? name : '')
 		) ?? EMPTY;
+	}
+
+	isProcessing(): Observable<boolean> {
+		return this.emote?.getStatus().pipe(
+			map(status => status === Constants.Emotes.Status.PROCESSING)
+		) ?? of(true);
 	}
 
 	getBorderColor(): Observable<Color> {

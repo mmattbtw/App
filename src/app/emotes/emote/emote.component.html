@@ -2,16 +2,27 @@
 	<!-- Heading -->
 	<div class="w-100 p-2 mat-elevation-z2 d-inline-flex justify-content-between" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
 		<!-- Emote Name / Back arrow -->
-		<div class="d-inline-block">
+		<div class="d-inline-flex flex-row align-items-center">
 			<button mat-icon-button class="ml-2" [routerLink]="['../']">
 				<mat-icon>arrow_back</mat-icon>
 			</button>
-			<img [style.height.em]="1" [src]="emote?.getURL() | async">
-
+			<div class="emote-title-preview" [ngSwitch]="isProcessing() | async">
+				<img [style.height.em]="1" [src]="emote?.getURL() | async" *ngSwitchCase="false">
+				<mat-spinner [diameter]="16" *ngSwitchCase="true"></mat-spinner>
+			</div>
+			
 			<span class="ml-2"> {{emote?.getName() | async}} </span>
 			<button mat-icon-button (click)="rename()" *ngIf="canEdit() | async">
 				<mat-icon>edit</mat-icon>
 			</button>
+		</div>
+
+		<div class="emote-state">
+			<span [appColor]="themingService.warning" *ngIf="isProcessing() | async">PROCESSING</span>
+			<span [appColor]="themingService.warning.lighten(.25)" *ngIf="isPendingOrDisabled() | async">  {{emote?.getStatusName() | async}} </span>
+
+			<span [appColor]="themingService.accent" *ngIf="emote?.isGlobal() | async">GLOBAL EMOTE</span>
+			<span [appColor]="themingService.colors.twitch_purple" *ngIf="emote?.isChannel() | async">ADDED TO CHANNEL</span>
 		</div>
 
 		<!-- Emote Owner -->
@@ -25,7 +36,10 @@
 	<div class="d-flex flex-row align-items-center justify-content-center sizes-preview mt-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
 		<!-- Size -->
 		<div class="size-preview d-flex flex-column justify-content-end align-items-center" [style.height.px]="MAX_HEIGHT" *ngFor="let size of getSizes() | async">
-			<img [src]="size.url">
+			<div class="preview-img" [ngSwitch]="isProcessing() | async">
+				<img [src]="size.url" *ngSwitchCase="false">
+				<mat-spinner [diameter]="32 * size.scope" *ngSwitchCase="true"></mat-spinner>
+			</div>
 
 			<span class="mt-2"> {{size.scope}}x </span>
 		</div>

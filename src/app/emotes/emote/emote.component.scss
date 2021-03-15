@@ -1,3 +1,9 @@
+.emote-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
 
 .sizes-preview {
 	min-height: 16em;
@@ -5,7 +11,10 @@
 	.size-preview {
 		margin: 1em;
 
-		img { width: 100% }
+		.preview-img {
+			width: 100%;
+			img { width: 100%; }
+		}
 		span { text-align: center; }
 	}
 }
@@ -19,6 +28,7 @@
 	}
 
 	.section-content {
-		margin-top: .44em;
+		margin-top: .64em;
+		margin-left: .64em;
 	}
 }

@@ -57,6 +57,18 @@ export class EmoteStructure {
 		);
 	}
 
+	getStatus(): Observable<Constants.Emotes.Status | undefined> {
+		return this.data.pipe(
+			map(d => d?.status)
+		);
+	}
+
+	getStatusName(): Observable<(keyof typeof Constants.Emotes.Status) | undefined> {
+		return this.getStatus().pipe(
+			map(status => !!status ? Constants.Emotes.Status[status] as (keyof typeof Constants.Emotes.Status) : undefined)
+		);
+	}
+
 	/**
 	 * Whether or not the emote is global
 	 */

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, EMPTY, noop, Observable, throwError } from 'rxjs';
-import { map, mapTo, tap } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, Observable, throwError } from 'rxjs';
+import { map, mapTo, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 
 
@@ -107,6 +107,16 @@ export class EmoteStructure {
 			RestService.onlyResponse(),
 			tap(res => this.restService.clientService.pushData(res.body)),
 			mapTo(undefined)
+		);
+	}
+
+	/**
+	 * Whether or not the emote is added to the client user's channel
+	 */
+	isChannel(): Observable<boolean> {
+		return this.restService.clientService.getEmotes().pipe(
+			take(1),
+			map(a => !!this.id && a.includes(this.id))
 		);
 	}
 

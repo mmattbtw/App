@@ -1,8 +1,8 @@
-<div class="emote-card mat-elevation-z2" matRipple [@hovering]="{ value: hover | async, params: { borderColor: (emote?.isGlobal() | async) ? globalBorderColor : borderColor } }"
+<div class="emote-card mat-elevation-z2" matRipple [@hovering]="{ value: hover | async, params: { borderColor: this.currentBorderColor | async}  }"
 	[style.height.em]="size"
 	[style.width.em]="size"
 	[appColor]="themingService.bg.darken(.1)" [isBackground]="true"
-	[class.global]="emote?.isGlobal() | async"
+	[class.down-border]="(emote?.isGlobal() | async) || (emote?.isChannel() | async)"
 	[class.hovering]="hover | async"
 	[class.ladink]="!(emote?.getName() | async)">
 
@@ -18,10 +18,16 @@
 	</div>
 </div>
 
-<!-- Global Emote Indicator -->
-<div class="d-flex justify-content-center global-indicator" *ngIf="emote?.isGlobal() | async" [matTooltip]="'Global Emote'">
+<!-- Global / Channel Emote Indicator -->
+<div class="d-flex justify-content-center state-indicator" *ngIf="(emote?.isGlobal() | async) || (emote?.isChannel() | async)" [matTooltip]="'Global Emote'">
 	<div class="d-inline-flex justify-content-center align-items-center" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
 		<mat-icon [appColor]="globalBorderColor">star</mat-icon>
+	</div>
+</div>
+
+<div class="d-flex justify-content-center state-indicator" *ngIf="(emote?.isChannel() | async) && !(emote?.isGlobal() | async)" [matTooltip]="'Channel Emote'">
+	<div class="d-inline-flex justify-content-center align-items-center" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+		<mat-icon [appColor]="channelBorderColor">check_circle</mat-icon>
 	</div>
 </div>
 <div *ngIf="contextMenu" [matMenuTriggerFor]="contextMenu" #contextMenuTrigger></div>

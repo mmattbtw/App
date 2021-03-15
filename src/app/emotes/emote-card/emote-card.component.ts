@@ -2,9 +2,9 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
-import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import * as Color from 'color';
+import { asapScheduler, BehaviorSubject, EMPTY, Observable, scheduled } from 'rxjs';
+import { defaultIfEmpty, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
@@ -17,7 +17,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 	animations: [
 		trigger('hovering', [
 			state('true', style({ 'border-color': 'currentColor' })),
-			state('false', style({ 'border-color': '{{borderColor}}'} ), { params: { borderColor: 'blue' } }),
+			state('false', style({ 'border-color': '{{borderColor}}'} ), { params: { borderColor: 'none' } }),
 
 			transition('true => false', animate(500)),
 			transition('false => true', animate(100))
@@ -31,8 +31,10 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Output() openContext = new EventEmitter<EmoteStructure>();
 	@ViewChild(MatMenuTrigger) contextMenuTrigger: MatMenuTrigger | undefined;
 
-	borderColor = this.themingService.bg.lighten(.2).hex();
-	globalBorderColor = this.themingService.accent.hex();
+	borderColor = this.themingService.bg.lighten(.2);
+	globalBorderColor = this.themingService.accent;
+	channelBorderColor = this.themingService.colors.twitch_purple;
+	currentBorderColor = new BehaviorSubject<string>('');
 	hover = new BehaviorSubject<boolean | null>(false);
 
 	// Listen for hover states
@@ -63,7 +65,12 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 
 		if (!!this.emote) this.openContext.next(this.emote);
 		this.contextMenuTrigger?.openMenu();
-		console.log(this.contextMenuTrigger);
+
+		this.contextMenuTrigger?.menuClosed.pipe(
+			take(1),
+			tap(e => console.log(e)),
+			tap(() => this.updateBorderColor())
+		).subscribe();
 	}
 
 	constructor(
@@ -73,7 +80,15 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 		public themingService: ThemingService
 	) { }
 
-	ngOnInit(): void {}
+	ngOnInit(): void {
+		this.updateBorderColor();
+	}
+
+	updateBorderColor(): void {
+		this.getBorderColor().pipe(
+			map(color => this.currentBorderColor.next(color?.hex() ?? ''))
+		).subscribe();
+	}
 
 	getEmoteURL(): string {
 		return this.restService.CDN.Emote(String(this.emote?.getID()), 3);
@@ -83,6 +98,23 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 		return this.emote?.getName().pipe(
 			map(name => (name?.length ?? 0) >= 14 ? name : '')
 		) ?? EMPTY;
+	}
+
+	getBorderColor(): Observable<Color> {
+		return scheduled([
+			this.emote?.isGlobal().pipe(map(b => ({ b, type: 'global' }))),
+			this.emote?.isChannel().pipe(map(b => ({ b, type: 'channel' }))),
+		], asapScheduler).pipe(
+			switchMap(value => value ?? EMPTY),
+			filter(({ b }) => b === true),
+			defaultIfEmpty({ b: false, type: 'none' }),
+			take(1),
+			map(o => o.type as 'global' | 'channel'),
+			map(type => (type !== null ? ({
+				global: this.globalBorderColor,
+				channel: this.channelBorderColor
+			})[type] as Color : this.borderColor))
+		);
 	}
 
 	ngOnDestroy(): void {

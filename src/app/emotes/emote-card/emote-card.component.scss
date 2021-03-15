@@ -42,7 +42,7 @@
 		}
 	}
 
-	&.global {
+	&.down-border {
 		border: 0px;
 		border-bottom: solid 2px;
 	}
@@ -62,7 +62,7 @@
 	100% { filter: brightness(1); }
 }
 
-.global-indicator {
+.state-indicator {
 	cursor: default;
 	position: relative;
 	height: 0;
@@ -75,6 +75,7 @@
 		text-align: center;
 		border-bottom-left-radius: 33%;
 		border-bottom-right-radius: 33%;
+		padding-bottom: 4px;
 
 		mat-icon {
 			transform: scale(.75);

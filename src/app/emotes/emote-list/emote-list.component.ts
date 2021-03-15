@@ -89,6 +89,21 @@ export class EmoteListComponent implements OnInit {
 				this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]))
 			)))
 		},
+		{ // Add to channel
+			label: 'Add To Channel', color: this.themingService.primary.desaturate(0.4), icon: 'add_circle',
+			condition: emote => this.clientService.getEmotes().pipe(
+				switchMap(emotes => emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
+				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(emote?.getID() as string))
+			),
+			click: emote => emote.addToChannel()
+		},
+		{ // Remove from channel
+			label: 'Remove From Channel', color: this.themingService.primary.desaturate(0.4).negate(), icon: 'remove_circle',
+			condition: emote => this.clientService.getEmotes().pipe(
+				map(emotes => emotes.includes(emote?.getID() as string))
+			),
+			click: emote => emote.removeFromChannel()
+		},
 		{
 			label: 'Make Global',
 			icon: 'star',

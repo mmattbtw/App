@@ -16,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { CallbackGuard } from './navigation/callback.guard';
 import { AdminComponent } from './admin/admin.component';
 import { UtilModule } from 'src/app/util/util.module';
+import { TwitchButtonComponent } from 'src/app/util/twitch-button/twitch-button.component';
 
 @NgModule({
 	declarations: [
@@ -23,6 +24,7 @@ import { UtilModule } from 'src/app/util/util.module';
 		HomeComponent,
 		NavigationComponent,
 		AdminComponent,
+		TwitchButtonComponent
 	],
 	imports: [
 		BrowserModule,

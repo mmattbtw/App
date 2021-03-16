@@ -54,6 +54,10 @@
 			<mat-icon svgIcon="discord"></mat-icon>
 		</a>
 		<div class="mx-md-4"></div>
-		<app-user-name [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
+
+		<div [ngSwitch]="clientService.isAuthenticated() | async">
+			<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
+			<app-user-name *ngSwitchCase="true" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
+		</div>
 	</div>
 </mat-toolbar>

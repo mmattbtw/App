@@ -1,10 +1,7 @@
 <!-- Login / Current User -->
-<div [ngSwitch]="clientService.isAuthenticated() | async">
-    <!-- Button -->
-    <app-twitch-button *ngSwitchCase="false"></app-twitch-button>
-
+<div>
     <!-- Display Auth user -->
-    <div class="signed-in-user d-flex flex-row align-items-center" *ngSwitchCase="true">
+    <div class="signed-in-user d-flex flex-row align-items-center">
         <div class="signed-in-avatar" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
             <img id="ava" [src]="clientService.getAvatarURL() | async">
         </div>

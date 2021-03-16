@@ -47,7 +47,7 @@ export class NavigationComponent implements OnInit {
 	] as NavigationComponent.NavButton[];
 
 	constructor(
-		private clientService: ClientService,
+		public clientService: ClientService,
 		public viewportService: ViewportService,
 		public themingService: ThemingService,
 		public appService: AppService,

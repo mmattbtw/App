@@ -60,7 +60,12 @@
 			<mat-error>
 				<h2 class="text-center"> {{emoteFormService.processError | async}} </h2>
 			</mat-error>
-			<mat-progress-bar [value]="emoteFormService.uploadProgress | async" [color]="((emoteFormService.processError | async)?.length) || 0 > 0 ? 'warn' : null"></mat-progress-bar>
+			<mat-progress-bar
+				[value]="emoteFormService.uploadProgress | async"
+				[color]="((emoteFormService.processError | async)?.length) || 0 > 0 ? 'warn' : null"
+				[mode]="(emoteFormService.uploadProgress | async) === 0 ? 'indeterminate' : 'determinate'">
+
+			</mat-progress-bar>
 		</div>
 	</form>
 </div>

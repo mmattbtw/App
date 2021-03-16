@@ -38,12 +38,12 @@ export class EmoteFormService {
 	uploadEmote(): void {
 		let returnedData: DataStructure.Emote | null = null;
 		const formData = new FormData(); // Append file to form data
-		formData.append('file', this.form.get('emote')?.value);
 		formData.append('data', new Blob([JSON.stringify({ // Append metadata to form data
 			name: this.form.get('name')?.value
 		})], {
 			type: 'application/json'
 		}), 'FORM_CONTENT');
+		formData.append('file', this.form.get('emote')?.value);
 
 		this.form.get('name')?.disable();
 		this.uploading.next(true); // Set uploading state as true
@@ -85,7 +85,7 @@ export class EmoteFormService {
 			ws.onopen = () => {
 				this.logger.info(`<WS> Connected to ${environment.wsUrl}`);
 
-				ws.onmessage = (ev) => {
+				ws.onmessage = (ev) => { // Receive messages from the websocket
 					const { tasks, message } = JSON.parse(ev.data)?.payload;
 					let status = message;
 					this.logger.info(`<WS> Message Received: ${ev.data}`);
@@ -95,25 +95,25 @@ export class EmoteFormService {
 						this.logger.info(`Processing Progress: ${progress}%`);
 						this.uploadProgress.next(progress);
 
-						status = `${progress}% ${status}`;
+						status = `${progress}% ${status}`; // Update progress
 					}
 					this.uploadStatus.next(status);
 				};
-				ws.onclose = (ev) => {
+				ws.onclose = (ev) => { // Listen for closure
 					this.logger.info(`<WS> Connection Closed (${ev.code} ${ev.reason})`);
 
-					if (ev.code === 1000) {
+					if (ev.code === 1000) { // Normal Closure: upload was successful!
 						this.uploading.next(false);
 						this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?._id), 4));
 						setTimeout(() => {
 							this.form.reset();
 							this.router.navigate(['/emotes', returnedData?._id]);
 						}, 200);
-					} else {
+					} else { // Abnormal Closure (likely 1011): display error
 						this.processError.next(`Error: ${ev.reason ?? 'Unknown'}`);
 					}
 
-					this.reset();
+					this.reset(); // Done: reset the form.
 				};
 
 				// Send the message, requesting the server to start sending processing events

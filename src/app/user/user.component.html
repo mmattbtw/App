@@ -2,17 +2,17 @@
     <div class="info-container">
         <div class="user-container">
 
-        <span [ngSwitch]="client.getRank()|async">
+        <span [ngSwitch]="(user | async)?.getRank()|async">
             <p *ngSwitchDefault="0">User</p>
 
             <p *ngSwitchCase="1">Moderator</p>
             <mat-icon class="rank" *ngSwitchCase="100" svgIcon="admin"></mat-icon>
         </span>
 
-        <p [appColor]="((client.getUsername() | async) || 0) >= 1 ? themingService.primary : undefined" class="user">
-            {{client.getUsername()|async}}</p>
+        <p [appColor]="(((user | async)?.getUsername() | async) || 0) >= 1 ? themingService.primary : undefined" class="user">
+            {{(user | async)?.getUsername()|async}}</p>
         </div>
-        <p *ngIf="client.isAuthenticated()|async">This is you :)</p>
+        <p *ngIf="isClientUser">This is you :)</p>
         <p>Emotes added: 0</p>
         <p>Other info</p>
         <p>V1 ZULUL</p>
@@ -21,6 +21,6 @@
     </div>
 
     <div class="ava-container">
-        <img class="avatar" src="{{client.getAvatarURL()|async}}">
+        <img class="avatar" src="{{(user | async)?.getAvatarURL()|async}}">
     </div>
 </div>

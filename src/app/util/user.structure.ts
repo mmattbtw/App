@@ -6,19 +6,21 @@ import { map, mergeAll } from 'rxjs/operators';
 
 export class UserStructure {
 	protected data = new BehaviorSubject<DataStructure.TwitchUser | null>(null);
+	protected snapshot: DataStructure.TwitchUser | null = null;
 
 	/**
 	 * Push data onto this user.
 	 *
 	 * @param data Twitch User data
 	 */
-	 pushData(data: DataStructure.TwitchUser | null): void {
+	pushData(data: DataStructure.TwitchUser | null): void {
 		this.data.next(data);
+		this.snapshot = data;
 	}
 
 	getID(): Observable<string | null> {
 		return this.data.pipe(
-			map(data => !!data?._id  ? String(data._id) : null)
+			map(data => !!data?._id ? String(data._id) : null)
 		);
 	}
 
@@ -56,5 +58,9 @@ export class UserStructure {
 		return this.data.pipe(
 			map(data => data?.emotes as string[] ?? [])
 		);
+	}
+
+	getSnapshot(): DataStructure.TwitchUser | null {
+		return this.snapshot;
 	}
 }

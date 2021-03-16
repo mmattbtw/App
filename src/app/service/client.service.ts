@@ -64,6 +64,7 @@ export class ClientService extends UserStructure {
 	 * and appear as signed out
 	 */
 	logout(): void {
+		localStorage.removeItem('access_token');
 		this.data.next(null);
 	}
 }

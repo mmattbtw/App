@@ -1,13 +1,13 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { asyncScheduler, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, switchMap, switchMapTo, tap } from 'rxjs/operators';
 import { LoggerService } from 'src/app/service/logger.service';
 import { OAuthService } from 'src/app/service/oauth.service';
 import { ThemingService } from 'src/app/service/theming.service';
-import { DataStructure } from '@typings/typings/DataStructure';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ErrorDialogComponent } from 'src/app/util/dialog/error-dialog/error-dialog.component';
 
 @Component({
 	selector: 'app-twitch-button',
@@ -24,11 +24,11 @@ export class TwitchButtonComponent implements OnInit {
 	};
 
 	constructor(
-		private httpClient: HttpClient,
 		private oauthService: OAuthService,
 		private logger: LoggerService,
 		private clientService: ClientService,
 		private restService: RestService,
+		private dialogRef: MatDialog,
 		public themingService: ThemingService
 	) { }
 
@@ -54,7 +54,15 @@ export class TwitchButtonComponent implements OnInit {
 			switchMapTo(EMPTY)
 		).subscribe({
 			error: (err) => {
-				this.logger.error('Could not redirect to authorization', err);
+				this.dialogRef.open(ErrorDialogComponent, {
+					data: {
+						errorCode: err.status,
+						errorMessage: err.error?.error ?? err.message,
+						errorName: 'Could not sign in'
+					} as ErrorDialogComponent.Data
+				});
+				this.logger.error('Could not sign in', err);
+				this.clientService.logout();
 				this.oauthService.openedWindow?.close();
 			}
 		});

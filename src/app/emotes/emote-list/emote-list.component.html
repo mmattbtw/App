@@ -35,12 +35,12 @@
 				<button mat-menu-item
 				*ngFor="let opt of contextMenuOptions"
 				[class.d-none]="(!!opt.condition && !!contextEmote) && !(opt.condition(contextEmote) | async)"
-				(click)="(!!contextEmote && opt.click) ? onContextInteract(opt, contextEmote) : undefined">
-					<mat-icon> {{opt.icon}} </mat-icon>
-					{{opt.label}}
+				(click)="(!!contextEmote && opt.click) ? onContextInteract(opt, contextEmote) : undefined"
+				>
+					<mat-icon [appColor]="opt.color"> {{opt.icon}} </mat-icon>
+					<span [appColor]="opt.color">{{opt.label}}</span>
 				</button>
 			</ng-template>
 		</mat-menu>
-		
 	</div>
 </div>

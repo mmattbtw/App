@@ -70,6 +70,7 @@ export class EmoteListComponent implements OnInit {
 
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
 	pageOptions: EmoteListComponent.PersistentPageOptions | undefined;
+	currentSearchQuery = '';
 
 	contextMenuOptions = [
 		{
@@ -85,24 +86,45 @@ export class EmoteListComponent implements OnInit {
 			label: 'Copy Link',
 			icon: 'link',
 			click: emote => of(this.windowRef.copyValueToClipboard(''.concat(
-				`${this.windowRef.getNativeWindow().location.host}`, // Get window location.host
+				`https://${this.windowRef.getNativeWindow().location.host}`, // Get window location.host
 				this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]))
 			)))
 		},
 		{ // Add to channel
-			label: 'Add To Channel', color: this.themingService.primary.desaturate(0.4), icon: 'add_circle',
+			label: 'Add To Channel', icon: 'add_circle',
 			condition: emote => this.clientService.getEmotes().pipe(
 				switchMap(emotes => emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
-				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(emote?.getID() as string))
+				switchMap(({ isGlobal, emotes }) => this.clientService.isAuthenticated().pipe(map(isAuth => ({ isAuth, isGlobal, emotes })))),
+				map(({ emotes, isGlobal, isAuth }) => isAuth && !isGlobal && !emotes.includes(emote?.getID() as string))
 			),
 			click: emote => emote.addToChannel()
 		},
 		{ // Remove from channel
-			label: 'Remove From Channel', color: this.themingService.primary.desaturate(0.4).negate(), icon: 'remove_circle',
+			label: 'Remove From Channel', icon: 'remove_circle',
 			condition: emote => this.clientService.getEmotes().pipe(
 				map(emotes => emotes.includes(emote?.getID() as string))
 			),
 			click: emote => emote.removeFromChannel()
+		},
+		{
+			label: 'Make Private',
+			icon: 'lock',
+			condition: emote => this.clientService.getID().pipe(
+				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
+				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY),
+				switchMap(canEdit => canEdit ? emote.isPrivate().pipe(map(isPrivate => !isPrivate)) : of(false))
+			),
+			click: emote => emote.edit({ private: true })
+		},
+		{
+			label: 'Make Public',
+			icon: 'lock_open',
+			condition: emote => this.clientService.getID().pipe(
+				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
+				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY),
+				switchMap(canEdit => canEdit ? emote.isPrivate() : of(false))
+			),
+			click: emote => emote.edit({ private: false })
 		},
 		{
 			label: 'Make Global',
@@ -124,7 +146,7 @@ export class EmoteListComponent implements OnInit {
 		},
 		{
 			label: 'Delete',
-			icon: 'delete',
+			icon: 'delete', color: this.themingService.warning,
 			condition: emote => this.clientService.getID().pipe(
 				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
 				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY)
@@ -168,7 +190,7 @@ export class EmoteListComponent implements OnInit {
 
 	handleSearchChange(change: Partial<EmoteSearchComponent.SearchChange>): void {
 		const queryString = Object.keys(change).map(k => `${k}=${change[k as keyof EmoteSearchComponent.SearchChange]}`).join('&');
-		this.getEmotes(undefined, undefined, queryString).pipe(
+		this.getEmotes(undefined, undefined, this.currentSearchQuery = queryString).pipe(
 			toArray(),
 			tap(() => this.emotes.next([])),
 			delay(50),
@@ -177,7 +199,7 @@ export class EmoteListComponent implements OnInit {
 	}
 
 	getEmotes(page = 1, pageSize = 16, queryString?: string): Observable<EmoteStructure> {
-		return this.restService.Emotes.List(page, pageSize, queryString).pipe(
+		return this.restService.Emotes.List(page, pageSize, queryString ?? this.currentSearchQuery).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.totalEmotes.next(res.body?.total_estimated_size ?? 0)),
 			tap(() => this.emotes.next([])),

@@ -53,7 +53,8 @@ export class RestService {
 				auth: true,
 				body
 			}),
-			Delete: (id: string) => this.createRequest<void>('delete', `/emotes/${id}`, { auth: true })
+			Delete: (id: string) => this.createRequest<void>('delete', `/emotes/${id}`, { auth: true }),
+			GetChannels: (emoteId: string) => this.createRequest<{ count: number; users: DataStructure.TwitchUser[] }>('get', `/emotes/${emoteId}/channels`)
 		};
 	}
 

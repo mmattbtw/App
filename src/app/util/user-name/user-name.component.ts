@@ -10,7 +10,7 @@ import { UserStructure } from 'src/app/util/user.structure';
 	styleUrls: ['./user-name.component.scss']
 })
 export class UserNameComponent implements OnInit {
-	@Input() user: UserStructure | undefined;
+	@Input() user: UserStructure | undefined | null;
 	@Input() showAvatar = true;
 	@Input() avatarBorder = true;
 	@Input() showUsername: boolean | null = true;

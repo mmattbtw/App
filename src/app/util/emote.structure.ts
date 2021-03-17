@@ -70,6 +70,15 @@ export class EmoteStructure {
 	}
 
 	/**
+	 * Whether or not the emote is private
+	 */
+	isPrivate(): Observable<boolean> {
+		return this.data.pipe(
+			map(d => d?.private ?? false)
+		);
+	}
+
+	/**
 	 * Whether or not the emote is global
 	 */
 	isGlobal(): Observable<boolean> {

@@ -11,9 +11,9 @@
 
     <span class="username-container" *ngIf="showUsername" [appColor]="((target.getRank() | async) || 0) >= 1 ? themingService.primary : undefined" [style.font-size.em]="size[1]">
         <span [ngSwitch]="clickable">
-            <a class="is-username" *ngSwitchCase="true" [routerLink]="['/user', target.getUsername() | async]" [class.clickable]="clickable">
+            <span class="is-username" *ngSwitchCase="true" [routerLink]="['/user', target.getUsername() | async]" [class.clickable]="clickable">
                 {{this.target.getUsername() | async}}
-            </a>
+            </span>
             <span class="is-username" *ngSwitchCase="false"> {{this.target.getUsername() | async}} </span>
         </span>
     </span>

@@ -6,7 +6,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 })
 
 export class AppService {
-	title = 'SevenTV';
+	title = '7tv.app';
 	description = '';
 	currentView = '';
 	devStage = 'alpha';

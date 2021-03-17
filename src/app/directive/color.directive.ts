@@ -38,19 +38,16 @@ export class ColorDirective implements OnInit, OnDestroy {
 	}
 
 	private setColor(): void {
-		console.log('set color');
 		this.el.nativeElement.style[this.getStyleName() as any] = String(this.appColor);
 	}
 
 	resetColor(): void {
-		console.log('reset color');
 		this.el.nativeElement.style[this.getStyleName() as any] = this.originalColor;
 	}
 
 	ngOnInit(): void {
 		this.originalColor = this.isBorder ? this.el.nativeElement.style.borderColor : this.el.nativeElement.style[this.isBackground ? 'backgroundColor' : 'color'];
 
-		console.log('hoveronly', this.onHoverOnly);
 		this.onHoverOnly ? this.hovering.pipe(
 			map(hovering => hovering ? this.setColor() : this.resetColor())
 		).subscribe() : this.setColor();

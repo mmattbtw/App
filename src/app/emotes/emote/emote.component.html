@@ -76,10 +76,16 @@
 
 	<!-- Channels Section -->
 	<div class="section-container" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
-		<span class="section-title">Channels</span>
-		<div class="section-content">
-			<div>
-				Nothing here
+		<span class="section-title">Channels ({{ (channels | async)?.length || 0 }})</span>
+		<div class="section-content" [ngSwitch]="((channels | async)?.length || 0) > 0">
+			<div class="channel-card-list" *ngSwitchCase="true">
+				<app-emote-channel-card [user]="user" *ngFor="let user of channels | async">
+
+				</app-emote-channel-card>
+			</div>
+			
+			<div class="d-inline-block" *ngSwitchCase="false">
+				<span>Nothing here</span>
 				<mat-icon [svgIcon]="'zulul'"></mat-icon>
 			</div>
 		</div>

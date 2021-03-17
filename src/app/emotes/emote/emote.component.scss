@@ -32,3 +32,9 @@
 		margin-left: .64em;
 	}
 }
+
+.channel-card-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}

@@ -3,8 +3,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
-import { asyncScheduler, EMPTY, from, Observable, of, scheduled, Subject, timer } from 'rxjs';
-import { filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { asyncScheduler, BehaviorSubject, EMPTY, from, iif, Observable, of, scheduled, Subject, timer } from 'rxjs';
+import { filter, map, mapTo, mergeAll, mergeMap, switchMap, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -12,6 +12,8 @@ import { ThemingService } from 'src/app/service/theming.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import * as Color from 'color';
 import { HttpErrorResponse } from '@angular/common/http';
+import { UserStructure } from 'src/app/util/user.structure';
+import { UserService } from 'src/app/service/user.service';
 
 @Component({
 	selector: 'app-emote',
@@ -33,6 +35,7 @@ export class EmoteComponent implements OnInit {
 	/** The maximum height an emote can be. This tells where the scope text should be placed */
 	MAX_HEIGHT = 128;
 
+	channels = new BehaviorSubject<UserStructure[]>([]);
 	emote: EmoteStructure | undefined;
 	interactError = new Subject<string>().pipe(
 		mergeMap(x => scheduled([
@@ -99,6 +102,7 @@ export class EmoteComponent implements OnInit {
 		private router: Router,
 		private cdr: ChangeDetectorRef,
 		private dialog: MatDialog,
+		private userService: UserService,
 		public themingService: ThemingService,
 		public clientService: ClientService
 	) { }
@@ -121,7 +125,12 @@ export class EmoteComponent implements OnInit {
 	 */
 	onInteract(interaction: EmoteComponent.InteractButton): void {
 		if (typeof interaction.click === 'function' && !!this.emote) {
-			interaction.click(this.emote).subscribe({
+			interaction.click(this.emote).pipe(
+				switchMap(() => iif(() => interaction.label === 'add to channel' || interaction.label === 'remove from channel',
+					this.getChannels().pipe(mapTo(undefined)),
+					of(undefined)
+				))
+			).subscribe({
 				complete: () => this.interactError.next(''),
 				error: (err: HttpErrorResponse) => this.interactError.next(err.error.error ?? err.error)
 			});
@@ -137,8 +146,22 @@ export class EmoteComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().pipe(
+			filter(newName => newName !== null),
 			switchMap(newName => this.emote?.edit({ name: newName }) ?? EMPTY),
 		).subscribe();
+	}
+
+	/**
+	 * Get the channels that this emote is added to
+	 */
+	getChannels(): Observable<UserStructure[]> {
+		if (!this.emote) return of([]);
+
+		return this.restService.Emotes.GetChannels(this.emote.getID() as string).pipe(
+			RestService.onlyResponse(),
+			map(res => res.body?.users.map(user => this.userService.new(user)) ?? []),
+			tap(users => this.channels.next(users))
+		);
 	}
 
 	canEdit(): Observable<boolean> {
@@ -166,8 +189,7 @@ export class EmoteComponent implements OnInit {
 
 	isPendingOrDisabled(): Observable<boolean> {
 		return this.emote?.getStatus().pipe(
-			map(status => status === Constants.Emotes.Status.PENDING || status === Constants.Emotes.Status.DISABLED),
-			tap(st => console.log('hi', st))
+			map(status => status === Constants.Emotes.Status.PENDING || status === Constants.Emotes.Status.DISABLED)
 		) ?? of(false);
 	}
 
@@ -178,6 +200,7 @@ export class EmoteComponent implements OnInit {
 				RestService.onlyResponse(),
 				filter(res => res.body !== null), // Initiate a new emote structure instance
 				map(res => this.emote = new EmoteStructure(this.restService).pushData(res.body)),
+				switchMap(() => this.getChannels()),
 
 				tap(() => this.cdr.markForCheck())
 			).subscribe({

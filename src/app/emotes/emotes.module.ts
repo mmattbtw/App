@@ -12,6 +12,8 @@ import { EmoteListComponent } from './emote-list/emote-list.component';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { TagSystemComponent } from 'src/app/util/tag-system/tag-system.component';
 import { EmoteSearchComponent } from './emote-search/emote-search.component';
+import { EmoteChannelCardComponent } from 'src/app/emotes/emote/emote-channel-card.component';
+import { UtilModule } from 'src/app/util/util.module';
 
 @NgModule({
 	imports: [
@@ -19,13 +21,14 @@ import { EmoteSearchComponent } from './emote-search/emote-search.component';
 		EmotesRouterModule,
 		MaterialModule,
 		ReactiveFormsModule,
-
+		UtilModule
 	],
 	exports: [],
 	declarations: [
 		EmotesComponent,
 		EmoteCardComponent,
 		EmoteComponent,
+		EmoteChannelCardComponent,
 		EmoteCreateComponent,
 		EmoteListComponent,
 		EmoteRenameDialogComponent,

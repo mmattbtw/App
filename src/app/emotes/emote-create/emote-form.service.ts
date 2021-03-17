@@ -2,8 +2,9 @@
 
 import { HttpErrorResponse, HttpHeaderResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -14,7 +15,10 @@ import { environment } from 'src/environments/environment';
 @Injectable({providedIn: 'root'})
 export class EmoteFormService {
 	form = new FormGroup({
-		name: new FormControl(''),
+		name: new FormControl('', [
+			Validators.pattern(Constants.Emotes.NAME_REGEXP)
+		]),
+		tags: new FormControl([]),
 		emote: new FormControl('')
 	});
 	uploadedEmote = new BehaviorSubject(EmoteFormService.DefaultUploadImg);
@@ -36,26 +40,35 @@ export class EmoteFormService {
 	 * Upload the emote file to the server and wait for emote data to be returned
 	 */
 	uploadEmote(): void {
+		// Validate form
+		if (!this.form.valid) {
+			return this.processError.next(Object.keys(this.form.errors ?? {}).map(k => (this.form.errors ?? {})[k]).join(' '));
+		}
+		this.processError.next('');
+
 		let returnedData: DataStructure.Emote | null = null;
 		const formData = new FormData(); // Append file to form data
+
 		formData.append('data', new Blob([JSON.stringify({ // Append metadata to form data
-			name: this.form.get('name')?.value
+			name: this.form.get('name')?.value?.length > 0 ? this.form.get('name')?.value : null,
+			tags: this.form.get('tags')?.value ?? {}
 		})], {
 			type: 'application/json'
 		}), 'FORM_CONTENT');
 		formData.append('file', this.form.get('emote')?.value);
 
-		this.form.get('name')?.disable();
+		this.form.get('name')?.disable(); // Disable the form as the emote uploads
 		this.uploading.next(true); // Set uploading state as true
 		this.restService.Emotes.Upload(formData, 0).pipe( // Begin upload
 			tap(progress => {
+				// Only accept progress emissions
 				if (progress instanceof HttpResponse || progress instanceof HttpHeaderResponse) return undefined; // Send progress updates
 				switch (progress.loaded >= (progress.total ?? 1)) {
-					case true:
+					case true: // Upload complete: processing will begin shortly
 						this.uploadStatus.next('Upload complete, waiting for server to begin processing...');
 						this.uploadProgress.next(0);
 						break;
-					case false:
+					case false: // File is being uploaded to the server
 						const perc = (progress.loaded) / (progress.total ?? 1) || 100;
 						this.uploadStatus.next(`${(perc * 100).toFixed(1)}% uploaded`);
 						this.uploadProgress.next(perc * 100);
@@ -65,10 +78,9 @@ export class EmoteFormService {
 				return undefined;
 			}),
 
-			RestService.onlyResponse(),
+			RestService.onlyResponse(), // Only accept the HTTP response signaling the emote was created in the backend
 			tap(res => this.emoteData.next(returnedData = res.body)),
-			tap(() => this.form.enable()),
-			tap(res => this.form.patchValue({
+			tap(res => this.form.patchValue({ // Patch the form with data the server returned
 				name: res.body?.name
 			}))
 		).subscribe({
@@ -128,6 +140,7 @@ export class EmoteFormService {
 		this.uploading.next(false);
 		this.uploadStatus.next('');
 		this.emoteData.next(null);
+		this.form.enable();
 	}
 
 }

@@ -40,7 +40,7 @@
 
 						<!-- Uplaod Button -->
 						<div class="d-flex flex-column mt-2 justify-content-center" *ngIf="!(isUploaded() | async) && !!(emoteFormService.uploadedEmote | async) && emoteControl.dirty">
-							<button mat-stroked-button color="primary" (click)="emoteFormService.uploadEmote()" [disabled]="emoteFormService.uploading | async">
+							<button mat-stroked-button color="primary" (click)="emoteFormService.uploadEmote()" [disabled]="!form.valid || (emoteFormService.uploading | async)">
 								<div class="d-inline-flex" [ngSwitch]="isUploading() | async">
 									<mat-icon *ngSwitchCase="false">file_upload</mat-icon>
 									<mat-spinner *ngSwitchCase="true" [diameter]="24"></mat-spinner>

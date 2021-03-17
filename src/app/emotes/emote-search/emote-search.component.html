@@ -22,17 +22,32 @@
 		</div>
 
 		<!-- Checkbox for whether or not global emotes should be visible -->
-		<mat-radio-group class="d-flex flex-column" formControlName="hideGlobal">
+		<mat-radio-group class="d-flex flex-column" formControlName="globalState">
 			<mat-label>Global Emotes</mat-label>
 			<div class="my-1"></div>
 
-			<mat-radio-button>Include</mat-radio-button>
-			<mat-radio-button>Hide</mat-radio-button>
-			<mat-radio-button>Only</mat-radio-button>
+			<mat-radio-button *ngFor="let opt of globalStateButtons" [value]="opt.value">
+				{{ opt.label }}
+			</mat-radio-button>
 		</mat-radio-group>
 
-		<!-- Display Order -->
+		<mat-divider class="px-3 my-2"></mat-divider>
 
+		<!-- Show only added to channel -->
+		<mat-checkbox class="pt-2" formControlName="channel">
+			<mat-label>Channel Emotes Only</mat-label>
+		</mat-checkbox>
+
+		<mat-divider class="px-3 my-2"></mat-divider>
+		<!-- Sorting -->
+		<div class="search-sorting">
+			<mat-radio-group class="d-flex flex-column" formControlName="sort">
+				<mat-label>Sorting</mat-label>
+				<div class="my-1"></div>
+
+				<mat-radio-button *ngFor="let opt of sortOptions" [value]="opt.value"> {{ opt.label }} </mat-radio-button>
+			</mat-radio-group>
+		</div>
 
 	</form>
 </div>

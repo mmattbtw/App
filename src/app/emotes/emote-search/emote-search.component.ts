@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { asyncScheduler, BehaviorSubject, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, mergeMap, take, tap, throttleTime } from 'rxjs/operators';
@@ -7,15 +7,17 @@ import { ThemingService } from 'src/app/service/theming.service';
 @Component({
 	selector: 'app-emote-search',
 	templateUrl: './emote-search.component.html',
-	styleUrls: ['./emote-search.component.scss']
+	styleUrls: ['./emote-search.component.scss'],
+	encapsulation: ViewEncapsulation.None,
 })
 export class EmoteSearchComponent implements OnInit {
 	@Output() searchChange = new EventEmitter<Partial<EmoteSearchComponent.SearchChange>>();
 
 	form = new FormGroup({
 		name: new FormControl('', { updateOn: 'blur' }),
-		globalState: new FormControl(''),
-		hideGlobal: new FormControl(false)
+		globalState: new FormControl('include'),
+		channel: new FormControl(false),
+		sort: new FormControl('channel_count')
 	});
 	nameSearchBox: string | undefined;
 	current: Partial<EmoteSearchComponent.SearchChange> = {};
@@ -33,6 +35,18 @@ export class EmoteSearchComponent implements OnInit {
 			id: 'submitter'
 		}
 	] as EmoteSearchComponent.ModeMenuOption[];
+
+	globalStateButtons = [
+		{ label: 'Include', value: 'include' },
+		{ label: 'Hide', value: 'hide' },
+		{ label: 'Only', value: 'only' }
+	] as EmoteSearchComponent.RadioOption[];
+
+	sortOptions = [
+		{ label: 'Total Channels', value: 'channel_count' },
+		{ label: 'Date Created', value: 'date_created' }
+	] as EmoteSearchComponent.RadioOption[];
+
 	selectedSearchMode = new BehaviorSubject<EmoteSearchComponent.ModeMenuOption>(this.modeMenuOptions[0]);
 
 	constructor(
@@ -45,7 +59,6 @@ export class EmoteSearchComponent implements OnInit {
 	 * This method is used by the mode menu
 	 */
 	changeSearchMode(opt: EmoteSearchComponent.ModeMenuOption): void {
-
 		this.selectedSearchMode.pipe(
 			take(1),
 			tap(mode => { delete this.current[mode.id as keyof EmoteSearchComponent.SearchChange]; }),
@@ -67,8 +80,16 @@ export class EmoteSearchComponent implements OnInit {
 				map(({ value, mode }) => ({ [mode.id]: value })) // Map SearchMode to value
 			) ?? EMPTY,
 
-			this.form.get('hideGlobal')?.valueChanges.pipe( // Look for changes to the "show global"
-				map((value: string) => ({ hideGlobal: value }))
+			this.form.get('globalState')?.valueChanges.pipe( // Look for changes to the "show global"
+				map((value: string) => ({ globalEmotes: value }))
+			) ?? EMPTY,
+
+			this.form.get('channel')?.valueChanges.pipe(
+				map((value: boolean) => ({ channel: value ? '@me' : undefined }))
+			) ?? EMPTY,
+
+			this.form.get('sort')?.valueChanges.pipe(
+				map((value: string) => ({ sort: value }))
 			) ?? EMPTY
 		], asyncScheduler).pipe(
 			mergeAll(),
@@ -91,5 +112,10 @@ export namespace EmoteSearchComponent {
 	export interface ModeMenuOption {
 		label: string;
 		id: string;
+	}
+
+	export interface RadioOption {
+		label: string;
+		value: string;
 	}
 }

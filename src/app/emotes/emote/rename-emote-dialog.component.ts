@@ -1,9 +1,11 @@
 
 
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { tap } from 'rxjs/operators';
+import { Constants } from '@typings/src/Constants';
+import { Subject } from 'rxjs';
+import { filter, take, tap } from 'rxjs/operators';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 
 @Component({
@@ -20,14 +22,16 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 		</div>
 
 		<div mat-dialog-actions>
-			<button [disabled]="!input.valid" mat-button color="primary" [mat-dialog-close]="input.value">RENAME</button>
+			<button [disabled]="!input.valid || input.value === originalValue" mat-button color="primary" [mat-dialog-close]="input.value">RENAME</button>
 			<button mat-button [mat-dialog-close]="null" >CANCEL</button>
 		</div>
 	`
 })
 
-export class EmoteRenameDialogComponent implements OnInit {
-	input = new FormControl('', [Validators.required]);
+export class EmoteRenameDialogComponent implements OnInit, OnDestroy {
+	destroyed = new Subject<void>().pipe(take(1)) as Subject<void>;
+	input = new FormControl('', [Validators.required, Validators.pattern(Constants.Emotes.NAME_REGEXP)]);
+	originalValue = '';
 
 	constructor(
 		public dialogRef: MatDialogRef<EmoteRenameDialogComponent, EmoteRenameDialogComponent.Data>,
@@ -36,9 +40,11 @@ export class EmoteRenameDialogComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.data.emote.getName().pipe( // Patch input with current emote name
-			tap(name => this.input.patchValue(name))
+			tap(name => this.input.patchValue(this.originalValue = name ?? ''))
 		).subscribe();
 	}
+
+	ngOnDestroy(): void { this.destroyed.next(); }
 }
 
 export namespace EmoteRenameDialogComponent {

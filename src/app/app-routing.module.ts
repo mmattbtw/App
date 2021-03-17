@@ -23,11 +23,11 @@ const routes: Routes = [
 		canLoad: [ AdminGuard ],
 		loadChildren: () => import('src/app/admin/admin.module').then(m => m.AdminModule)
 	},
-
 	{
-		path: 'user',
+		path: 'users',
 		loadChildren: () => import('src/app/user/user.module').then(m => m.UserModule)
 	},
+	{ path: 'user', redirectTo: 'users' },
 
 	{
 		path: 'callback',

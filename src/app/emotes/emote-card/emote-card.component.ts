@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import * as Color from 'color';
 import { asapScheduler, BehaviorSubject, EMPTY, Observable, of, scheduled } from 'rxjs';
-import { defaultIfEmpty, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { defaultIfEmpty, delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
@@ -69,7 +69,7 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 
 		this.contextMenuTrigger?.menuClosed.pipe(
 			take(1),
-			tap(e => console.log(e)),
+			delay(50),
 			tap(() => this.updateBorderColor())
 		).subscribe();
 	}

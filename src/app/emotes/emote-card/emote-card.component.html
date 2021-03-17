@@ -23,6 +23,11 @@
 			<span>PROCESSING</span>
 		</div>
 	</div>
+
+	<!-- Display lock icon if private -->
+	<div class="is-private" *ngIf="emote?.isPrivate() | async" matTooltip="Private Emote">
+		<mat-icon color="warn">lock</mat-icon>
+	</div>
 </div>
 
 <!-- Global / Channel Emote Indicator -->

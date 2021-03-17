@@ -51,6 +51,13 @@
 		}
 	}
 
+	.is-private {
+		position: absolute;
+		z-index: 1;
+		right: 0;
+		bottom: 0;
+	}
+
 	&.down-border {
 		border: 0px;
 		border-bottom: solid 2px;

@@ -14,6 +14,8 @@ import * as Color from 'color';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserStructure } from 'src/app/util/user.structure';
 import { UserService } from 'src/app/service/user.service';
+import { ErrorDialogComponent } from 'src/app/util/dialog/error-dialog/error-dialog.component';
+import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emote-dialog.component';
 
 @Component({
 	selector: 'app-emote',
@@ -66,6 +68,26 @@ export class EmoteComponent implements OnInit {
 			),
 			click: emote => emote.removeFromChannel()
 		},
+		{
+			label: 'make private',
+			icon: 'lock', color: this.themingService.bg.darken(0.35),
+			condition: this.clientService.getID().pipe(
+				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
+				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY),
+				switchMap(canEdit => canEdit ? this.emote?.isPrivate().pipe(map(isPrivate => !isPrivate)) ?? EMPTY : of(false))
+			),
+			click: emote => emote.edit({ private: true })
+		},
+		{
+			label: 'make public',
+			icon: 'lock_open', color: this.themingService.bg.lighten(3),
+			condition: this.clientService.getID().pipe(
+				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
+				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY),
+				switchMap(canEdit => canEdit ? this.emote?.isPrivate() ?? EMPTY : of(false))
+			),
+			click: emote => emote.edit({ private: false })
+		},
 		{ // Make this emote global (Moderator only)
 			label: 'make global', color: this.themingService.accent, icon: 'star',
 			condition: this.clientService.getRank().pipe(
@@ -81,6 +103,24 @@ export class EmoteComponent implements OnInit {
 				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
 			),
 			click: (emote) => emote.edit({ global: false })
+		},
+		{
+			label: 'Transfer Ownership', color: this.themingService.primary.lighten(0.1).negate(),
+			icon: 'swap_horiz',
+			condition: this.clientService.getRank().pipe(
+				switchMap(rank => this.emote?.canEdit(String(this.clientService.getSnapshot()?._id), rank) ?? EMPTY)
+			),
+			click: emote => {
+				const dialogRef = this.dialog.open(EmoteOwnershipDialogComponent, {
+					data: { emote }
+				});
+
+				return dialogRef.afterClosed().pipe(
+					filter(newOwner => newOwner !== null),
+					switchMap(newOwner => this.userService.getOne(newOwner).pipe(switchMap(user => user.getID()))),
+					switchMap(newOwnerID => this.emote?.edit({ owner: newOwnerID }) ?? EMPTY)
+				);
+			}
 		},
 		{ // Delete this emote
 			label: 'Delete', color: this.themingService.warning, icon: 'delete',
@@ -142,7 +182,7 @@ export class EmoteComponent implements OnInit {
 	 */
 	rename(): void {
 		const dialogRef = this.dialog.open(EmoteRenameDialogComponent, {
-			data: { emote: this.emote }
+			data: { emote: this.emote, happening: 'Rename' },
 		});
 
 		dialogRef.afterClosed().pipe(
@@ -193,6 +233,12 @@ export class EmoteComponent implements OnInit {
 		) ?? of(false);
 	}
 
+	getEmoteOwner(): Observable<UserStructure> {
+		return this.emote?.getOwnerID().pipe(
+			switchMap(ownerID => this.userService.getOne(ownerID as string))
+		) ?? EMPTY;
+	}
+
 	ngOnInit(): void {
 		// Look up requested emote from route uri
 		if (this.route.snapshot.paramMap.has('emote')) { // Route URI has emote param?
@@ -204,7 +250,17 @@ export class EmoteComponent implements OnInit {
 
 				tap(() => this.cdr.markForCheck())
 			).subscribe({
-				error: (err) => this.router.navigate(['/emotes'])
+				error: (err: HttpErrorResponse) => {
+					console.log(err);
+					this.dialog.open(ErrorDialogComponent, {
+						data: {
+							errorName: 'Could not get emote',
+							errorMessage: err.error?.error,
+							errorCode: String(err.status)
+						} as ErrorDialogComponent.Data
+					});
+					this.router.navigate(['/emotes']);
+				}
 			});
 		}
 	}

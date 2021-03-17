@@ -21,6 +21,7 @@
 			<span [appColor]="themingService.warning" *ngIf="isProcessing() | async">PROCESSING</span>
 			<span [appColor]="themingService.warning.lighten(.25)" *ngIf="isPendingOrDisabled() | async">  {{emote?.getStatusName() | async}} </span>
 
+			<span [appColor]="themingService.warning.saturate(.2)" *ngIf="emote?.isPrivate() | async">PRIVATE EMOTE</span>
 			<span [appColor]="themingService.accent" *ngIf="emote?.isGlobal() | async">GLOBAL EMOTE</span>
 			<span [appColor]="themingService.colors.twitch_purple" *ngIf="emote?.isChannel() | async">ADDED TO CHANNEL</span>
 		</div>

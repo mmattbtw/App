@@ -1,11 +1,20 @@
 <!-- Login / Current User -->
-<div>
-    <!-- Display Auth user -->
-    <div class="signed-in-user d-flex flex-row align-items-center">
-        <div class="signed-in-avatar" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
-            <img id="ava" [src]="clientService.getAvatarURL() | async">
-        </div>
-        <div class="mx-1"></div>
-        <span *ngIf="showUsername" [appColor]="((clientService.getRank() | async) || 0) >= 1 ? themingService.primary : undefined "><a [routerLink]="['user', clientService.getUsername() | async]">{{this.clientService.getUsername() | async}}</a></span>
+<!-- Display Auth user -->
+<div class="signed-in-user text-truncate">
+    <div class="signed-in-avatar" [style.border-style]="avatarBorder ? 'solid' : 'none'"
+        [appColor]="themingService.bg.lighten(.1)" [isBackground]="true" [style.height.em]="size[0]"
+        [style.width.em]="size[0]" *ngIf="showAvatar">
+        <img id="ava" [src]="target.getAvatarURL() | async">
     </div>
+
+    <div class="mx-1"></div>
+
+    <span class="username-container" *ngIf="showUsername" [appColor]="((target.getRank() | async) || 0) >= 1 ? themingService.primary : undefined" [style.font-size.em]="size[1]">
+        <span [ngSwitch]="clickable">
+            <a class="is-username" *ngSwitchCase="true" [routerLink]="['/user', target.getUsername() | async]" [class.clickable]="clickable">
+                {{this.target.getUsername() | async}}
+            </a>
+            <span class="is-username" *ngSwitchCase="false"> {{this.target.getUsername() | async}} </span>
+        </span>
+    </span>
 </div>

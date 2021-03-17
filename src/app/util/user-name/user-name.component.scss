@@ -1,8 +1,18 @@
 .signed-in-user {
-	span {
-		font-size: .75em;
+	display: flex;
+	align-items: center;
+	width: 100%;
+
+	.username-container {
+		display: block;
+		.is-username {
+			font-size: inherit;
+
+			&.clickable { cursor: pointer; }
+		}
+		
 	}
-	
+
 
 	.signed-in-avatar {
 		display: flex;
@@ -12,14 +22,11 @@
 		border-style: solid;
 		border-width: 1px;
 		border-radius: 50%;
-		height: 32px;
-		width: 32px;
-		
 	
 		img {
 			height: 100%;
 			width: 100%;
-			clip-path: circle(15px at center);
+			clip-path: circle(50% at center);
 		}
 	}
 }

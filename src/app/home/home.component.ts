@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
 	browserIcons = [
 		{
 			icon: 'chrome',
-			click: () => window.open('https://github.com/SevenTV/SevenTV', '_blank')
+			click: () => window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank')
 		},
 		{
 			icon: 'firefox',

@@ -8,6 +8,9 @@ import { CallbackGuard } from './navigation/callback.guard';
 const routes: Routes = [
 	{
 		path: '',
+		data: {
+			title:  'Home %cock'
+		},
 		component: HomeComponent
 	},
 	{

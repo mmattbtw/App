@@ -16,6 +16,7 @@ import { UserStructure } from 'src/app/util/user.structure';
 import { UserService } from 'src/app/service/user.service';
 import { ErrorDialogComponent } from 'src/app/util/dialog/error-dialog/error-dialog.component';
 import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emote-dialog.component';
+import { AppService } from 'src/app/service/app.service';
 
 @Component({
 	selector: 'app-emote',
@@ -143,9 +144,10 @@ export class EmoteComponent implements OnInit {
 		private cdr: ChangeDetectorRef,
 		private dialog: MatDialog,
 		private userService: UserService,
+		private appService: AppService,
 		public themingService: ThemingService,
-		public clientService: ClientService
-	) { }
+		public clientService: ClientService,
+	) {}
 
 	/**
 	 * Get all sizes of the current emote
@@ -245,6 +247,11 @@ export class EmoteComponent implements OnInit {
 			this.restService.Emotes.Get(this.route.snapshot.paramMap.get('emote') as string).pipe(
 				RestService.onlyResponse(),
 				filter(res => res.body !== null), // Initiate a new emote structure instance
+
+				tap(res => this.appService.pageTitleAttr.next([
+					{ name: 'EmoteName', value: res.body?.name ?? '' },
+					{ name: 'OwnerName', value: `by ${res.body?.owner_name ?? ''}` }
+				])),
 				map(res => this.emote = new EmoteStructure(this.restService).pushData(res.body)),
 				switchMap(() => this.getChannels()),
 

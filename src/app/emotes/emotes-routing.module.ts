@@ -10,6 +10,9 @@ export const routes: Routes = [
 	{
 		path: '',
 		component: EmotesComponent,
+		data: {
+			title: 'Emotes %PageIndex %SearchOptions'
+		},
 		children: [
 			{
 				path: '',
@@ -17,6 +20,7 @@ export const routes: Routes = [
 			},
 			{
 				path: 'create',
+				data: { title: 'Create Emote' },
 				component: EmoteCreateComponent
 			}
 		]
@@ -24,6 +28,9 @@ export const routes: Routes = [
 
 	{
 		path: ':emote',
+		data: {
+			title: 'Emote - %EmoteName %OwnerName'
+		},
 		component: EmoteComponent
 	}
 ];

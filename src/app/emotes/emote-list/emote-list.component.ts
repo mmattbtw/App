@@ -7,6 +7,7 @@ import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
 import { delay, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.component';
+import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -166,6 +167,7 @@ export class EmoteListComponent implements OnInit {
 		private renderer: Renderer2,
 		private router: Router,
 		private windowRef: WindowRef,
+		private appService: AppService,
 		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }
@@ -190,6 +192,8 @@ export class EmoteListComponent implements OnInit {
 
 	handleSearchChange(change: Partial<EmoteSearchComponent.SearchChange>): void {
 		const queryString = Object.keys(change).map(k => `${k}=${change[k as keyof EmoteSearchComponent.SearchChange]}`).join('&');
+
+		this.appService.pushTitleAttributes({ name: 'SearchOptions', value: `- ${queryString}` });
 		this.getEmotes(undefined, undefined, this.currentSearchQuery = queryString).pipe(
 			toArray(),
 			tap(() => this.emotes.next([])),
@@ -222,6 +226,10 @@ export class EmoteListComponent implements OnInit {
 		} as EmoteListComponent.PersistentPageOptions;
 		localStorage.setItem('pagination', JSON.stringify(pageOptions));
 
+		// Save PageIndex title attr
+		this.appService.pushTitleAttributes({ name: 'PageIndex', value: `- ${ev.pageIndex + 1}/${Number((ev.length / ev.pageSize).toFixed(0)) + 1}` });
+
+		// Fetch new set of emotes
 		this.getEmotes(ev.pageIndex + 1, ev.pageSize).pipe(
 			toArray(),
 			tap(emotes => this.emotes.next(emotes))

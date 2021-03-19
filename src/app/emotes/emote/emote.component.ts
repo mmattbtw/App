@@ -1,5 +1,5 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
@@ -33,7 +33,8 @@ import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-di
 				]))
 			])
 		])
-	]
+	],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmoteComponent implements OnInit {
 	/** The maximum height an emote can be. This tells where the scope text should be placed */
@@ -41,6 +42,7 @@ export class EmoteComponent implements OnInit {
 
 	channels = new BehaviorSubject<UserStructure[]>([]);
 	emote: EmoteStructure | undefined;
+	sizes = new BehaviorSubject<EmoteComponent.SizeResult[]>([]);
 	interactError = new Subject<string>().pipe(
 		mergeMap(x => scheduled([
 			of(!!x ? 'ERROR: ' + x : ''),
@@ -196,8 +198,8 @@ export class EmoteComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().pipe(
-			filter(newName => newName !== null),
-			switchMap(newName => this.emote?.edit({ name: newName }) ?? EMPTY),
+			filter(data => data.name !== null),
+			switchMap(data => this.emote?.edit({ name: data.name }, data.reason) ?? EMPTY),
 		).subscribe();
 	}
 
@@ -262,6 +264,9 @@ export class EmoteComponent implements OnInit {
 				])),
 				map(res => this.emote = new EmoteStructure(this.restService).pushData(res.body)),
 				switchMap(() => this.getChannels()),
+				switchMap(() => this.getSizes().pipe(
+					tap(result => this.sizes.next(result))
+				)),
 
 				tap(() => this.cdr.markForCheck())
 			).subscribe({

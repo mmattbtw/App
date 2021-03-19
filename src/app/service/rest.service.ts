@@ -49,9 +49,10 @@ export class RestService {
 				body: data,
 				auth: true
 			}),
-			Edit: (id: string, body: any) => this.createRequest<DataStructure.Emote>('patch', `/emotes/${id}`, {
+			Edit: (id: string, body: any, reason?: string) => this.createRequest<DataStructure.Emote>('patch', `/emotes/${id}`, {
 				auth: true,
-				body
+				body,
+				headers: { 'X-Action-Reason': reason ?? 'no reason' }
 			}),
 			Delete: (id: string, reason?: string) => this.createRequest<void>('delete', `/emotes/${id}`, {
 				auth: true,

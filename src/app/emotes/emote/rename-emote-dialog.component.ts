@@ -1,7 +1,7 @@
 
 
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constants } from '@typings/src/Constants';
 import { Subject } from 'rxjs';
@@ -13,16 +13,21 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 	template: `
 		<h3 mat-dialog-title> Rename {{data.emote.getName() | async}} </h3>
 
-
-		<div mat-dialog-content>
+		<form [formGroup]="form" mat-dialog-content class="d-flex flex-column py-3">
 			<mat-form-field appearance="outline">
 				<mat-label>Name</mat-label>
-				<input [formControl]="input" matInput cdkFocusInitial [value]="data.emote.getName() | async">
+				<input formControlName="name" matInput cdkFocusInitial [value]="data.emote.getName() | async">
 			</mat-form-field>
-		</div>
+
+			<mat-form-field appearance="outline">
+				<mat-label>Reason</mat-label>
+				<input formControlName="reason" matInput cdkFocusInitial>
+				<mat-hint>Provide the reason why you're renaming this emote </mat-hint>
+			</mat-form-field>
+		</form>
 
 		<div mat-dialog-actions>
-			<button [disabled]="!input.valid || input.value === originalValue" mat-button color="primary" [mat-dialog-close]="input.value">RENAME</button>
+			<button [disabled]="!form.valid || form.get('name')?.value === originalValue" mat-button color="primary" [mat-dialog-close]="form.value">RENAME</button>
 			<button mat-button [mat-dialog-close]="null" >CANCEL</button>
 		</div>
 	`
@@ -30,7 +35,10 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 
 export class EmoteRenameDialogComponent implements OnInit, OnDestroy {
 	destroyed = new Subject<void>().pipe(take(1)) as Subject<void>;
-	input = new FormControl('', [Validators.required, Validators.pattern(Constants.Emotes.NAME_REGEXP)]);
+	form = new FormGroup({
+		name: new FormControl('', [Validators.required, Validators.pattern(Constants.Emotes.NAME_REGEXP)]),
+		reason: new FormControl('')
+	});
 	originalValue = '';
 
 	constructor(
@@ -40,7 +48,8 @@ export class EmoteRenameDialogComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.data.emote.getName().pipe( // Patch input with current emote name
-			tap(name => this.input.patchValue(this.originalValue = name ?? ''))
+			take(1),
+			tap(name => this.form.get('name')?.patchValue(this.originalValue = name ?? ''))
 		).subscribe();
 	}
 

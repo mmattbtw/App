@@ -97,8 +97,8 @@ export class EmoteStructure {
 		);
 	}
 
-	edit(body: any): Observable<EmoteStructure> {
-		return this.restService.Emotes.Edit(String(this.id), body).pipe(
+	edit(body: any, reason?: string): Observable<EmoteStructure> {
+		return this.restService.Emotes.Edit(String(this.id), body, reason).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.data.next(res.body)),
 			mapTo(this)

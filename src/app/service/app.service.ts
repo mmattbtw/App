@@ -12,7 +12,7 @@ export class AppService {
 	title = '7tv.app';
 	description = '';
 	currentView = '';
-	devStage = 'alpha';
+	devStage = 'beta';
 	loading = false;
 
 	pageTitleSnapshot = '';

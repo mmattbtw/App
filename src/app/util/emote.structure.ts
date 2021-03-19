@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, EMPTY, Observable, throwError } from 'rxjs';
-import { map, mapTo, take, tap } from 'rxjs/operators';
+import { map, mapTo, mergeAll, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 
 
@@ -84,6 +84,14 @@ export class EmoteStructure {
 	isGlobal(): Observable<boolean> {
 		return this.data.pipe(
 			map(d => d?.global ?? false)
+		);
+	}
+
+	getAuditActivity(): Observable<DataStructure.AuditLog.Entry> {
+		return this.data.pipe(
+			take(1),
+			map(emote => emote?.audit_entries ?? []),
+			mergeAll()
 		);
 	}
 

@@ -91,4 +91,28 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Audit Logs -->
+	<div class="my-2"></div>
+	<div class="section-container" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+		<div class="section-title">Recent Activity</div>
+		<div class="section-content">
+			<!-- Display entries -->
+			<div class="audit-entry" *ngFor="let entry of audit | async">
+				<div class="d-flex flex-wrap align-items-center my-1" *ngFor="let change of entry.changes">
+					<app-user-name [user]="entry.action_user_instance"></app-user-name>
+					<div class="ml-1"></div>
+					<span class="mx-1">set</span>
+					<span class="mr-1">{{change.key.charAt(0).toUpperCase() + change.key.slice(1)}} </span>
+					<span class="text-danger"> {{change.old_value}} </span>
+					<mat-icon class="mx-1" [inline]="true">arrow_forward</mat-icon>
+					<span class="text-success"> {{change.new_value}} </span>
+
+					<span class="ml-2" *ngIf="entry.reason">
+						for {{entry.reason}}
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

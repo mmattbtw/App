@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { asyncScheduler, BehaviorSubject, EMPTY, from, iif, Observable, of, scheduled, Subject, timer } from 'rxjs';
-import { filter, map, mapTo, mergeAll, mergeMap, switchMap, takeUntil, tap, toArray } from 'rxjs/operators';
+import { catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -18,6 +18,7 @@ import { ErrorDialogComponent } from 'src/app/util/dialog/error-dialog/error-dia
 import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emote-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
+import { DataStructure } from '@typings/typings/DataStructure';
 
 @Component({
 	selector: 'app-emote',
@@ -43,6 +44,7 @@ export class EmoteComponent implements OnInit {
 	channels = new BehaviorSubject<UserStructure[]>([]);
 	emote: EmoteStructure | undefined;
 	sizes = new BehaviorSubject<EmoteComponent.SizeResult[]>([]);
+	audit = new BehaviorSubject<EmoteComponent.AuditEntry[]>([]);
 	interactError = new Subject<string>().pipe(
 		mergeMap(x => scheduled([
 			of(!!x ? 'ERROR: ' + x : ''),
@@ -216,6 +218,18 @@ export class EmoteComponent implements OnInit {
 		);
 	}
 
+	readAuditActivity(): Observable<DataStructure.AuditLog.Entry[]> {
+		return this.emote?.getAuditActivity().pipe(
+			// Get action user
+			concatMap(entry => this.userService.getOne(String(entry.action_user)).pipe(
+				tap(user => (entry as EmoteComponent.AuditEntry).action_user_instance = user),
+				mapTo(entry)
+			)),
+
+			toArray()
+		) ?? of([]);
+	}
+
 	canEdit(): Observable<boolean> {
 		if (!this.emote) return of(false);
 
@@ -254,7 +268,7 @@ export class EmoteComponent implements OnInit {
 	ngOnInit(): void {
 		// Look up requested emote from route uri
 		if (this.route.snapshot.paramMap.has('emote')) { // Route URI has emote param?
-			this.restService.Emotes.Get(this.route.snapshot.paramMap.get('emote') as string).pipe(
+			this.restService.Emotes.Get(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
 				RestService.onlyResponse(),
 				filter(res => res.body !== null), // Initiate a new emote structure instance
 
@@ -266,6 +280,10 @@ export class EmoteComponent implements OnInit {
 				switchMap(() => this.getChannels()),
 				switchMap(() => this.getSizes().pipe(
 					tap(result => this.sizes.next(result))
+				)),
+				switchMap(() => this.readAuditActivity().pipe(
+					tap(entries => this.audit.next(entries)),
+					catchError(err => of(undefined))
 				)),
 
 				tap(() => this.cdr.markForCheck())
@@ -291,6 +309,8 @@ export namespace EmoteComponent {
 		scope: number;
 		url: string;
 	}
+
+	export type AuditEntry = DataStructure.AuditLog.Entry & { action_user_instance?: UserStructure };
 
 	export interface InteractButton {
 		label: string;

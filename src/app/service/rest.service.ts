@@ -44,7 +44,8 @@ export class RestService {
 				this.createRequest<
 					{ emotes: DataStructure.Emote[]; total_estimated_size: number; }
 				>('get', `/emotes?page=${page}&pageSize=${pageSize}${query ? `&${query}` : ''}`, { auth: true }),
-			Get: (id: string) => this.createRequest<DataStructure.Emote>('get', `/emotes/${id}`, { auth: true }),
+			Get: (id: string, includeActivity?: boolean) =>
+				this.createRequest<DataStructure.Emote>('get', `/emotes/${id}${includeActivity ? '?include_activity=true' : ''}`, { auth: true }),
 			Upload: (data: FormData, length: number) => this.createRequest<DataStructure.Emote>('post', '/emotes', {
 				body: data,
 				auth: true

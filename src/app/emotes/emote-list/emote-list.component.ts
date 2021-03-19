@@ -1,12 +1,14 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
 import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
-import { delay, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { delay, filter, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.component';
+import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -152,12 +154,20 @@ export class EmoteListComponent implements OnInit {
 				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
 				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY)
 			),
-			click: emote => emote.delete().pipe(
-				switchMap(() => this.emotes.pipe(
-					take(1),
-					tap(emotes => this.emotes.next(emotes.filter(e => e.getID() !== emote.getID())))
-				))
-			)
+			click: emote => {
+				const dialogRef = this.dialog.open(EmoteDeleteDialogComponent, {
+					data: { emote }
+				});
+
+				return dialogRef.afterClosed().pipe(
+					filter(reason => reason !== null && typeof reason === 'string'),
+					switchMap(reason => emote?.delete(reason) ?? EMPTY),
+					switchMap(() => this.emotes.pipe(
+						take(1),
+						tap(emotes => this.emotes.next(emotes.filter(e => e.getID() !== emote.getID())))
+					))
+				);
+			}
 		}
 	] as EmoteListComponent.ContextMenuButtons[];
 
@@ -168,6 +178,7 @@ export class EmoteListComponent implements OnInit {
 		private router: Router,
 		private windowRef: WindowRef,
 		private appService: AppService,
+		private dialog: MatDialog,
 		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }

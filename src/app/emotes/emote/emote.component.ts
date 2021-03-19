@@ -17,6 +17,7 @@ import { UserService } from 'src/app/service/user.service';
 import { ErrorDialogComponent } from 'src/app/util/dialog/error-dialog/error-dialog.component';
 import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emote-dialog.component';
 import { AppService } from 'src/app/service/app.service';
+import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 
 @Component({
 	selector: 'app-emote',
@@ -130,10 +131,17 @@ export class EmoteComponent implements OnInit {
 				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY)
 			),
 
-			click: (emote) => emote.delete().pipe(
-				// Emote deleted: quit this page
-				tap(() => this.router.navigate(['/emotes']))
-			)
+			click: emote => {
+				const dialogRef = this.dialog.open(EmoteDeleteDialogComponent, {
+					data: { emote }
+				});
+
+				return dialogRef.afterClosed().pipe(
+					filter(reason => reason !== null && typeof reason === 'string'),
+					switchMap(reason => this.emote?.delete(reason) ?? EMPTY),
+					tap(() => this.router.navigate(['/emotes']))
+				);
+			}
 		}
 	] as EmoteComponent.InteractButton[];
 
@@ -248,7 +256,7 @@ export class EmoteComponent implements OnInit {
 				RestService.onlyResponse(),
 				filter(res => res.body !== null), // Initiate a new emote structure instance
 
-				tap(res => this.appService.pageTitleAttr.next([
+				tap(res => this.appService.pageTitleAttr.next([ // Update page title
 					{ name: 'EmoteName', value: res.body?.name ?? '' },
 					{ name: 'OwnerName', value: `by ${res.body?.owner_name ?? ''}` }
 				])),

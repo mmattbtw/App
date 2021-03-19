@@ -144,10 +144,11 @@ export class EmoteStructure {
 	/**
 	 * Delete this emote
 	 */
-	delete(): Observable<void> {
+	delete(reason?: string): Observable<void> {
 		if (!this.id) return throwError(Error('Cannot delete unknown emote'));
 
-		return this.restService.Emotes.Delete(this.id).pipe(
+		console.log('reasson', reason);
+		return this.restService.Emotes.Delete(this.id, reason).pipe(
 			RestService.onlyResponse(),
 			mapTo(undefined)
 		);

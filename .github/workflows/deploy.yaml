@@ -5,8 +5,10 @@ on:
     branches: [master]
 
   workflow_dispatch:
-    branches: [actions-test]
-
+    inputs:
+      comment:
+        description: Comment on triggering this workflow
+        required: false
 jobs:
   build:
     runs-on: ubuntu-latest

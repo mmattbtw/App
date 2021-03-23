@@ -17,6 +17,7 @@ import { CallbackGuard } from './navigation/callback.guard';
 import { AdminComponent } from './admin/admin.component';
 import { UtilModule } from 'src/app/util/util.module';
 import { TwitchButtonComponent } from 'src/app/util/twitch-button/twitch-button.component';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
 	declarations: [
@@ -36,7 +37,8 @@ import { TwitchButtonComponent } from 'src/app/util/twitch-button/twitch-button.
 		NgbModule
 	],
 	providers: [
-		CallbackGuard
+		CallbackGuard,
+		CookieService
 	],
 	bootstrap: [AppComponent]
 })

@@ -1,16 +1,13 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ActivationStart, Router } from '@angular/router';
-import { BehaviorSubject, of, throwError } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
 import { iconList } from 'src/app/icons-register';
 import { AppService } from 'src/app/service/app.service';
-import { ClientService } from 'src/app/service/client.service';
-import { LoggerService } from 'src/app/service/logger.service';
-import { RestService } from 'src/app/service/rest.service';
 import { ViewportService } from 'src/app/service/viewport.service';
 
 @Component({
@@ -20,7 +17,7 @@ import { ViewportService } from 'src/app/service/viewport.service';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
-	static isBrowser = new BehaviorSubject<boolean | null>(null);
+	static isBrowser = new BehaviorSubject<boolean>(false);
 
 	title = 'seventv-app';
 	layoutDisabled = false;
@@ -29,43 +26,21 @@ export class AppComponent implements OnInit {
 		@Inject(PLATFORM_ID) platformId: any,
 		iconRegistry: MatIconRegistry,
 		sanitizer: DomSanitizer,
-		restService: RestService,
-		clientService: ClientService,
-		loggerService: LoggerService,
-		router: Router,
 		appService: AppService,
 		titleService: Title,
+		private location: Location,
+		private router: Router,
 		private overlayRef: OverlayContainer,
 		public viewportService: ViewportService
 	) {
 		// Check if platform is browser
-		console.log('PLATFORM', platformId);
 		AppComponent.isBrowser.next(isPlatformBrowser(platformId));
 
 		for (const iconRef of iconList) {
-			if (AppComponent.isBrowser.getValue() === false) continue;
 			iconRegistry.addSvgIcon(
 				iconRef[0],
 				sanitizer.bypassSecurityTrustResourceUrl(`assets/${iconRef[1]}`)
 			);
-		}
-
-		// Sign in the user?
-		{
-			const token = clientService.localStorage.getItem('access_token');
-			of(token).pipe(
-				filter(x => typeof x === 'string'),
-				tap(tok => clientService.setToken(tok)),
-				switchMap(() => restService.Users.Get('@me')),
-				RestService.onlyResponse(),
-				switchMap(res => !!res.body?._id ? of(res) : throwError('Unknown Account')),
-				tap(res => clientService.pushData(res.body))
-			).subscribe({
-				error: err => {
-					loggerService.error('Could\'nt sign in as user', err);
-					clientService.localStorage.removeItem('access_token');
-				}
-			});
 		}
 
 		// Set page title
@@ -89,7 +64,8 @@ export class AppComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-
+		// Navigate to current URL in order to trigger a routing event and update the page title
+		this.router.navigateByUrl(this.location.path(true));
 	}
 
 	setTheme(): void {

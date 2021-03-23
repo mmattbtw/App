@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { defer, EMPTY, iif } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { defer, EMPTY, iif, of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 
 
@@ -21,12 +21,9 @@ export class LocalStorageService implements Storage {
 	constructor() {
 		this.storage = new LocalStorage();
 
-		AppComponent.isBrowser.pipe(
-			switchMap(isBrowser => iif(() => !!isBrowser,
-				defer(() => this.storage = localStorage),
-				EMPTY
-			))
-		);
+		if (AppComponent.isBrowser.getValue() === true) {
+			this.storage = localStorage;
+		}
 	}
 
 	[x: string]: any;

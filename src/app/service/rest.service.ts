@@ -1,8 +1,9 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpProgressEvent, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { iif, Observable, of } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { iif, Observable, of, throwError } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { environment } from 'src/environments/environment';
 
@@ -14,9 +15,28 @@ export class RestService {
 	private CDN_BASE = environment.cdnUrl;
 
 	constructor(
+		@Inject(PLATFORM_ID) platformId: any,
 		private httpService: HttpClient,
 		public clientService: ClientService
-	) { }
+	) {
+		// Sign in the user?
+		if (isPlatformBrowser(platformId))
+		{
+			const token = clientService.localStorage.getItem('access_token');
+			of(token).pipe(
+				filter(x => typeof x === 'string'),
+				tap(tok => clientService.setToken(tok)),
+				switchMap(() => this.Users.Get('@me')),
+				RestService.onlyResponse(),
+				switchMap(res => !!res.body?._id ? of(res) : throwError('Unknown Account')),
+				tap(res => clientService.pushData(res.body))
+			).subscribe({
+				error: err => {
+					clientService.localStorage.removeItem('access_token');
+				}
+			});
+		}
+	}
 
 	// tslint:disable:typedef
 	get Auth() {

@@ -33,7 +33,6 @@ export class AppService {
 			map(({ attributes, title }) => {
 				attributes.map(attr => title = title.replace(`%${attr.name}`, attr.value));
 
-				console.log(attributes, 'attrs');
 				titleService.setTitle(title.replace(AppService.PAGE_ATTR_REGEX, ''));
 			})
 		).subscribe();

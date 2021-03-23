@@ -15,7 +15,6 @@ export class WindowRef {
 	) { }
 
 	getNativeWindow(): Window | null {
-		console.log('avlzkd', AppComponent.isBrowser.getValue());
 		return (AppComponent.isBrowser.getValue() !== true && AppComponent.isBrowser.getValue() !== null) ? null : window;
 	}
 

@@ -1,10 +1,10 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { asyncScheduler, BehaviorSubject, EMPTY, from, iif, Observable, of, scheduled, Subject, timer } from 'rxjs';
-import { catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, switchMap, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -19,6 +19,9 @@ import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emo
 import { AppService } from 'src/app/service/app.service';
 import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { DataStructure } from '@typings/typings/DataStructure';
+import { Meta } from '@angular/platform-browser';
+import { AppComponent } from 'src/app/app.component';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
 	selector: 'app-emote',
@@ -150,6 +153,8 @@ export class EmoteComponent implements OnInit {
 	] as EmoteComponent.InteractButton[];
 
 	constructor(
+		@Inject(DOCUMENT) private document: Document,
+		private metaService: Meta,
 		private restService: RestService,
 		private route: ActivatedRoute,
 		private router: Router,
@@ -158,8 +163,8 @@ export class EmoteComponent implements OnInit {
 		private userService: UserService,
 		private appService: AppService,
 		public themingService: ThemingService,
-		public clientService: ClientService,
-	) {}
+		public clientService: ClientService
+	) { }
 
 	/**
 	 * Get all sizes of the current emote
@@ -200,7 +205,7 @@ export class EmoteComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().pipe(
-			filter(data => data.name !== null),
+			filter(data => !!data && data.name !== null),
 			switchMap(data => this.emote?.edit({ name: data.name }, data.reason) ?? EMPTY),
 		).subscribe();
 	}
@@ -277,7 +282,44 @@ export class EmoteComponent implements OnInit {
 					{ name: 'OwnerName', value: `by ${res.body?.owner_name ?? ''}` }
 				])),
 				map(res => this.emote = new EmoteStructure(this.restService).pushData(res.body)),
-				switchMap(() => this.getChannels()),
+				switchMap(emote => this.getChannels().pipe(mapTo(emote))),
+
+				// Update meta
+				// Show this emote in discord etc!
+				switchMap(emote => emote.getURL(4).pipe(
+					tap(url => {
+						const appURL = this.document.location.host + this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
+						const emoteData = emote.getSnapshot();
+						this.metaService.addTags([
+							// { name: 'og:title', content: this.appService.pageTitle },
+							// { name: 'og:site_name', content: this.appService.pageTitle },
+							{ name: 'og:description', content: `uploaded by ${emoteData?.owner_name}`},
+							{ name: 'og:image', content: url ?? '' },
+							{ name: 'og:image:type', content: emote.getSnapshot()?.mime ?? 'image/png' },
+							{ name: 'theme-color', content: this.themingService.primary.hex() }
+						]);
+
+						// Discord OEmbed
+						// TODO: Make this a proper service so it can be applied to other pages
+						if (AppComponent.isBrowser.getValue() !== true) {
+							const link = this.document.createElement('link');
+							link.setAttribute('type', 'application/json+oembed');
+
+							const data = {
+								title: this.appService.pageTitle,
+								author_name: `${emoteData?.name} ${emoteData?.global ? '(Global Emote)' : `(${this.channels.getValue()?.length} Channels)`}`,
+								author_url: `https://${appURL}`,
+								provider_name: `7TV.APP - It's like a third party thing`,
+								provider_url: 'https://7tv.app'
+							};
+							if (!data) return undefined;
+							if (data) link.setAttribute('href', 'https://terrible-wolverine-50.loca.lt/og/oembed/emote.json' + `?data=${Buffer.from(JSON.stringify(data)).toString('base64')}`);
+							this.document.head.appendChild(link);
+						}
+						return undefined;
+					})
+				)),
+
 				switchMap(() => this.getSizes().pipe(
 					tap(result => this.sizes.next(result))
 				)),

@@ -161,4 +161,8 @@ export class EmoteStructure {
 			mapTo(undefined)
 		);
 	}
+
+	getSnapshot(): DataStructure.Emote | null | undefined {
+		return this.data.getValue();
+	}
 }

@@ -25,7 +25,6 @@ export class CallbackGuard implements CanActivate {
 		this.logger.info(`Received data from redirect query`, route.queryParamMap.get('token'));
 
 		// Set to pending access token. The main window is waiting for this value
-		console.log('PLAAAAAAAATFORM', this.platformId, win?.opener);
 
 		(win
 			?.opener as Window)
@@ -37,6 +36,6 @@ export class CallbackGuard implements CanActivate {
 			}, win?.location.origin ?? '');
 		this.localStorage.setItem('pending-access-token', route.queryParamMap.get('token') as string);
 		win?.close();
-		return false;
+		return true;
 	}
 }

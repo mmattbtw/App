@@ -30,14 +30,11 @@ export class OAuthService {
 	 */
 	openAuthorizeWindow<T>(url?: string): Observable<T> {
 		return new Observable<T>(observer => {
-			console.log('CBT', AppComponent.isBrowser.getValue());
-
 			// Get the native window (parent) & set the domain
 			const nativeWin = this.windowRef.getNativeWindow();
 			if (!nativeWin) return observer.complete();
 
 			const listener = (ev: MessageEvent): void => {
-				console.log('msg', ev);
 				if (ev.data.type !== 'oauthCallback') return undefined;
 
 				observer.next(ev.data.data);

@@ -53,7 +53,7 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 		if (ev.button === 1) {
 			const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(this.emote?.getID())]));
 
-			this.windowRef.getNativeWindow().open(url, '_blank');
+			this.windowRef.getNativeWindow()?.open(url, '_blank');
 		}
 	}
 

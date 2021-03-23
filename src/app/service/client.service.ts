@@ -3,6 +3,7 @@
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
 
@@ -13,6 +14,7 @@ export class ClientService extends UserStructure {
 	private isAuth = false;
 
 	constructor(
+		public localStorage: LocalStorageService,
 		private logger: LoggerService
 	) {
 		super();
@@ -37,7 +39,7 @@ export class ClientService extends UserStructure {
 	}
 
 	setToken(token: string | null): void {
-		localStorage.setItem('access_token', token ?? '');
+		this.localStorage.setItem('access_token', token ?? '');
 
 		this.token = token ?? '';
 	}
@@ -64,7 +66,7 @@ export class ClientService extends UserStructure {
 	 * and appear as signed out
 	 */
 	logout(): void {
-		localStorage.removeItem('access_token');
+		this.localStorage.removeItem('access_token');
 		this.data.next(null);
 	}
 }

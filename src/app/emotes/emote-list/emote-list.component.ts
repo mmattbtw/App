@@ -11,6 +11,7 @@ import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.c
 import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
@@ -82,14 +83,14 @@ export class EmoteListComponent implements OnInit {
 			click: emote => {
 				const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
 
-				return of(this.windowRef.getNativeWindow().open(url, '_blank'));
+				return of(this.windowRef.getNativeWindow()?.open(url, '_blank'));
 			}
 		},
 		{
 			label: 'Copy Link',
 			icon: 'link',
 			click: emote => of(this.windowRef.copyValueToClipboard(''.concat(
-				`https://${this.windowRef.getNativeWindow().location.host}`, // Get window location.host
+				`https://${this.windowRef.getNativeWindow()?.location.host}`, // Get window location.host
 				this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]))
 			)))
 		},
@@ -179,6 +180,7 @@ export class EmoteListComponent implements OnInit {
 		private windowRef: WindowRef,
 		private appService: AppService,
 		private dialog: MatDialog,
+		private localStorage: LocalStorageService,
 		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }
@@ -235,7 +237,7 @@ export class EmoteListComponent implements OnInit {
 			pageSize: ev.pageSize,
 			length: ev.length
 		} as EmoteListComponent.PersistentPageOptions;
-		localStorage.setItem('pagination', JSON.stringify(pageOptions));
+		this.localStorage.setItem('pagination', JSON.stringify(pageOptions));
 
 		// Save PageIndex title attr
 		this.appService.pushTitleAttributes({ name: 'PageIndex', value: `- ${ev.pageIndex + 1}/${Number((ev.length / ev.pageSize).toFixed(0)) + 1}` });
@@ -249,7 +251,7 @@ export class EmoteListComponent implements OnInit {
 
 	ngOnInit(): void {
 		// Get persisted page options?
-		const pageOptions = localStorage.getItem('pagination');
+		const pageOptions = this.localStorage.getItem('pagination');
 		if (!!pageOptions) { // If persistence options found set the page
 			const o = JSON.parse(pageOptions) as EmoteListComponent.PersistentPageOptions; // Parse JSON from localStorage
 

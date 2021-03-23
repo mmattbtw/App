@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpProgressEvent, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { iif, Observable, of } from 'rxjs';

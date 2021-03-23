@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
+import { AppComponent } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -8,14 +10,17 @@ import { environment } from 'src/environments/environment';
 export class WindowRef {
 	domain = environment.origin;
 
-	constructor() { }
+	constructor(
+		@Inject(DOCUMENT) private document: Document
+	) { }
 
-	getNativeWindow(): Window {
-		return window;
+	getNativeWindow(): Window | null {
+		console.log('avlzkd', AppComponent.isBrowser.getValue());
+		return (AppComponent.isBrowser.getValue() !== true && AppComponent.isBrowser.getValue() !== null) ? null : window;
 	}
 
 	getNativeDocument(): Document {
-		return document;
+		return this.document;
 	}
 
 	copyValueToClipboard(value: string): void {

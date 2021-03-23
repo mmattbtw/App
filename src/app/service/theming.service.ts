@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as Color from 'color';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { AppComponent } from 'src/app/app.component';
 
 @Injectable({
 	providedIn: 'root'
@@ -8,7 +10,7 @@ import { Subject } from 'rxjs';
 
 export class ThemingService {
 	themeChanged = new Subject<string>();
-	defaultTheme: ThemingService.Name = localStorage.getItem('theme') as ThemingService.Name || 'dark';
+	// defaultTheme: ThemingService.Name = localStorage.getItem('theme') as ThemingService.Name || 'dark';
 	dark = false;
 	currentTheme: ThemingService.Name = 'dark';
 
@@ -44,6 +46,13 @@ export class ThemingService {
 	images = {
 
 	};
+
+	public getSvgIcon(key: string): Observable<string> {
+		return AppComponent.isBrowser.pipe(
+			take(1),
+			map(isBrowser => isBrowser ? key : '')
+		);
+	}
 
 	constructor() {}
 

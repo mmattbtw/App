@@ -32,7 +32,7 @@
 						{{btn.icon}}
 					</mat-icon>
 
-					<mat-icon *ngSwitchCase="true" [svgIcon]="btn.icon" [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''"></mat-icon>
+					<mat-icon *ngSwitchCase="true" [svgIcon]="(themingService.getSvgIcon(btn.icon) | async) || ''" [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''"></mat-icon>
 				</div>
 				<div class="mx-1"></div>
 
@@ -51,7 +51,7 @@
 
 	<div class="d-inline-flex align-items-center flex-grow-0">
 		<a mat-icon-button target="_blank" href="https://discord.gg/WyqtzzrU9t" matTooltip="Join Discord!">
-			<mat-icon svgIcon="discord"></mat-icon>
+			<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
 		</a>
 		<div class="mx-md-4"></div>
 

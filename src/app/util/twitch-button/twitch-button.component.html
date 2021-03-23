@@ -1,7 +1,7 @@
 <div class="twitch-button mat-elevation-z2" [appColor]="colors.bg" [isBackground]="true" [style.border-color]="colors.border" (click)="open()">
 	<div class="d-flex justify-content-between align-items-center" matRipple [matRippleColor]="colors.ripple">
 		<div class="twitch-icon">
-			<mat-icon svgIcon="twitch"></mat-icon>
+			<mat-icon [svgIcon]="(themingService.getSvgIcon('twitch') | async) || ''"></mat-icon>
 		</div>
 		<span class="mx-1">SIGN IN</span>
 	</div>

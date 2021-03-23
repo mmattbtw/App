@@ -1,7 +1,8 @@
-import { Injectable, NgZone, Output, EventEmitter, RendererFactory2 } from '@angular/core';
+import { Injectable, NgZone, Output, EventEmitter, RendererFactory2, Inject, HostListener } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { BehaviorSubject, noop, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
+import { DOCUMENT } from '@angular/common';
 
 export type ViewportBreakpointName = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -41,7 +42,8 @@ export class ViewportService {
 	} | undefined;
 
 	constructor(
-		ngZone: NgZone, media: MediaMatcher,
+		@Inject(DOCUMENT) private document: Document,
+		private ngZone: NgZone, media: MediaMatcher,
 		renderFactory2: RendererFactory2
 	) {
 		this.query.xs = media.matchMedia('(max-width: 576px)');
@@ -58,18 +60,12 @@ export class ViewportService {
 		})();
 
 		// Listen to the window being resized
-		window.onresize = (e: UIEvent) => {
-			ngZone.run(() => {
-				this.height = window.innerHeight;
-				this.width = window.innerWidth;
-				this.resize.emit('windowdow');
+		document.onresize = (e: UIEvent) => {
 
-				this.checkBreakpoint();
-			});
 		};
 
-		this.height = window.innerHeight;
-		this.width = window.innerWidth;
+		this.height = 0;
+		this.width = 0;
 		this.checkBreakpoint();
 
 		// Update mouse position
@@ -80,6 +76,16 @@ export class ViewportService {
 				this.mouseY = ev.y;
 			});
 		}
+	}
+
+	@HostListener('window:resize', ['$event'])
+	onResize(ev: Event): void {
+		console.log('hi hi', ev);
+		this.ngZone.run(() => {
+			this.resize.emit('window');
+
+			this.checkBreakpoint();
+		});
 	}
 
 	get BREAKPOINT_NAMES(): ViewportBreakpointName[] {

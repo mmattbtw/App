@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
+import { AppComponent } from 'src/app/app.component';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from './logger.service';
 import { WindowRef } from './window.service';
 
@@ -17,6 +19,7 @@ export class OAuthService {
 
 	constructor(
 		private windowRef: WindowRef,
+		private localStorage: LocalStorageService,
 		private logger: LoggerService
 	) { }
 
@@ -27,10 +30,14 @@ export class OAuthService {
 	 */
 	openAuthorizeWindow<T>(url?: string): Observable<T> {
 		return new Observable<T>(observer => {
+			console.log('CBT', AppComponent.isBrowser.getValue());
+
 			// Get the native window (parent) & set the domain
 			const nativeWin = this.windowRef.getNativeWindow();
+			if (!nativeWin) return observer.complete();
 
 			const listener = (ev: MessageEvent): void => {
+				console.log('msg', ev);
 				if (ev.data.type !== 'oauthCallback') return undefined;
 
 				observer.next(ev.data.data);
@@ -46,15 +53,22 @@ export class OAuthService {
 			this.openedWindow = childWin;
 			this.stylizeWindow();
 
+			// LocalStorage key found: accept auth
 			// Window closes: reject.
 			const interval = setInterval(() => {
-				if (!childWin || !childWin.closed) return undefined;
+				const pendingToken = this.localStorage.getItem('pending-access-token');
+				if (!pendingToken || (!childWin || !childWin.closed)) return undefined;
+
+				if (!childWin.closed) childWin.close();
 				this.windowClosed.next();
 				clearInterval(interval);
 
+				observer.next(String(pendingToken) as any);
+				this.localStorage.removeItem('pending-access-token');
+
 				setTimeout(() => {
 					observer.complete();
-				}, 50);
+				}, 10);
 
 				return undefined;
 			}, 200);

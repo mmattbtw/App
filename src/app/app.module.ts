@@ -27,7 +27,7 @@ import { TwitchButtonComponent } from 'src/app/util/twitch-button/twitch-button.
 		TwitchButtonComponent
 	],
 	imports: [
-		BrowserModule,
+		BrowserModule.withServerTransition({ appId: 'serverApp' }),
 		AppRoutingModule,
 		BrowserAnimationsModule,
 		HttpClientModule,

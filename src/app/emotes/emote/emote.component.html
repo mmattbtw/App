@@ -87,7 +87,7 @@
 			
 			<div class="d-inline-block" *ngSwitchCase="false">
 				<span>Nothing here</span>
-				<mat-icon [svgIcon]="'zulul'"></mat-icon>
+				<mat-icon [svgIcon]="(themingService.getSvgIcon('zulul') | async) || ''"></mat-icon>
 			</div>
 		</div>
 	</div>

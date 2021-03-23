@@ -1,7 +1,6 @@
-
-
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate } from '@angular/router';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from '../service/logger.service';
 import { WindowRef } from '../service/window.service';
 
@@ -14,32 +13,30 @@ export class CallbackGuard implements CanActivate {
 	 */
 	constructor(
 		private windowRef: WindowRef,
-		private router: Router,
+		private localStorage: LocalStorageService,
+		@Inject(PLATFORM_ID) private platformId: any,
 		private logger: LoggerService
 	) { }
 
-	canActivate(): boolean {
-		if (!this.windowRef.getNativeWindow().opener) { // If this isn't a child window nav to home
-			this.router.navigate(['/']);
-			return true;
-		}
+	canActivate(route: ActivatedRouteSnapshot): boolean {
+		const win = this.windowRef.getNativeWindow();
 
 		// Find params
-		const params = new URLSearchParams(this.windowRef.getNativeWindow().location.search);
-		this.logger.info(`Received data from redirect query`, params.get('token'));
+		this.logger.info(`Received data from redirect query`, route.queryParamMap.get('token'));
 
-		// Send message back to parent window
-		(this.windowRef.getNativeWindow()
-			.opener as Window)
+		// Set to pending access token. The main window is waiting for this value
+		console.log('PLAAAAAAAATFORM', this.platformId, win?.opener);
+
+		(win
+			?.opener as Window)
 			?.postMessage({
 				type: 'oauthCallback',
 				data: {
-					token: params.get('token')
+					token: route.queryParamMap.get('token')
 				}
-			}, this.windowRef.getNativeWindow().location.origin);
-
-		// Close this child window
-		this.windowRef.getNativeWindow().close();
+			}, win?.location.origin ?? '');
+		this.localStorage.setItem('pending-access-token', route.queryParamMap.get('token') as string);
+		win?.close();
 		return false;
 	}
 }

@@ -2,9 +2,10 @@ name: Build App
 
 on:
   push:
-    branches: [master, actions-test]
+    branches: [master]
 
   workflow_dispatch:
+    branches: [actions-test]
 
 jobs:
   build:
@@ -24,5 +25,5 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          repository: seventv/app/app
+          repository: seventv/app
           tag_with_ref: true

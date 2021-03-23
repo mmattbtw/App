@@ -2,7 +2,7 @@ name: Build App
 
 on:
   push:
-    branches: [master]
+    branches: [master, actions-test]
 
   workflow_dispatch:
 

@@ -18,15 +18,11 @@ jobs:
         with:
           node-version: 12
 
-      - name: Install Modules & Build with Server-Side Rendering
-        run: |
-          npm install
-          npm run build:ssr
-
-      - name: Push to Packages
+      - name: Build Image with Server-Side Rendering & Push to Packages
         uses: docker/build-push-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           repository: SevenTV/App/App
+          tag_with_ref: true

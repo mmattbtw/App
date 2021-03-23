@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 	providedIn: 'root'
 })
 export class RestService {
-	private BASE = environment.apiUrl;
+	private BASE = '';
 	private CDN_BASE = environment.cdnUrl;
 
 	constructor(
@@ -19,9 +19,10 @@ export class RestService {
 		private httpService: HttpClient,
 		public clientService: ClientService
 	) {
+		this.BASE = environment.platformApiUrl(platformId);
+		console.log('Based', this.BASE);
 		// Sign in the user?
-		if (isPlatformBrowser(platformId))
-		{
+		if (isPlatformBrowser(platformId)) {
 			const token = clientService.localStorage.getItem('access_token');
 			of(token).pipe(
 				filter(x => typeof x === 'string'),

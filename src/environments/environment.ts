@@ -7,7 +7,8 @@ export const environment = {
 	production: false,
 	serviceWorker: true,
 	origin: 'localhost',
-	apiUrl: 'http://localhost:3000',
+	apiUrl: 'localhost:3000',
+	platformApiUrl: (platform: 'browser' | 'server') => `http://${environment.apiUrl}`,
 	cdnUrl: 'https://cdn.7tv.app/dev',
 	wsUrl: 'ws://localhost:3000'
 };

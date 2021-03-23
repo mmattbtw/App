@@ -1,0 +1,30 @@
+name: Build App
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - name: Install Modules & Build with Server-Side Rendering
+        run: |
+          npm install
+          npm run build:ssr
+
+      - name: Push to Packages
+        uses: docker/build-push-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          repository: SevenTV/App/App

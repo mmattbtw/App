@@ -52,11 +52,6 @@
 	</div>
 
 	<div class="align-items-center flex-grow-0 d-none d-md-inline-flex">
-		<a mat-icon-button target="_blank" href="https://discord.gg/WyqtzzrU9t" class="d-none d-md-block" matTooltip="Join Discord!">
-			<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
-		</a>
-		<div class="mx-md-4"></div>
-
 		<div [ngSwitch]="clientService.isAuthenticated() | async">
 			<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
 			<app-user-name *ngSwitchCase="true" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	

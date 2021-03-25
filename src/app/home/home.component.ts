@@ -1,6 +1,9 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { AppService } from 'src/app/service/app.service';
+import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
@@ -50,13 +53,23 @@ export class HomeComponent implements OnInit {
 	] as HomeComponent.FooterOptions[];
 
 	logoSize = 64 * 3;
+	discordWidget = new BehaviorSubject<RestService.Result.GetDiscordWidget | null>(null);
 
 	constructor(
+		private restService: RestService,
 		public themingService: ThemingService,
 		public appService: AppService
 	) { }
 
 	ngOnInit(): void {
+		// Get Discord Widget
+		this.restService.Discord.Widget().pipe(
+			RestService.onlyResponse(),
+			tap(res => console.log(res.body)),
+			tap(res => this.discordWidget.next(res.body))
+		).subscribe({
+			error(err): void { console.log(err); }
+		});
 	}
 
 }

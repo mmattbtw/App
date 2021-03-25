@@ -84,6 +84,12 @@ export class RestService {
 		};
 	}
 
+	get Discord() {
+		return {
+			Widget: (guildID = '817075418054000661') => this.createRequest<RestService.Result.GetDiscordWidget>('get', `https://discord.com/api/guilds/${guildID}/widget.json`)
+		};
+	}
+
 	get CDN() {
 		return {
 			Emote: (id: string, size: number) => `${this.CDN_BASE}/emote/${id}/${size}x`
@@ -92,7 +98,7 @@ export class RestService {
 	// tslint:enable:typedef
 
 	private createRequest<T>(method: RestService.Method, route: string, options?: Partial<RestService.CreateRequestOptions>): Observable<HttpResponse<T> | HttpProgressEvent> {
-		const uri = this.BASE + route;
+		const uri = (route.startsWith('http') ? '' :  this.BASE) + route;
 		const opt = {
 			observe: 'events',
 			headers: {
@@ -129,6 +135,25 @@ export namespace RestService {
 		/** GET /auth  */
 		export interface GetURLResult {
 			url?: string;
+		}
+
+		export interface GetDiscordWidget {
+			id: string;
+			name: string;
+			instant_invite: string;
+			channels: {
+				id: string;
+				name: string;
+				position: number;
+			}[];
+			members: {
+				id: string;
+				username: string;
+				discriminator: string;
+				status: string;
+				avatar_url: string;
+			}[];
+			presence_count: number;
 		}
 	}
 }

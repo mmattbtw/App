@@ -40,7 +40,8 @@ export class ThemingService {
 			get: () => new Color(this.colors.bg[this.currentTheme])
 		},
 
-		twitch_purple: new Color('#9146FF')
+		twitch_purple: new Color('#9146FF'),
+		discord_blurple: new Color('#7289DA')
 	};
 
 	images = {

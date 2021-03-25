@@ -65,7 +65,6 @@ export class HomeComponent implements OnInit {
 		// Get Discord Widget
 		this.restService.Discord.Widget().pipe(
 			RestService.onlyResponse(),
-			tap(res => console.log(res.body)),
 			tap(res => this.discordWidget.next(res.body))
 		).subscribe({
 			error(err): void { console.log(err); }

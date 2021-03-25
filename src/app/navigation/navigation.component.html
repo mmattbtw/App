@@ -3,7 +3,9 @@
 	<div class="d-flex align-items-center" [routerLink]="['/']">		
 		<div class="no-select app-title" [class.is-loading]="appService.loading">
 			<!-- Logo -->
-			<div class="_logo"></div>
+			<div class="_logo">
+				<object data="assets/brand/7tv-light.svg" height="32" type="image/svg+xml"></object>
+			</div>
 		 	
 
 			<span class="_text">{{appService.title}}</span>
@@ -18,7 +20,7 @@
 	</div>
 
 	<!-- Navigation Buttons -->
-	<div class="nav-button-list justify-content-center flex-grow-1">
+	<div class="nav-button-list justify-content-center flex-grow-1 d-none d-md-flex">
 		<div [routerLink]="btn.path" [routerLinkActive]="['selected']"
 			[routerLinkActiveOptions]="{ exact: true }"
 			matRipple
@@ -37,7 +39,7 @@
 				<div class="mx-1"></div>
 
 				<!-- Name -->
-				<span class="_name d-none d-md-block">
+				<span class="_name d-none d-md-block" [appColor]="btn.color">
 					{{btn.name | uppercase}}
 				</span>
 
@@ -49,8 +51,8 @@
 		</div>
 	</div>
 
-	<div class="d-inline-flex align-items-center flex-grow-0">
-		<a mat-icon-button target="_blank" href="https://discord.gg/WyqtzzrU9t" matTooltip="Join Discord!">
+	<div class="align-items-center flex-grow-0 d-none d-md-inline-flex">
+		<a mat-icon-button target="_blank" href="https://discord.gg/WyqtzzrU9t" class="d-none d-md-block" matTooltip="Join Discord!">
 			<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
 		</a>
 		<div class="mx-md-4"></div>
@@ -60,4 +62,25 @@
 			<app-user-name *ngSwitchCase="true" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
 		</div>
 	</div>
+
+	<!-- Hamburger -->
+	<div class="nav-hamburger d-block d-md-none">
+		<button mat-icon-button [matMenuTriggerFor]="mobileMenu">
+			<mat-icon>menu</mat-icon>
+		</button>
+		
+	</div>
 </mat-toolbar>
+
+<mat-menu #mobileMenu="matMenu" class="d-flex flex-column">
+	<app-user-name></app-user-name>	
+	<mat-divider></mat-divider>
+
+	<button mat-menu-item [routerLink]="btn.path" *ngFor="let btn of navButtons" class="d-flex" [style.color]="btn.color">
+		<div [ngSwitch]="btn.svg">
+			<mat-icon [style.color]="btn.color" *ngSwitchCase="true" [svgIcon]="(themingService.getSvgIcon(btn.icon) | async) || ''"></mat-icon>
+			<mat-icon [style.color]="btn.color" *ngSwitchDefault> {{ btn.icon }} </mat-icon>
+		</div>
+		<span>{{ btn.name | uppercase}}</span>
+	</button>
+</mat-menu>

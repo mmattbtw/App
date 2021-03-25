@@ -10,7 +10,7 @@ import { map, mergeAll, tap, withLatestFrom } from 'rxjs/operators';
 
 export class AppService {
 	title = '7tv.app';
-	description = '';
+	description = 'It\'s like a third party thing';
 	currentView = '';
 	devStage = 'beta';
 	loading = false;

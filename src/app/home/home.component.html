@@ -1,10 +1,17 @@
-<div class="h-100 d-flex flex-column justify-content-between align-items-center">
-	<span></span>
+<div class="h-100 d-flex flex-column justify-content-around align-items-center">
+	<div class="logo-container">
+		<div class="logo-spacer d-none d-md-block w-100 py-3"></div>
+		<div class="logo-wrapper">
+			<object data="assets/brand/7tv-light.svg" height="{{logoSize}}" type="image/svg+xml"></object>
+		</div>
+
+	</div>
 
 	<!-- Intro & Download Button -->
 	<div class="d-flex flex-column intro align-items-center justify-content-center">
-		<h1>
-			Yeah but 7TV is like a third party thing
+		
+		<h1 class="slogan-text">
+			{{appService.description}}
 		</h1>
 
 		<span class="my-1"></span>
@@ -20,6 +27,10 @@
 		</span>
 	</div>
 
+	<span></span>
+	<span></span>
+	<span></span>
+	<!-- Footer Links -->
 	<div class="d-flex flex-row footer-options">
 		<span class="d-flex flex-row align-items-center" *ngFor="let btn of footerOptions; let index = index;">
 			<a target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>

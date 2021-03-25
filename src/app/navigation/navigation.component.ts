@@ -36,7 +36,7 @@ export class NavigationComponent implements OnInit {
 			svg: true
 		},
 		{
-			name: '',
+			name: 'admin',
 			path: '/admin',
 			color: this.themingService.primary,
 			condition: this.clientService.getRank().pipe(

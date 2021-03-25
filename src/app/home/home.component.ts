@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
+import { AppService } from 'src/app/service/app.service';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
@@ -48,8 +49,11 @@ export class HomeComponent implements OnInit {
 		},
 	] as HomeComponent.FooterOptions[];
 
+	logoSize = 64 * 3;
+
 	constructor(
-		public themingService: ThemingService
+		public themingService: ThemingService,
+		public appService: AppService
 	) { }
 
 	ngOnInit(): void {

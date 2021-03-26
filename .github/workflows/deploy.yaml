@@ -50,4 +50,4 @@ jobs:
             mkdir -p ~/.kube
             (echo $KUBE_CONFIG_DATA | base64 -d) >> ~/.kube/config
             kubectl config use-context 7tv-as-deployer
-            kubectl rollout restart -n 7tv sts/7tv-webapp
+            kubectl rollout restart -n 7tv deploy/7tv-webapp

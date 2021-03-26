@@ -313,7 +313,7 @@ export class EmoteComponent implements OnInit {
 								provider_url: 'https://7tv.app'
 							};
 							if (!data) return undefined;
-							if (data) link.setAttribute('href', `${this.document.location.origin}/og/oembed/emote.json` + `?data=${Buffer.from(JSON.stringify(data)).toString('base64')}`);
+							if (data) link.setAttribute('href', `http://${this.document.location.hostname}/og/oembed/emote.json` + `?data=${Buffer.from(JSON.stringify(data)).toString('base64')}`);
 							this.document.head.appendChild(link);
 						}
 						return undefined;

@@ -1,7 +1,7 @@
 import { Injectable, NgZone, Output, EventEmitter, RendererFactory2, Inject, HostListener } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { BehaviorSubject, noop, Observable } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { AppComponent } from 'src/app/app.component';
 
@@ -61,6 +61,7 @@ export class ViewportService {
 		})();
 
 		AppComponent.isBrowser.pipe(
+			filter(isBrowser => isBrowser === true),
 			tap(() => {
 				window.onresize = (ev: UIEvent) => {
 					this.ngZone.run(() => {

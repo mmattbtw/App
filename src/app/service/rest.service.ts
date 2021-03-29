@@ -20,7 +20,6 @@ export class RestService {
 		public clientService: ClientService
 	) {
 		this.BASE = environment.platformApiUrl(platformId);
-		console.log('Based', this.BASE);
 		// Sign in the user?
 		if (isPlatformBrowser(platformId)) {
 			const token = clientService.localStorage.getItem('access_token');

@@ -21,11 +21,6 @@ export class CallbackGuard implements CanActivate {
 	canActivate(route: ActivatedRouteSnapshot): boolean {
 		const win = this.windowRef.getNativeWindow();
 
-		// Find params
-		this.logger.info(`Received data from redirect query`, route.queryParamMap.get('token'));
-
-		// Set to pending access token. The main window is waiting for this value
-
 		(win
 			?.opener as Window)
 			?.postMessage({

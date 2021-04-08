@@ -216,12 +216,11 @@ export class EmoteListComponent implements OnInit {
 	}
 
 	getEmotes(page = 1, pageSize = 16, queryString?: string): Observable<EmoteStructure> {
-		return this.restService.Emotes.List(page, pageSize, queryString ?? this.currentSearchQuery).pipe(
-			RestService.onlyResponse(),
-			tap(res => this.totalEmotes.next(res.body?.total_estimated_size ?? 0)),
+		return this.restService.v2.GetEmotes('', page, pageSize).pipe(
+			// tap(res => this.totalEmotes.next(res?.search_emotes.body?.total_estimated_size ?? 0)),
 			tap(() => this.emotes.next([])),
 			delay(200),
-			map(res => res.body?.emotes ?? []),
+			map(res => res?.search_emotes ?? []),
 			mergeAll(),
 			map(data => new EmoteStructure(this.restService).pushData(data))
 		);

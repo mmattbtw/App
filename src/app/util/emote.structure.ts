@@ -106,7 +106,7 @@ export class EmoteStructure {
 	}
 
 	edit(body: any, reason?: string): Observable<EmoteStructure> {
-		return this.restService.Emotes.Edit(String(this.id), body, reason).pipe(
+		return this.restService.v1.Emotes.Edit(String(this.id), body, reason).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.data.next(res.body)),
 			mapTo(this)
@@ -119,7 +119,7 @@ export class EmoteStructure {
 	addToChannel(): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.Channels.AddEmote(this.id).pipe(
+		return this.restService.v1.Channels.AddEmote(this.id).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.restService.clientService.pushData(res.body)),
 			mapTo(undefined)
@@ -132,7 +132,7 @@ export class EmoteStructure {
 	removeFromChannel(): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.Channels.RemoveEmote(this.id).pipe(
+		return this.restService.v1.Channels.RemoveEmote(this.id).pipe(
 			RestService.onlyResponse(),
 			tap(res => this.restService.clientService.pushData(res.body)),
 			mapTo(undefined)
@@ -156,7 +156,7 @@ export class EmoteStructure {
 		if (!this.id) return throwError(Error('Cannot delete unknown emote'));
 
 		console.log('reasson', reason);
-		return this.restService.Emotes.Delete(this.id, reason).pipe(
+		return this.restService.v1.Emotes.Delete(this.id, reason).pipe(
 			RestService.onlyResponse(),
 			mapTo(undefined)
 		);

@@ -59,7 +59,7 @@ export class EmoteFormService {
 
 		this.form.get('name')?.disable(); // Disable the form as the emote uploads
 		this.uploading.next(true); // Set uploading state as true
-		this.restService.Emotes.Upload(formData, 0).pipe( // Begin upload
+		this.restService.v1.Emotes.Upload(formData, 0).pipe( // Begin upload
 			tap(progress => {
 				// Only accept progress emissions
 				if (progress instanceof HttpResponse || progress instanceof HttpHeaderResponse) return undefined; // Send progress updates

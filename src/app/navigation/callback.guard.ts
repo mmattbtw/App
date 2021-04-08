@@ -1,7 +1,7 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
-import { LoggerService } from '../service/logger.service';
 import { WindowRef } from '../service/window.service';
 
 @Injectable()
@@ -14,8 +14,7 @@ export class CallbackGuard implements CanActivate {
 	constructor(
 		private windowRef: WindowRef,
 		private localStorage: LocalStorageService,
-		@Inject(PLATFORM_ID) private platformId: any,
-		private logger: LoggerService
+		private cookieService: CookieService
 	) { }
 
 	canActivate(route: ActivatedRouteSnapshot): boolean {
@@ -27,6 +26,7 @@ export class CallbackGuard implements CanActivate {
 				type: 'oauthCallback',
 				data: {
 					token: route.queryParamMap.get('token')
+						?? this.cookieService.get('auth')
 				}
 			}, win?.location.origin ?? '');
 		this.localStorage.setItem('pending-access-token', route.queryParamMap.get('token') as string);

@@ -37,6 +37,7 @@ export class OAuthService {
 			const listener = (ev: MessageEvent): void => {
 				if (ev.data.type !== 'oauthCallback') return undefined;
 
+				this.logger.info(`Received auth message`, ev.data);
 				observer.next(ev.data.data);
 				nativeWin.removeEventListener('message', listener);
 				return undefined;

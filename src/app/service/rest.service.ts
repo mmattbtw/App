@@ -1,22 +1,26 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { DataStructure } from '@typings/typings/DataStructure';
 import { iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
+import { RestV1 } from 'src/app/service/rest/rest-v1.structure';
+import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class RestService {
-	private BASE = '';
+	BASE = '';
 	private CDN_BASE = environment.cdnUrl;
+
+	public v1 = new RestV1(this);
+	public v2 = new RestV2(this);
 
 	constructor(
 		@Inject(PLATFORM_ID) platformId: any,
-		private httpService: HttpClient,
+		public httpService: HttpClient,
 		public clientService: ClientService
 	) {
 		this.BASE = environment.platformApiUrl(platformId);
@@ -26,7 +30,7 @@ export class RestService {
 			of(token).pipe(
 				filter(x => typeof x === 'string'),
 				tap(tok => clientService.setToken(tok)),
-				switchMap(() => this.Users.Get('@me')),
+				switchMap(() => this.v1.Users.Get('@me')),
 				RestService.onlyResponse(),
 				switchMap(res => !!res.body?._id ? of(res) : throwError('Unknown Account')),
 				tap(res => clientService.pushData(res.body))
@@ -39,50 +43,6 @@ export class RestService {
 	}
 
 	// tslint:disable:typedef
-	get Auth() {
-		return {
-			GetURL: () => this.createRequest<RestService.Result.GetURLResult>('get', '/auth', { auth: false })
-		};
-	}
-
-	get Users() {
-		return {
-			Get: (id: '@me' | string) => this.createRequest<DataStructure.TwitchUser>('get', `/users/${id}`, { auth: id === '@me' })
-		};
-	}
-
-	get Channels() {
-		return {
-			AddEmote: (emoteId: string, userId = '@me') => this.createRequest<DataStructure.TwitchUser>('put', `/channels/${userId}/emotes/${emoteId}`, { auth: true }),
-			RemoveEmote: (emoteId: string, userId = '@me') => this.createRequest<DataStructure.TwitchUser>('delete', `/channels/${userId}/emotes/${emoteId}`, { auth: true }),
-		};
-	}
-
-	get Emotes() {
-		return {
-			List: (page = 1, pageSize = 16, query?: string) =>
-				this.createRequest<
-					{ emotes: DataStructure.Emote[]; total_estimated_size: number; }
-				>('get', `/emotes?page=${page}&pageSize=${pageSize}${query ? `&${query}` : ''}`, { auth: true }),
-			Get: (id: string, includeActivity?: boolean) =>
-				this.createRequest<DataStructure.Emote>('get', `/emotes/${id}${includeActivity ? '?include_activity=true' : ''}`, { auth: true }),
-			Upload: (data: FormData, length: number) => this.createRequest<DataStructure.Emote>('post', '/emotes', {
-				body: data,
-				auth: true
-			}),
-			Edit: (id: string, body: any, reason?: string) => this.createRequest<DataStructure.Emote>('patch', `/emotes/${id}`, {
-				auth: true,
-				body,
-				headers: { 'X-Action-Reason': reason ?? 'no reason' }
-			}),
-			Delete: (id: string, reason?: string) => this.createRequest<void>('delete', `/emotes/${id}`, {
-				auth: true,
-				headers: { 'X-Action-Reason': reason ?? 'no reason' }
-			}),
-			GetChannels: (emoteId: string) => this.createRequest<{ count: number; users: DataStructure.TwitchUser[] }>('get', `/emotes/${emoteId}/channels`)
-		};
-	}
-
 	get Discord() {
 		return {
 			Widget: (guildID = '817075418054000661') => this.createRequest<RestService.Result.GetDiscordWidget>('get', `https://discord.com/api/guilds/${guildID}/widget.json`)
@@ -96,8 +56,13 @@ export class RestService {
 	}
 	// tslint:enable:typedef
 
-	private createRequest<T>(method: RestService.Method, route: string, options?: Partial<RestService.CreateRequestOptions>): Observable<HttpResponse<T> | HttpProgressEvent> {
-		const uri = (route.startsWith('http') ? '' :  this.BASE) + route;
+	createRequest<T>(
+		method: RestService.Method,
+		route: string,
+		options?: Partial<RestService.CreateRequestOptions>,
+		apiVersion: RestService.ApiVersion = 'v1'
+	): Observable<HttpResponse<T> | HttpProgressEvent> {
+		const uri = (route.startsWith('http') ? '' :  this.BASE) + `/${apiVersion}` + route;
 		const opt = {
 			observe: 'events',
 			headers: {
@@ -119,6 +84,8 @@ export class RestService {
 export namespace RestService {
 	export type Method = 'get' | 'patch' | 'post' | 'put' | 'delete';
 	export type BodyMethod = 'patch' | 'post' | 'put';
+
+	export type ApiVersion = 'v1' | 'v2';
 
 	export const onlyResponse = () => <T>(source: Observable<HttpResponse<T> | HttpProgressEvent>) => source.pipe(
 		filter(x => x instanceof HttpResponse)

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { asyncScheduler, EMPTY, scheduled } from 'rxjs';
+import { asyncScheduler, defer, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, switchMap, switchMapTo, tap } from 'rxjs/operators';
 import { LoggerService } from 'src/app/service/logger.service';
 import { OAuthService } from 'src/app/service/oauth.service';
@@ -39,16 +39,11 @@ export class TwitchButtonComponent implements OnInit {
 		scheduled([
 			this.oauthService.openAuthorizeWindow<{ token: string }>().pipe(
 				tap(data => this.clientService.setToken(data.token)),
-				switchMap(() => this.restService.Users.Get('@me').pipe(
-					RestService.onlyResponse(),
-					map(res => this.clientService.pushData(res.body))
+				switchMap(() => this.restService.v2.GetUser('@me').pipe(
+					map(res => this.clientService.pushData(res?.user ?? null))
 				))
 			),
-			this.restService.Auth.GetURL().pipe(
-				RestService.onlyResponse(),
-				map(res => res.body?.url as string),
-				tap(url => this.oauthService.navigateTo(url))
-			)
+			defer(() => this.oauthService.navigateTo(this.restService.v2.GetAuthURL()))
 		], asyncScheduler).pipe(
 			mergeAll(),
 			switchMapTo(EMPTY)

@@ -35,7 +35,7 @@ export class UserService {
 				? this.cache.get('@me') : null);
 		if (!!cachedUser && !ignoreCache) return of(cachedUser);
 
-		return this.restService.Users.Get(idOrUsername).pipe(
+		return this.restService.v1.Users.Get(idOrUsername).pipe(
 			RestService.onlyResponse(),
 			switchMap(res => !!res.body ? of(this.new(res.body)) : throwError(Error('Empty response content')))
 		);

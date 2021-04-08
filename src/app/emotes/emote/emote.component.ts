@@ -216,7 +216,7 @@ export class EmoteComponent implements OnInit {
 	getChannels(): Observable<UserStructure[]> {
 		if (!this.emote) return of([]);
 
-		return this.restService.Emotes.GetChannels(this.emote.getID() as string).pipe(
+		return this.restService.v1.Emotes.GetChannels(this.emote.getID() as string).pipe(
 			RestService.onlyResponse(),
 			map(res => res.body?.users.map(user => this.userService.new(user)) ?? []),
 			tap(users => this.channels.next(users))
@@ -273,7 +273,7 @@ export class EmoteComponent implements OnInit {
 	ngOnInit(): void {
 		// Look up requested emote from route uri
 		if (this.route.snapshot.paramMap.has('emote')) { // Route URI has emote param?
-			this.restService.Emotes.Get(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
+			this.restService.v1.Emotes.Get(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
 				RestService.onlyResponse(),
 				filter(res => res.body !== null), // Initiate a new emote structure instance
 

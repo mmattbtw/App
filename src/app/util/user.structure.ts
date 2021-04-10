@@ -1,21 +1,23 @@
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, mergeAll } from 'rxjs/operators';
+import { map, mergeAll, tap } from 'rxjs/operators';
 
 
 export class UserStructure {
-	protected data = new BehaviorSubject<DataStructure.TwitchUser | null>(null);
-	protected snapshot: DataStructure.TwitchUser | null = null;
+	protected data = new BehaviorSubject<Partial<DataStructure.TwitchUser> | null>(null);
+	protected snapshot: Partial<DataStructure.TwitchUser> | null = null;
 
 	/**
 	 * Push data onto this user.
 	 *
 	 * @param data Twitch User data
 	 */
-	pushData(data: DataStructure.TwitchUser | null): void {
+	pushData(data: Partial<DataStructure.TwitchUser> | null): UserStructure {
 		this.data.next(data);
 		this.snapshot = data;
+
+		return this;
 	}
 
 	getID(): Observable<string | null> {
@@ -44,10 +46,25 @@ export class UserStructure {
 
 	/**
 	 * Get the user's rank
+	 *
+	 * @deprecated no longer returned in v2, use role
 	 */
 	getRank(): Observable<Constants.Users.Rank> {
 		return this.data.pipe(
 			map(data => data?.rank ?? Constants.Users.Rank.DEFAULT)
+		);
+	}
+
+	getRole(): Observable<DataStructure.Role | null> {
+		return this.data.pipe(
+			map(data => data?.role ?? null)
+		);
+	}
+
+	getRoleColor(): Observable<string | null> {
+		return this.getRole().pipe(
+			tap(x => console.log('role', x)),
+			map(role => `#${role?.color.toString(16)}` ?? null)
 		);
 	}
 
@@ -60,7 +77,7 @@ export class UserStructure {
 		);
 	}
 
-	getSnapshot(): DataStructure.TwitchUser | null {
+	getSnapshot(): Partial<DataStructure.TwitchUser> | null {
 		return this.snapshot;
 	}
 }

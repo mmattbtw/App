@@ -26,16 +26,18 @@ export class ClientService extends UserStructure {
 	 *
 	 * @param data Twitch User data
 	 */
-	pushData(data: DataStructure.TwitchUser | null): void {
+	pushData(data: Partial<DataStructure.TwitchUser> | null): UserStructure {
 		super.pushData(data);
 
-		if (this.isAuth) return undefined;
+		if (this.isAuth) return this;
 		if (!!data?._id) {
 			this.setAuthState(!!data);
 			this.logger.info(`Signed in as ${data.display_name}.`);
 		} else {
 			this.logger.info('Signed out.');
 		}
+
+		return this;
 	}
 
 	setToken(token: string | null): void {

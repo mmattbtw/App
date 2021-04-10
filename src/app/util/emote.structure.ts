@@ -5,6 +5,7 @@ import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, EMPTY, Observable, throwError } from 'rxjs';
 import { filter, map, mapTo, mergeAll, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
+import { UserStructure } from 'src/app/util/user.structure';
 
 
 
@@ -46,9 +47,9 @@ export class EmoteStructure {
 		);
 	}
 
-	getOwner(): Observable<Partial<DataStructure.TwitchUser> | undefined> {
+	getOwner(): Observable<UserStructure | undefined> {
 		return this.data.pipe(
-			map(d => d?.owner)
+			map(d => !!d?.owner ? new UserStructure().pushData(d.owner) : undefined)
 		);
 	}
 
@@ -150,6 +151,12 @@ export class EmoteStructure {
 
 	getVisibility(): number {
 		return this.data.getValue()?.visibility ?? 0;
+	}
+
+	getCreatedAt(): Observable<Date | null> {
+		return this.data.pipe(
+			map(d => !!d?.created_at ? new Date(d.created_at) : null)
+		);
 	}
 
 	/**

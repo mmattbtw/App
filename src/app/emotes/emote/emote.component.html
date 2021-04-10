@@ -27,22 +27,28 @@
 		</div>
 
 		<!-- Emote Owner -->
-		<div class="d-flex align-items-center">
+		<div class="d-flex align-items-center" *ngIf="emote?.getOwner() | async">
 			<span>Added by</span>
-			<span class="ml-1"> {{emote?.getOwnerName() | async}} </span>
+			<app-user-name class="ml-1" [user]="emote?.getOwner() | async" [size]="[1.25, 1]"></app-user-name>
 		</div>
 	</div>
 	
 	<!-- Preview sizes -->
-	<div class="d-flex flex-row align-items-center justify-content-center sizes-preview mt-1" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
-		<!-- Size -->
-		<div class="size-preview d-flex flex-column justify-content-end align-items-center" [style.height.px]="MAX_HEIGHT" *ngFor="let size of sizes | async">
-			<div class="preview-img" [ngSwitch]="isProcessing() | async">
-				<img [src]="size.url" *ngSwitchCase="false">
-				<mat-spinner [diameter]="32 * size.scope" *ngSwitchCase="true"></mat-spinner>
-			</div>
+	<div class="d-block" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
+		<div class="d-flex flex-row align-items-center justify-content-center sizes-preview mt-1">
+			<!-- Size -->
+			<div class="size-preview d-flex flex-column justify-content-end align-items-center" [style.height.px]="MAX_HEIGHT" *ngFor="let size of sizes | async">
+				<div class="preview-img" [ngSwitch]="isProcessing() | async">
+					<img [src]="size.url" *ngSwitchCase="false">
+					<mat-spinner [diameter]="32 * size.scope" *ngSwitchCase="true"></mat-spinner>
+				</div>
 
-			<span class="mt-2"> {{size.scope}}x </span>
+				<span class="mt-2"> {{size.scope}}x </span>
+			</div>
+		</div>
+
+		<div class="p-2">
+			Created {{ formatCreationDate() | async }}
 		</div>
 	</div>
 	<div class="my-3"></div>

@@ -12,7 +12,7 @@
 	</div>
 	<!-- Submitter sub-banner -->
 	<div class="title-banner submitter" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
-		<span class="text-truncate px-2" matTooltipPosition="below"> {{emote?.getOwnerName() | async}} </span>
+		<app-user-name [user]="emote?.getOwner() | async" [showAvatar]="false"></app-user-name>
 	</div>
 
 	<!-- Card Image wrapper (below title) -->

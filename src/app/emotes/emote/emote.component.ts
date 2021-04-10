@@ -10,6 +10,7 @@ import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
+import { format } from 'date-fns';
 import * as Color from 'color';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserStructure } from 'src/app/util/user.structure';
@@ -236,6 +237,12 @@ export class EmoteComponent implements OnInit {
 			toArray(),
 			map(a => a.reverse())
 		) ?? of([]);
+	}
+
+	formatCreationDate(): Observable<string> {
+		return this.emote?.getCreatedAt().pipe(
+			map(d => !!d ? format(d, 'Pp') : '')
+		) ?? of('');
 	}
 
 	canEdit(): Observable<boolean> {

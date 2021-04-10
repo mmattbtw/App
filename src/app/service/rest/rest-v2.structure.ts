@@ -74,6 +74,7 @@ export class RestV2 {
 
 				fragment fullEmote on Emote {
 					id,
+					created_at,
 					name,
 					channels {
 						login, display_name, role {
@@ -81,9 +82,9 @@ export class RestV2 {
 						}, profile_image_url
 					},
 					owner {
-						display_name,
+						display_name, created_at, profile_image_url,
 						role {
-							name, color
+							name, color, allowed, denied, position
 						}
 					},
 					visibility,

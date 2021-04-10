@@ -3,7 +3,9 @@ import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
+import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
+import { DataStructure } from '@typings/typings/DataStructure';
 import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
 import { delay, filter, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
@@ -13,6 +15,7 @@ import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
+import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
@@ -118,7 +121,7 @@ export class EmoteListComponent implements OnInit {
 				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY),
 				switchMap(canEdit => canEdit ? emote.isPrivate().pipe(map(isPrivate => !isPrivate)) : of(false))
 			),
-			click: emote => emote.edit({ private: true })
+			click: emote => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
 		},
 		{
 			label: 'Make Public',
@@ -128,7 +131,7 @@ export class EmoteListComponent implements OnInit {
 				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY),
 				switchMap(canEdit => canEdit ? emote.isPrivate() : of(false))
 			),
-			click: emote => emote.edit({ private: false })
+			click: emote => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
 		},
 		{
 			label: 'Make Global',
@@ -137,7 +140,7 @@ export class EmoteListComponent implements OnInit {
 				switchMap(rank => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
 				map(({ isGlobal, rank }) => !isGlobal && rank >= Constants.Users.Rank.MODERATOR)
 			),
-			click: (emote) => emote.edit({ global: true })
+			click: (emote) => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{
 			label: 'Revoke Global',
@@ -146,7 +149,7 @@ export class EmoteListComponent implements OnInit {
 				switchMap(rank => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
 				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
 			),
-			click: (emote) => emote.edit({ global: false })
+			click: (emote) => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{
 			label: 'Delete',
@@ -207,7 +210,9 @@ export class EmoteListComponent implements OnInit {
 		const queryString = Object.keys(change).map(k => `${k}=${change[k as keyof EmoteSearchComponent.SearchChange]}`).join('&');
 
 		this.appService.pushTitleAttributes({ name: 'SearchOptions', value: `- ${queryString}` });
-		this.getEmotes(undefined, undefined, this.currentSearchQuery = queryString).pipe(
+		this.getEmotes(undefined, undefined, {
+			query: change.name
+		}).pipe(
 			toArray(),
 			tap(() => this.emotes.next([])),
 			delay(50),
@@ -215,12 +220,14 @@ export class EmoteListComponent implements OnInit {
 		).subscribe();
 	}
 
-	getEmotes(page = 1, pageSize = 16, queryString?: string): Observable<EmoteStructure> {
-		return this.restService.v2.GetEmotes('', page, pageSize).pipe(
-			// tap(res => this.totalEmotes.next(res?.search_emotes.body?.total_estimated_size ?? 0)),
+	getEmotes(page = 1, pageSize = 16, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure> {
+		return this.restService.v2.GetEmotes(page, pageSize, {
+			query: options?.query
+		}).pipe(
+			tap(res => this.totalEmotes.next(res?.total_estimated_size ?? 0)),
 			tap(() => this.emotes.next([])),
 			delay(200),
-			map(res => res?.search_emotes ?? []),
+			map(res => res?.emotes ?? []),
 			mergeAll(),
 			map(data => new EmoteStructure(this.restService).pushData(data))
 		);

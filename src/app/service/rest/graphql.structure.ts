@@ -1,25 +1,24 @@
+import { HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 
 export class GraphQL {
 	constructor(private restService: RestService) { }
 
-	public query<T>(options: GraphQLService.QueryOptions & GraphQLService.WithVar): Observable<T | null> {
-		return this.restService.createRequest<GraphQLService.QueryResult<T>>('post', '/gql', {
+	public query<T>(options: GraphQL.QueryOptions & GraphQL.WithVar): Observable<HttpResponse<GraphQL.QueryResult<T>> | null> {
+		return this.restService.createRequest<GraphQL.QueryResult<T>>('post', '/gql', {
 			body: {
 				query: options.query.replace(/\s{2,}/g, ''),
 				variables: options.variables
 			},
 			auth: options.auth
 		}, 'v2').pipe(
-			RestService.onlyResponse(),
-			map(x => x.body?.data ?? null),
+			RestService.onlyResponse()
 		);
 	}
 }
 
-export namespace GraphQLService {
+export namespace GraphQL {
 	export interface QueryOptions {
 		query: string;
 		auth?: boolean;

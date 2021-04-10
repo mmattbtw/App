@@ -78,7 +78,6 @@ export class ViewportService {
 
 		this.height = document.body.offsetHeight;
 		this.width = document.body.offsetWidth;
-		console.log(this.width, this.height);
 		this.checkBreakpoint();
 
 		// Update mouse position

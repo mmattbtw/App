@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpProgressEvent, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 import { iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
@@ -20,32 +21,31 @@ export class RestService {
 
 	constructor(
 		@Inject(PLATFORM_ID) platformId: any,
+		cookieService: CookieService,
 		public httpService: HttpClient,
 		public clientService: ClientService
 	) {
 		this.BASE = environment.platformApiUrl(platformId);
 		// Sign in the user?
-		if (isPlatformBrowser(platformId)) {
-			const token = clientService.localStorage.getItem('access_token');
-			of(token).pipe(
-				filter(x => typeof x === 'string'),
-				tap(tok => clientService.setToken(tok)),
-				switchMap(() => this.v1.Users.Get('@me')),
-				RestService.onlyResponse(),
-				switchMap(res => !!res.body?._id ? of(res) : throwError('Unknown Account')),
-				tap(res => clientService.pushData(res.body))
-			).subscribe({
-				error: err => {
-					clientService.localStorage.removeItem('access_token');
-				}
-			});
-		}
+		const token = clientService.localStorage.getItem('access_token')
+			?? cookieService.get('auth');
+		of(token).pipe(
+			filter(x => typeof x === 'string'),
+			tap(tok => clientService.setToken(tok)),
+			switchMap(() => this.v2.GetUser('@me')),
+			switchMap(res => !!res.user?._id ? of(res.user) : throwError('Unknown Account')),
+			tap(user => clientService.pushData(user))
+		).subscribe({
+			error: err => {
+				clientService.localStorage.removeItem('access_token');
+			}
+		});
 	}
 
 	// tslint:disable:typedef
 	get Discord() {
 		return {
-			Widget: (guildID = '817075418054000661') => this.createRequest<RestService.Result.GetDiscordWidget>('get', `https://discord.com/api/guilds/${guildID}/widget.json`)
+			Widget: (guildID = '817075418054000661') => this.createRequest<RestService.Result.GetDiscordWidget>('get', `https://discord.com/api/guilds/${guildID}/widget.json`, {}, null)
 		};
 	}
 
@@ -62,7 +62,7 @@ export class RestService {
 		options?: Partial<RestService.CreateRequestOptions>,
 		apiVersion: RestService.ApiVersion = 'v1'
 	): Observable<HttpResponse<T> | HttpProgressEvent> {
-		const uri = (route.startsWith('http') ? '' :  this.BASE) + `/${apiVersion}` + route;
+		const uri = (route.startsWith('http') ? '' : this.BASE) + (apiVersion !== null ? `/${apiVersion}` : '') + route;
 		const opt = {
 			observe: 'events',
 			headers: {
@@ -79,13 +79,17 @@ export class RestService {
 			))
 		).pipe(map((x: any) => x as (HttpResponse<T> | HttpProgressEvent)));
 	}
+
+	formatError(err: HttpErrorResponse): string {
+		return err.error?.errors?.map((er: any) => er.message) ?? err.error?.error ?? JSON.stringify(err.error);
+	}
 }
 
 export namespace RestService {
 	export type Method = 'get' | 'patch' | 'post' | 'put' | 'delete';
 	export type BodyMethod = 'patch' | 'post' | 'put';
 
-	export type ApiVersion = 'v1' | 'v2';
+	export type ApiVersion = 'v1' | 'v2' | null;
 
 	export const onlyResponse = () => <T>(source: Observable<HttpResponse<T> | HttpProgressEvent>) => source.pipe(
 		filter(x => x instanceof HttpResponse)

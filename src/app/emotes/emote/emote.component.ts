@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { asyncScheduler, BehaviorSubject, EMPTY, from, iif, Observable, of, scheduled, Subject, timer } from 'rxjs';
-import { catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, switchMap, takeUntil, tap, toArray } from 'rxjs/operators';
+import { catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -22,6 +22,7 @@ import { DataStructure } from '@typings/typings/DataStructure';
 import { Meta } from '@angular/platform-browser';
 import { AppComponent } from 'src/app/app.component';
 import { DOCUMENT } from '@angular/common';
+import { BitField } from '@typings/src/BitField';
 
 @Component({
 	selector: 'app-emote',
@@ -85,7 +86,7 @@ export class EmoteComponent implements OnInit {
 				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY),
 				switchMap(canEdit => canEdit ? this.emote?.isPrivate().pipe(map(isPrivate => !isPrivate)) ?? EMPTY : of(false))
 			),
-			click: emote => emote.edit({ private: true })
+			click: emote => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
 		},
 		{
 			label: 'make public',
@@ -95,7 +96,7 @@ export class EmoteComponent implements OnInit {
 				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY),
 				switchMap(canEdit => canEdit ? this.emote?.isPrivate() ?? EMPTY : of(false))
 			),
-			click: emote => emote.edit({ private: false })
+			click: emote => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
 		},
 		{ // Make this emote global (Moderator only)
 			label: 'make global', color: this.themingService.accent, icon: 'star',
@@ -103,7 +104,7 @@ export class EmoteComponent implements OnInit {
 				switchMap(rank => (this.emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
 				map(({ isGlobal, rank }) => !isGlobal && rank >= Constants.Users.Rank.MODERATOR)
 			),
-			click: (emote) => emote.edit({ global: true })
+			click: (emote) => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{ // Remove this emote's global status (Moderator only)
 			label: 'revoke global', color: this.themingService.accent.negate(), icon: 'star_half',
@@ -111,7 +112,7 @@ export class EmoteComponent implements OnInit {
 				switchMap(rank => (this.emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
 				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
 			),
-			click: (emote) => emote.edit({ global: false })
+			click: (emote) => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{
 			label: 'Transfer Ownership', color: this.themingService.primary.lighten(0.1).negate(),
@@ -127,7 +128,7 @@ export class EmoteComponent implements OnInit {
 				return dialogRef.afterClosed().pipe(
 					filter(newOwner => newOwner !== null),
 					switchMap(newOwner => this.userService.getOne(newOwner).pipe(switchMap(user => user.getID()))),
-					switchMap(newOwnerID => this.emote?.edit({ owner: newOwnerID }) ?? EMPTY)
+					switchMap(newOwnerID => this.emote?.edit({ owner_id: newOwnerID as string }) ?? EMPTY)
 				);
 			}
 		},
@@ -186,12 +187,12 @@ export class EmoteComponent implements OnInit {
 		if (typeof interaction.click === 'function' && !!this.emote) {
 			interaction.click(this.emote).pipe(
 				switchMap(() => iif(() => interaction.label === 'add to channel' || interaction.label === 'remove from channel',
-					this.getChannels().pipe(mapTo(undefined)),
+					this.readChannels().pipe(mapTo(undefined)),
 					of(undefined)
 				))
 			).subscribe({
 				complete: () => this.interactError.next(''),
-				error: (err: HttpErrorResponse) => this.interactError.next(err.error.error ?? err.error)
+				error: (err: HttpErrorResponse) => this.interactError.next(this.restService.formatError(err))
 			});
 		}
 	}
@@ -213,25 +214,27 @@ export class EmoteComponent implements OnInit {
 	/**
 	 * Get the channels that this emote is added to
 	 */
-	getChannels(): Observable<UserStructure[]> {
+	readChannels(): Observable<UserStructure[]> {
 		if (!this.emote) return of([]);
 
-		return this.restService.v1.Emotes.GetChannels(this.emote.getID() as string).pipe(
-			RestService.onlyResponse(),
-			map(res => res.body?.users.map(user => this.userService.new(user)) ?? []),
+		return this.emote.getChannels().pipe(
+			take(1),
+			map(channels => Array.isArray(channels) ? channels.map(user => this.userService.new(user as DataStructure.TwitchUser)) ?? [] : []),
 			tap(users => this.channels.next(users))
 		);
 	}
 
 	readAuditActivity(): Observable<DataStructure.AuditLog.Entry[]> {
-		return this.emote?.getAuditActivity().pipe(
+		return this.emote?.getAuditActivityString().pipe(
+			map(entryString => JSON.parse(entryString) as DataStructure.AuditLog.Entry),
 			// Get action user
 			concatMap(entry => this.userService.getOne(String(entry.action_user)).pipe(
 				tap(user => (entry as EmoteComponent.AuditEntry).action_user_instance = user),
 				mapTo(entry)
 			)),
 
-			toArray()
+			toArray(),
+			map(a => a.reverse())
 		) ?? of([]);
 	}
 
@@ -273,16 +276,15 @@ export class EmoteComponent implements OnInit {
 	ngOnInit(): void {
 		// Look up requested emote from route uri
 		if (this.route.snapshot.paramMap.has('emote')) { // Route URI has emote param?
-			this.restService.v1.Emotes.Get(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
-				RestService.onlyResponse(),
-				filter(res => res.body !== null), // Initiate a new emote structure instance
+			this.restService.v2.GetEmote(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
+				filter(res => res.emote !== null), // Initiate a new emote structure instance
 
 				tap(res => this.appService.pageTitleAttr.next([ // Update page title
-					{ name: 'EmoteName', value: res.body?.name ?? '' },
-					{ name: 'OwnerName', value: `by ${res.body?.owner_name ?? ''}` }
+					{ name: 'EmoteName', value: res.emote?.name ?? '' },
+					{ name: 'OwnerName', value: `by ${res.emote?.owner?.display_name ?? ''}` }
 				])),
-				map(res => this.emote = new EmoteStructure(this.restService).pushData(res.body)),
-				switchMap(emote => this.getChannels().pipe(mapTo(emote))),
+				map(res => this.emote = new EmoteStructure(this.restService).pushData(res.emote)),
+				switchMap(emote => this.readChannels().pipe(mapTo(emote))),
 
 				// Update meta
 				// Show this emote in discord etc!
@@ -293,7 +295,7 @@ export class EmoteComponent implements OnInit {
 						this.metaService.addTags([
 							// { name: 'og:title', content: this.appService.pageTitle },
 							// { name: 'og:site_name', content: this.appService.pageTitle },
-							{ name: 'og:description', content: `uploaded by ${emoteData?.owner_name}`},
+							{ name: 'og:description', content: `uploaded by ${emoteData?.owner?.display_name}`},
 							{ name: 'og:image', content: url ?? '' },
 							{ name: 'og:image:type', content: emote.getSnapshot()?.mime ?? 'image/png' },
 							{ name: 'theme-color', content: this.themingService.primary.hex() }
@@ -331,10 +333,10 @@ export class EmoteComponent implements OnInit {
 				tap(() => this.cdr.markForCheck())
 			).subscribe({
 				error: (err: HttpErrorResponse) => {
-					console.log(err);
+					console.error(err);
 					this.dialog.open(ErrorDialogComponent, {
 						data: {
-							errorName: 'Could not get emote',
+							errorName: 'Cannot View Emote',
 							errorMessage: err.error?.error,
 							errorCode: String(err.status)
 						} as ErrorDialogComponent.Data

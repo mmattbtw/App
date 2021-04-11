@@ -5,10 +5,10 @@ export const environment = {
 	origin: '7tv.app',
 	api: {
 		v1: {
-			url: `https://api.7tv.app/v1`
+			url: `api.7tv.app/v1`
 		},
 		v2: {
-			url: 'https://api.7tv.app/v2'
+			url: 'api.7tv.app/v2'
 		}
 	},
 	platformApiUrl: (platform: 'browser' | 'server', version: 'v1' | 'v2'): string => `${platform === 'server' ? 'http' : 'https'}://${environment.api[version].url}`,

@@ -9,6 +9,10 @@ on:
       comment:
         description: Comment on triggering this workflow
         required: false
+env:
+  REGISTRY_REPO: seventv/servergo
+  REGISTRTY_IMAGE_NAME: seventv/servergo:${{ github.sha }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,8 +50,17 @@ jobs:
         - name: Apply Deployment & Rollout
           env:
             KUBE_CONFIG_DATA: ${{ secrets.K8S_CONFIG }}
+            KUBE_RESOURCE: deployments
+            KUBE_META_NAME: 7tv-webapp
+            KUBE_IMAGE_PATCH: >-
+              [
+                { "op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "ghcr.io/${{ env.REGISTRTY_IMAGE_NAME }}" }
+              ]
           run: |
             mkdir -p ~/.kube
             (echo $KUBE_CONFIG_DATA | base64 -d) >> ~/.kube/config
             kubectl config use-context 7tv-as-deployer
-            kubectl rollout restart -n 7tv deploy/7tv-webapp
+
+            kubectl patch $KUBE_RESOURCE $KUBE_META_NAME --type="json" -p="$KUBE_IMAGE_PATCH"
+
+            kubectl rollout restart -n 7tv $KUBE_RESOURCE/$KUBE_META_NAME

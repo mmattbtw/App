@@ -104,14 +104,14 @@ export class EmoteListComponent implements OnInit {
 				switchMap(({ isGlobal, emotes }) => this.clientService.isAuthenticated().pipe(map(isAuth => ({ isAuth, isGlobal, emotes })))),
 				map(({ emotes, isGlobal, isAuth }) => isAuth && !isGlobal && !emotes.includes(emote?.getID() as string))
 			),
-			click: emote => emote.addToChannel()
+			click: emote => emote.addToChannel(this.clientService.id)
 		},
 		{ // Remove from channel
 			label: 'Remove From Channel', icon: 'remove_circle',
 			condition: emote => this.clientService.getEmotes().pipe(
 				map(emotes => emotes.includes(emote?.getID() as string))
 			),
-			click: emote => emote.removeFromChannel()
+			click: emote => emote.removeFromChannel(this.clientService.id)
 		},
 		{
 			label: 'Make Private',

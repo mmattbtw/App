@@ -70,14 +70,14 @@ export class EmoteComponent implements OnInit {
 				switchMap(emotes => this.emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
 				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(this.emote?.getID() as string))
 			),
-			click: emote => emote.addToChannel()
+			click: emote => emote.addToChannel(this.clientService.id)
 		},
 		{ // Remove from channel
 			label: 'remove from channel', color: this.themingService.warning.desaturate(0.4).negate(), icon: 'remove_circle',
 			condition: this.clientService.getEmotes().pipe(
 				map(emotes => emotes.includes(this.emote?.getID() as string))
 			),
-			click: emote => emote.removeFromChannel()
+			click: emote => emote.removeFromChannel(this.clientService.id)
 		},
 		{
 			label: 'make private',

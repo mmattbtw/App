@@ -162,12 +162,11 @@ export class EmoteStructure {
 	/**
 	 * Add this emote to the client user's channel
 	 */
-	addToChannel(): Observable<void> {
+	addToChannel(userID: string, reason?: string): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.v1.Channels.AddEmote(this.id).pipe(
-			RestService.onlyResponse(),
-			tap(res => this.restService.clientService.pushData(res.body)),
+		return this.restService.v2.AddChannelEmote(this.id, userID, reason).pipe(
+			tap(res => this.restService.clientService.mergeData(res.user)),
 			mapTo(undefined)
 		);
 	}
@@ -175,12 +174,11 @@ export class EmoteStructure {
 	/**
 	 * Remove this emote from the client user's channel
 	 */
-	removeFromChannel(): Observable<void> {
+	removeFromChannel(userID: string, reason?: string): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.v1.Channels.RemoveEmote(this.id).pipe(
-			RestService.onlyResponse(),
-			tap(res => this.restService.clientService.pushData(res.body)),
+		return this.restService.v2.RemoveChannelEmote(this.id, userID, reason).pipe(
+			tap(res => this.restService.clientService.mergeData(res.user)),
 			mapTo(undefined)
 		);
 	}

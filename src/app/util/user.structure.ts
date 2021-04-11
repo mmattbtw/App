@@ -73,7 +73,7 @@ export class UserStructure {
 	 */
 	getEmotes(): Observable<string[]> {
 		return this.data.pipe(
-			map(data => data?.emotes as string[] ?? [])
+			map(data => data?.emote_ids as string[] ?? [])
 		);
 	}
 

@@ -9,6 +9,7 @@ import { UserStructure } from 'src/app/util/user.structure';
 
 @Injectable({providedIn: 'root'})
 export class ClientService extends UserStructure {
+	id = '';
 	private token = '';
 	private authState = new BehaviorSubject<boolean>(false);
 	private isAuth = false;
@@ -26,11 +27,12 @@ export class ClientService extends UserStructure {
 	 *
 	 * @param data Twitch User data
 	 */
-	pushData(data: Partial<DataStructure.TwitchUser> | null): UserStructure {
+	pushData(data: DataStructure.TwitchUser | null): UserStructure {
 		super.pushData(data);
 
 		if (this.isAuth) return this;
-		if (!!data?._id) {
+		if (!!data?._id || !!data?.id) {
+			this.id = (data.id ?? String(data._id)) ?? '';
 			this.setAuthState(!!data);
 			this.logger.info(`Signed in as ${data.display_name}.`);
 		} else {
@@ -38,6 +40,12 @@ export class ClientService extends UserStructure {
 		}
 
 		return this;
+	}
+
+	mergeData(data: Partial<DataStructure.TwitchUser>): UserStructure {
+		const d = { ...this.getSnapshot(), ...data } as DataStructure.TwitchUser;
+
+		return this.pushData(d);
 	}
 
 	setToken(token: string | null): void {

@@ -13,7 +13,10 @@ import { environment } from 'src/environments/environment';
 	providedIn: 'root'
 })
 export class RestService {
-	BASE = '';
+	BASE = {
+		v1: '',
+		v2: ''
+	} as { [key in RestService.ApiVersion]: string };
 	private CDN_BASE = environment.cdnUrl;
 
 	public v1 = new RestV1(this);
@@ -25,7 +28,8 @@ export class RestService {
 		public httpService: HttpClient,
 		public clientService: ClientService
 	) {
-		this.BASE = environment.platformApiUrl(platformId);
+		this.BASE.v1 = environment.platformApiUrl(platformId, 'v1');
+		this.BASE.v2 = environment.platformApiUrl(platformId, 'v2');
 		// Sign in the user?
 		const token = clientService.localStorage.getItem('access_token')
 			?? cookieService.get('auth');
@@ -45,7 +49,7 @@ export class RestService {
 	// tslint:disable:typedef
 	get Discord() {
 		return {
-			Widget: (guildID = '817075418054000661') => this.createRequest<RestService.Result.GetDiscordWidget>('get', `https://discord.com/api/guilds/${guildID}/widget.json`, {}, null)
+			Widget: (guildID = '817075418054000661') => this.createRequest<RestService.Result.GetDiscordWidget>('get', `https://discord.com/api/guilds/${guildID}/widget.json`, {}, 'none')
 		};
 	}
 
@@ -62,7 +66,7 @@ export class RestService {
 		options?: Partial<RestService.CreateRequestOptions>,
 		apiVersion: RestService.ApiVersion = 'v1'
 	): Observable<HttpResponse<T> | HttpProgressEvent> {
-		const uri = (route.startsWith('http') ? '' : this.BASE) + (apiVersion !== null ? `/${apiVersion}` : '') + route;
+		const uri = (route.startsWith('http') ? '' : this.BASE[apiVersion]) + route;
 		const opt = {
 			observe: 'events',
 			headers: {
@@ -89,7 +93,7 @@ export namespace RestService {
 	export type Method = 'get' | 'patch' | 'post' | 'put' | 'delete';
 	export type BodyMethod = 'patch' | 'post' | 'put';
 
-	export type ApiVersion = 'v1' | 'v2' | null;
+	export type ApiVersion = 'v1' | 'v2' | 'none';
 
 	export const onlyResponse = () => <T>(source: Observable<HttpResponse<T> | HttpProgressEvent>) => source.pipe(
 		filter(x => x instanceof HttpResponse)

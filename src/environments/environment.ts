@@ -7,10 +7,17 @@ export const environment = {
 	production: false,
 	serviceWorker: true,
 	origin: 'localhost',
-	apiUrl: 'localhost:3000',
-	platformApiUrl: (platform: 'browser' | 'server') => `http://${environment.apiUrl}`,
-	cdnUrl: 'https://cdn.7tv.app/dev',
-	wsUrl: 'ws://localhost:3000'
+	api: {
+		v1: {
+			url: 'localhost:3001/v1'
+		},
+		v2: {
+			url: 'localhost:3000/v2'
+		}
+	},
+	platformApiUrl: (platform: 'browser' | 'server', version: 'v1' | 'v2'): string => `http://${environment.api[version].url}`,
+	cdnUrl: 'https://cdn.7tv.app',
+	wsUrl: `ws://localhost:3001`
 };
 
 /*

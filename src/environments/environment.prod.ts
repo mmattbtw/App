@@ -3,8 +3,15 @@ export const environment = {
 	production: true,
 	serviceWorker: true,
 	origin: '7tv.app',
-	apiUrl: 'api.7tv.app',
-	platformApiUrl: (platform: 'browser' | 'server') => `${platform === 'server' ? 'http' : 'https'}://${environment.apiUrl}`,
+	api: {
+		v1: {
+			url: `https://api.7tv.app/v1`
+		},
+		v2: {
+			url: 'https://api.7tv.app/v2'
+		}
+	},
+	platformApiUrl: (platform: 'browser' | 'server', version: 'v1' | 'v2'): string => `${platform === 'server' ? 'http' : 'https'}://${environment.api[version].url}`,
 	cdnUrl: 'https://cdn.7tv.app',
 	wsUrl: 'wss://api.7tv.app'
 };

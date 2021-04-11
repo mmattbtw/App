@@ -1,7 +1,8 @@
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, mapTo } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
+import { GQLFragments } from 'src/app/service/rest/gql-fragments.structure';
 import { GraphQL } from 'src/app/service/rest/graphql.structure';
 
 export class RestV2 {
@@ -20,12 +21,7 @@ export class RestV2 {
 					}
 				}
 
-				fragment FullUser on User {
-					${Object.keys(RestV2.FullUser).join(', ')},
-					role {
-						id, name, color, allowed, denied
-					}
-				}
+				${GQLFragments.FullUser(false)}
 			`,
 			variables: {},
 			auth: true
@@ -115,6 +111,50 @@ export class RestV2 {
 			auth: true
 		}).pipe(
 			map(res => ({ emote: res?.body?.data.editEmote as DataStructure.Emote }))
+		);
+	}
+
+	AddChannelEmote(emoteID: string, channelID: string, reason = ''): Observable<{ user: DataStructure.TwitchUser }> {
+		return this.gql.query<{ addChannelEmote: DataStructure.TwitchUser }>({
+			query: `
+				mutation AddChannelEmote($ch: String!, $em: String!, $re: String!) {
+					addChannelEmote(channel_id: $ch, emote_id: $em, reason: $re) {
+						emote_ids
+					}
+				}
+			`,
+			variables: {
+				ch: channelID,
+				em: emoteID,
+				re: reason
+			},
+			auth: true
+		}).pipe(
+			map(res => ({
+				user: res?.body?.data.addChannelEmote as DataStructure.TwitchUser
+			}))
+		);
+	}
+
+	RemoveChannelEmote(emoteID: string, channelID: string, reason = ''): Observable<{ user: DataStructure.TwitchUser }> {
+		return this.gql.query<{ removeChannelEmote: DataStructure.TwitchUser }>({
+			query: `
+				mutation RemoveChannelEmote($ch: String!, $em: String!, $re: String!) {
+					removeChannelEmote(channel_id: $ch, emote_id: $em, reason: $re) {
+						emote_ids
+					}
+				}
+			`,
+			variables: {
+				ch: channelID,
+				em: emoteID,
+				re: reason
+			},
+			auth: true
+		}).pipe(
+			map(res => ({
+				user: res?.body?.data.removeChannelEmote as DataStructure.TwitchUser
+			}))
 		);
 	}
 

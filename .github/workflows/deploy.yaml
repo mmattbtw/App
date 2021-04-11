@@ -31,8 +31,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          repository: seventv/app
-          tag_with_ref: true
+          push: true
+          tags: ${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest

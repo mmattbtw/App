@@ -10,8 +10,8 @@ on:
         description: Comment on triggering this workflow
         required: false
 env:
-  REGISTRY_REPO: seventv/servergo
-  REGISTRTY_IMAGE_NAME: seventv/servergo:${{ github.sha }}
+  REGISTRY_REPO: seventv/app
+  REGISTRTY_IMAGE_NAME: seventv/app:${{ github.sha }}
 
 jobs:
   build:

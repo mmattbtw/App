@@ -159,7 +159,7 @@ export class RestV2 {
 	}
 
 	GetAuthURL(): string {
-		return `${this.restService.BASE}/v2/auth`;
+		return `${this.restService.BASE.v2}/auth`;
 	}
 }
 

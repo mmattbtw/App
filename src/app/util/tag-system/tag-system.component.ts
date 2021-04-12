@@ -15,8 +15,6 @@ export class TagSystemComponent implements OnInit {
 	@Input() emote: EmoteStructure | undefined;
 
 
-	ngOnInit(): void {
-		console.log(this.emote);
-	}
+	ngOnInit(): void {}
 
 }

@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, EMPTY, Observable, throwError } from 'rxjs';
-import { filter, map, mapTo, mergeAll, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, iif, Observable, of, throwError } from 'rxjs';
+import { filter, map, mapTo, mergeAll, switchMap, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
+import { UserService } from 'src/app/service/user.service';
 import { UserStructure } from 'src/app/util/user.structure';
 
 
@@ -23,6 +24,10 @@ export class EmoteStructure {
 	pushData(data: DataStructure.Emote | (null | undefined)): EmoteStructure {
 		this.id = String(data?.id);
 		this.data.next(data);
+
+		if (!!data?.owner) {
+			UserService.Get()?.new(data.owner as DataStructure.TwitchUser);
+		}
 
 		return this;
 	}
@@ -118,10 +123,13 @@ export class EmoteStructure {
 	/**
 	 * Whether a given user can edit this emote
 	 */
-	canEdit(userID: string, rank?: number): Observable<boolean> {
-		return this.data.pipe(
-			map(d => String(d?.owner)),
-			map(ownerID => userID === ownerID || (rank ?? 0) >= Constants.Users.Rank.MODERATOR)
+	canEdit(user: UserStructure): Observable<boolean> {
+		return this.getOwner().pipe(
+			map(owner => !!owner ? owner.id === user.id : false),
+			switchMap(ok => iif(() => ok,
+				of(true),
+				user.hasPermission('EDIT_EMOTE_ALL')
+			))
 		);
 	}
 

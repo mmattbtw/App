@@ -66,15 +66,15 @@ export class EmoteComponent implements OnInit {
 	interactions = [
 		{ // Add to channel
 			label: 'add to channel', color: this.themingService.colors.twitch_purple, icon: 'add_circle',
-			condition: this.clientService.getEmotes().pipe(
-				switchMap(emotes => this.emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
+			condition: emote => this.clientService.getEmotes().pipe(
+				switchMap(emotes => emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
 				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(this.emote?.getID() as string))
 			),
 			click: emote => emote.addToChannel(this.clientService.id)
 		},
 		{ // Remove from channel
 			label: 'remove from channel', color: this.themingService.warning.desaturate(0.4).negate(), icon: 'remove_circle',
-			condition: this.clientService.getEmotes().pipe(
+			condition: emote => this.clientService.getEmotes().pipe(
 				map(emotes => emotes.includes(this.emote?.getID() as string))
 			),
 			click: emote => emote.removeFromChannel(this.clientService.id)
@@ -82,9 +82,7 @@ export class EmoteComponent implements OnInit {
 		{
 			label: 'make private',
 			icon: 'lock', color: this.themingService.bg.darken(0.35),
-			condition: this.clientService.getID().pipe(
-				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
-				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY),
+			condition: emote => emote?.canEdit(this.clientService).pipe(
 				switchMap(canEdit => canEdit ? this.emote?.isPrivate().pipe(map(isPrivate => !isPrivate)) ?? EMPTY : of(false))
 			),
 			click: emote => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
@@ -92,35 +90,31 @@ export class EmoteComponent implements OnInit {
 		{
 			label: 'make public',
 			icon: 'lock_open', color: this.themingService.bg.lighten(3),
-			condition: this.clientService.getID().pipe(
-				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
-				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY),
+			condition: emote => emote?.canEdit(this.clientService).pipe(
 				switchMap(canEdit => canEdit ? this.emote?.isPrivate() ?? EMPTY : of(false))
 			),
 			click: emote => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
 		},
 		{ // Make this emote global (Moderator only)
 			label: 'make global', color: this.themingService.accent, icon: 'star',
-			condition: this.clientService.getRank().pipe(
-				switchMap(rank => (this.emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
-				map(({ isGlobal, rank }) => !isGlobal && rank >= Constants.Users.Rank.MODERATOR)
+			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
+				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
+				map(({ isGlobal, hasPermission }) => !isGlobal && hasPermission)
 			),
 			click: (emote) => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{ // Remove this emote's global status (Moderator only)
 			label: 'revoke global', color: this.themingService.accent.negate(), icon: 'star_half',
-			condition: this.clientService.getRank().pipe(
-				switchMap(rank => (this.emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
-				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
+			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
+				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
+				map(({ isGlobal, hasPermission }) => isGlobal && hasPermission)
 			),
 			click: (emote) => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{
 			label: 'Transfer Ownership', color: this.themingService.primary.lighten(0.1).negate(),
 			icon: 'swap_horiz',
-			condition: this.clientService.getRank().pipe(
-				switchMap(rank => this.emote?.canEdit(String(this.clientService.getSnapshot()?._id), rank) ?? EMPTY)
-			),
+			condition: emote => this.emote?.canEdit(this.clientService),
 			click: emote => {
 				const dialogRef = this.dialog.open(EmoteOwnershipDialogComponent, {
 					data: { emote }
@@ -135,10 +129,7 @@ export class EmoteComponent implements OnInit {
 		},
 		{ // Delete this emote
 			label: 'Delete', color: this.themingService.warning, icon: 'delete',
-			condition: this.clientService.getID().pipe(
-				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
-				switchMap(({ id, rank }) => this.emote?.canEdit(String(id), rank) ?? EMPTY)
-			),
+			condition: emote => emote.canEdit(this.clientService),
 
 			click: emote => {
 				const dialogRef = this.dialog.open(EmoteDeleteDialogComponent, {
@@ -245,15 +236,6 @@ export class EmoteComponent implements OnInit {
 		) ?? of('');
 	}
 
-	canEdit(): Observable<boolean> {
-		if (!this.emote) return of(false);
-
-		return this.clientService.getID().pipe(
-			switchMap(id => this.clientService.getRank().pipe(map(rank => ({ id, rank })))),
-			switchMap(({ id, rank }) => this.emote?.canEdit(id as string, rank) ?? EMPTY)
-		);
-	}
-
 	hasTags(): Observable<boolean> {
 		if (!this.emote) return of(false);
 
@@ -340,7 +322,6 @@ export class EmoteComponent implements OnInit {
 				tap(() => this.cdr.markForCheck())
 			).subscribe({
 				error: (err: HttpErrorResponse) => {
-					console.error(err);
 					this.dialog.open(ErrorDialogComponent, {
 						data: {
 							errorName: 'Cannot View Emote',
@@ -368,7 +349,7 @@ export namespace EmoteComponent {
 		color: Color;
 		icon?: string;
 		disabled?: boolean;
-		condition: Observable<boolean>;
+		condition: (emote: EmoteStructure) => Observable<boolean>;
 		click?: (emote: EmoteStructure) => Observable<void>;
 	}
 }

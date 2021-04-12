@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Constants } from '@typings/src/Constants';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { asapScheduler, Observable, race, scheduled } from 'rxjs';
+import { concatAll, count, delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -39,8 +39,10 @@ export class NavigationComponent implements OnInit {
 			name: 'admin',
 			path: '/admin',
 			color: this.themingService.primary,
-			condition: this.clientService.getRank().pipe(
-				map(rank => rank >= Constants.Users.Rank.MODERATOR ? true : false)
+			condition: this.clientService.getRole().pipe(
+				take(1),
+				delay(0),
+				switchMap(() => this.clientService.canAccessAdminArea())
 			),
 			icon: 'build'
 		}

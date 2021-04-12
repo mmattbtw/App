@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map, take, takeUntil, tap } from 'rxjs/operators';
@@ -28,6 +29,7 @@ export class UserNameComponent implements OnInit, OnDestroy {
 	role = new BehaviorSubject<DataStructure.Role | null>(null);
 
 	constructor(
+		private router: Router,
 		public clientService: ClientService,
 		public themingService: ThemingService
 	) {}
@@ -39,10 +41,18 @@ export class UserNameComponent implements OnInit, OnDestroy {
 		return this.user ?? this.clientService;
 	}
 
+	onClick(): void {
+		if (!this.clickable) return undefined;
+
+		this.target.getUsername().pipe(
+			tap(username => this.router.navigate(['/user', username]))
+		).subscribe();
+	}
+
 	getRoleColor(): Observable<string> {
 		return this.role.pipe(
 			takeUntil(this.destroyed),
-			map(role => `#${role?.color.toString(16)}` ?? '')
+			map(role => `#${role?.color.toString(16)}` ?? ''),
 		);
 	}
 

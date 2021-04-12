@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
@@ -23,7 +23,8 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 			transition('true => false', animate(500)),
 			transition('false => true', animate(100))
 		])
-	]
+	],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() size = 10;

@@ -12,7 +12,7 @@
 	</div>
 	<!-- Submitter sub-banner -->
 	<div class="title-banner submitter" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
-		<app-user-name [user]="emote?.getOwner() | async" [showAvatar]="false"></app-user-name>
+		<app-user-name [clickable]="false" [user]="emote?.getOwner() | async" [showAvatar]="false"></app-user-name>
 	</div>
 
 	<!-- Card Image wrapper (below title) -->

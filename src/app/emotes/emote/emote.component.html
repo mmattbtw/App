@@ -12,7 +12,7 @@
 			</div>
 			
 			<span class="ml-2"> {{emote?.getName() | async}} </span>
-			<button mat-icon-button (click)="rename()" *ngIf="canEdit() | async">
+			<button mat-icon-button (click)="rename()" *ngIf="emote?.canEdit(clientService) | async">
 				<mat-icon>edit</mat-icon>
 			</button>
 		</div>
@@ -67,7 +67,7 @@
 		<span class="section-title">Manage Emote</span>
 		<div class="section-content d-flex flex-row flex-wrap" *ngIf="emote">
 			<div class="interact-button my-1" *ngFor="let i of interactions">
-				<button mat-button (click)="onInteract(i)" [appColor]="i.color" [isBackground]="true" *ngIf="i.condition === undefined || (i.condition | async) && !i.disabled" class="mx-1">
+				<button mat-button (click)="onInteract(i)" [appColor]="i.color" [isBackground]="true" *ngIf="i.condition === undefined || (i.condition(emote) | async) && !i.disabled" class="mx-1">
 					<div class="d-inline-flex align-items-center" [appColor]="i.color?.isLight() ? 'black' : 'white'">
 						<mat-icon *ngIf="i.icon"> {{i.icon}} </mat-icon>
 						<div class="mx-1"></div>

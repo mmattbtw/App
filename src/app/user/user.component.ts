@@ -35,7 +35,6 @@ export class UserComponent implements OnInit, OnDestroy {
 		).subscribe({
 			error: (err) => this.loggerService.error('Couldn\'t fetch user', err)
 		});
-		// console.log(id);
 	}
 
 	ngOnDestroy(): void {

@@ -1,5 +1,5 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
-import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
@@ -17,6 +17,7 @@ import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
+import { UserService } from 'src/app/service/user.service';
 import { WindowRef } from 'src/app/service/window.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 
@@ -66,7 +67,8 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 				])
 			])
 		])
-	]
+	],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmoteListComponent implements OnInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
@@ -77,6 +79,7 @@ export class EmoteListComponent implements OnInit {
 
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
 	pageOptions: EmoteListComponent.PersistentPageOptions | undefined;
+	currentSearchOptions: RestV2.GetEmotesOptions | undefined;
 	currentSearchQuery = '';
 
 	contextMenuOptions = [
@@ -116,9 +119,7 @@ export class EmoteListComponent implements OnInit {
 		{
 			label: 'Make Private',
 			icon: 'lock',
-			condition: emote => this.clientService.getID().pipe(
-				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
-				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY),
+			condition: emote => emote.canEdit(this.clientService).pipe(
 				switchMap(canEdit => canEdit ? emote.isPrivate().pipe(map(isPrivate => !isPrivate)) : of(false))
 			),
 			click: emote => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
@@ -126,9 +127,7 @@ export class EmoteListComponent implements OnInit {
 		{
 			label: 'Make Public',
 			icon: 'lock_open',
-			condition: emote => this.clientService.getID().pipe(
-				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
-				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY),
+			condition: emote => emote?.canEdit(this.clientService).pipe(
 				switchMap(canEdit => canEdit ? emote.isPrivate() : of(false))
 			),
 			click: emote => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
@@ -136,28 +135,25 @@ export class EmoteListComponent implements OnInit {
 		{
 			label: 'Make Global',
 			icon: 'star',
-			condition: emote => this.clientService.getRank().pipe(
-				switchMap(rank => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
-				map(({ isGlobal, rank }) => !isGlobal && rank >= Constants.Users.Rank.MODERATOR)
+			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
+				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
+				map(({ isGlobal, hasPermission }) => !isGlobal && hasPermission)
 			),
 			click: (emote) => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{
 			label: 'Revoke Global',
 			icon: 'star_half',
-			condition: emote => this.clientService.getRank().pipe(
-				switchMap(rank => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, rank })))),
-				map(({ isGlobal, rank }) => isGlobal && rank >= Constants.Users.Rank.MODERATOR)
+			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
+				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
+				map(({ isGlobal, hasPermission }) => isGlobal && hasPermission)
 			),
 			click: (emote) => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
 		},
 		{
 			label: 'Delete',
 			icon: 'delete', color: this.themingService.warning,
-			condition: emote => this.clientService.getID().pipe(
-				switchMap(id => this.clientService.getRank().pipe(map(rank => ({ rank, id })))),
-				switchMap(({ id, rank }) => emote?.canEdit(String(id), rank) ?? EMPTY)
-			),
+			condition: emote => emote?.canEdit(this.clientService),
 			click: emote => {
 				const dialogRef = this.dialog.open(EmoteDeleteDialogComponent, {
 					data: { emote }
@@ -178,6 +174,7 @@ export class EmoteListComponent implements OnInit {
 	constructor(
 		private restService: RestService,
 		private clientService: ClientService,
+		private userService: UserService,
 		private renderer: Renderer2,
 		private router: Router,
 		private windowRef: WindowRef,
@@ -210,9 +207,15 @@ export class EmoteListComponent implements OnInit {
 		const queryString = Object.keys(change).map(k => `${k}=${change[k as keyof EmoteSearchComponent.SearchChange]}`).join('&');
 
 		this.appService.pushTitleAttributes({ name: 'SearchOptions', value: `- ${queryString}` });
-		this.getEmotes(undefined, undefined, {
-			query: change.name
-		}).pipe(
+
+		const searchOpts = {
+			query: change.name,
+			globalState: change.globalState,
+			sortBy: change.sortBy,
+			sortOrder: change.sortOrder
+		} as RestV2.GetEmotesOptions;
+		this.currentSearchOptions = searchOpts;
+		this.getEmotes(undefined, undefined, searchOpts).pipe(
 			toArray(),
 			tap(() => this.emotes.next([])),
 			delay(50),
@@ -221,9 +224,7 @@ export class EmoteListComponent implements OnInit {
 	}
 
 	getEmotes(page = 1, pageSize = 16, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure> {
-		return this.restService.v2.GetEmotes(page, pageSize, {
-			query: options?.query
-		}).pipe(
+		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, this.pageOptions?.pageSize ?? pageSize, options ?? this.currentSearchOptions).pipe(
 			tap(res => this.totalEmotes.next(res?.total_estimated_size ?? 0)),
 			tap(() => this.emotes.next([])),
 			delay(200),
@@ -238,7 +239,7 @@ export class EmoteListComponent implements OnInit {
 	 */
 	onPageEvent(ev: PageEvent): void {
 		// Save page options to localstorage
-		const pageOptions = {
+		const pageOptions = this.pageOptions = {
 			page: ev.pageIndex,
 			pageSize: ev.pageSize,
 			length: ev.length

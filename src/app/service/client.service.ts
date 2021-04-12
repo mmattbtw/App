@@ -2,14 +2,14 @@
 
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { asapScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
+import { concatAll, count, filter, map, switchMap, tap } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
 
 @Injectable({providedIn: 'root'})
 export class ClientService extends UserStructure {
-	id = '';
 	private token = '';
 	private authState = new BehaviorSubject<boolean>(false);
 	private isAuth = false;
@@ -29,10 +29,12 @@ export class ClientService extends UserStructure {
 	 */
 	pushData(data: DataStructure.TwitchUser | null): UserStructure {
 		super.pushData(data);
+		if (!data) {
+			return this;
+		}
 
 		if (this.isAuth) return this;
 		if (!!data?._id || !!data?.id) {
-			this.id = (data.id ?? String(data._id)) ?? '';
 			this.setAuthState(!!data);
 			this.logger.info(`Signed in as ${data.display_name}.`);
 		} else {
@@ -40,12 +42,6 @@ export class ClientService extends UserStructure {
 		}
 
 		return this;
-	}
-
-	mergeData(data: Partial<DataStructure.TwitchUser>): UserStructure {
-		const d = { ...this.getSnapshot(), ...data } as DataStructure.TwitchUser;
-
-		return this.pushData(d);
 	}
 
 	setToken(token: string | null): void {
@@ -69,6 +65,21 @@ export class ClientService extends UserStructure {
 	 */
 	isAuthenticated(): Observable<boolean> {
 		return this.authState;
+	}
+
+	canAccessAdminArea(): Observable<boolean> {
+		return scheduled([
+			this.hasPermission('MANAGE_REPORTS'),
+			this.hasPermission('MANAGE_ROLES'),
+			this.hasPermission('MANAGE_STACK'),
+			this.hasPermission('MANAGE_USERS'),
+			this.hasPermission('BAN_USERS'),
+		], asapScheduler).pipe(
+			concatAll(),
+			filter(b => b === true),
+			count(),
+			map(c => c > 0)
+		);
 	}
 
 	/**

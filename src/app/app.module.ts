@@ -1,7 +1,7 @@
 import 'zone.js';
 import 'zone.js/dist/long-stack-trace-zone.js';
-import {} from 'rxjs';
-import {} from 'rxjs/operators';
+import { } from 'rxjs';
+import { } from 'rxjs/operators';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -18,6 +18,8 @@ import { AdminComponent } from './admin/admin.component';
 import { UtilModule } from 'src/app/util/util.module';
 import { TwitchButtonComponent } from 'src/app/util/twitch-button/twitch-button.component';
 import { CookieService } from 'ngx-cookie-service';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
 	declarations: [
@@ -34,7 +36,13 @@ import { CookieService } from 'ngx-cookie-service';
 		HttpClientModule,
 		MaterialModule,
 		UtilModule,
-		NgbModule
+		NgbModule,
+		ServiceWorkerModule.register('ngsw-worker.js', {
+			enabled: environment.serviceWorker,
+			// Register the ServiceWorker as soon as the app is stable
+			// or after 30 seconds (whichever comes first).
+			registrationStrategy: 'registerImmediately'
+		})
 	],
 	providers: [
 		CallbackGuard,

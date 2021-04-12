@@ -41,8 +41,15 @@
 		<mat-divider class="px-3 my-2"></mat-divider>
 		<!-- Sorting -->
 		<div class="search-sorting">
-			<mat-radio-group class="d-flex flex-column" formControlName="sort">
-				<mat-label>Sorting</mat-label>
+			<mat-radio-group class="d-flex flex-column" formControlName="sortBy">
+				<mat-label class="d-flex flex-row align-items-center">
+					Sorting
+					
+					<div class="mx-1"></div>
+					<mat-icon class="sort-direction" [inline]="true" [matTooltip]="getSortDirectionLabel() + ' Order'" (click)="toggleSortDirection()">
+						{{sortOrder >= 1 ? 'arrow_upward' : 'arrow_downward'}}
+					</mat-icon>
+				</mat-label>
 				<div class="my-1"></div>
 
 				<mat-radio-button *ngFor="let opt of sortOptions" [value]="opt.value"> {{ opt.label }} </mat-radio-button>

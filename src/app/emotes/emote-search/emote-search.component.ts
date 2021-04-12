@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@ang
 import { FormControl, FormGroup } from '@angular/forms';
 import { asyncScheduler, BehaviorSubject, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, mergeMap, take, tap, throttleTime } from 'rxjs/operators';
+import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
@@ -17,7 +18,8 @@ export class EmoteSearchComponent implements OnInit {
 		name: new FormControl('', { updateOn: 'blur' }),
 		globalState: new FormControl('include'),
 		channel: new FormControl(false),
-		sort: new FormControl('channel_count')
+		sortBy: new FormControl('popularity'),
+		sortOrder: new FormControl(0)
 	});
 	nameSearchBox: string | undefined;
 	current: Partial<EmoteSearchComponent.SearchChange> = {};
@@ -43,10 +45,11 @@ export class EmoteSearchComponent implements OnInit {
 	] as EmoteSearchComponent.RadioOption[];
 
 	sortOptions = [
-		{ label: 'Total Channels', value: 'channel_count' },
-		{ label: 'Date Created', value: 'date_created' }
+		{ label: 'Total Channels', value: 'popularity' },
+		{ label: 'Date Created', value: 'age' }
 	] as EmoteSearchComponent.RadioOption[];
 
+	get sortOrder(): number { return this.form.get('sortOrder')?.value ?? 0; }
 	selectedSearchMode = new BehaviorSubject<EmoteSearchComponent.ModeMenuOption>(this.modeMenuOptions[0]);
 
 	constructor(
@@ -66,6 +69,14 @@ export class EmoteSearchComponent implements OnInit {
 		).subscribe();
 	}
 
+	toggleSortDirection(): void {
+		this.form.get('sortOrder')?.patchValue(this.sortOrder >= 1 ? 0 : 1);
+	}
+
+	getSortDirectionLabel(): string {
+		return this.sortOrder >= 1 ? 'Ascending' : 'Descending';
+	}
+
 	handleEnterPress(ev: KeyboardEvent | Event): void {
 		ev.preventDefault();
 
@@ -81,15 +92,19 @@ export class EmoteSearchComponent implements OnInit {
 			) ?? EMPTY,
 
 			this.form.get('globalState')?.valueChanges.pipe( // Look for changes to the "show global"
-				map((value: string) => ({ globalEmotes: value }))
+				map((value: string) => ({ globalState: value }))
 			) ?? EMPTY,
 
 			this.form.get('channel')?.valueChanges.pipe(
 				map((value: boolean) => ({ channel: value ? '@me' : undefined }))
 			) ?? EMPTY,
 
-			this.form.get('sort')?.valueChanges.pipe(
-				map((value: string) => ({ sort: value }))
+			this.form.get('sortBy')?.valueChanges.pipe(
+				map((value: string) => ({ sortBy: value }))
+			) ?? EMPTY,
+
+			this.form.get('sortOrder')?.valueChanges.pipe(
+				map((value: EmoteSearchComponent.SearchChange['sortOrder']) => ({ sortOrder: value }))
 			) ?? EMPTY
 		], asyncScheduler).pipe(
 			mergeAll(),
@@ -106,7 +121,9 @@ export namespace EmoteSearchComponent {
 	export interface SearchChange {
 		name: string;
 		submitter: string;
-		hideGlobal: string;
+		sortBy: RestV2.GetEmotesOptions['sortBy'];
+		sortOrder: RestV2.GetEmotesOptions['sortOrder'];
+		globalState: RestV2.GetEmotesOptions['globalState'];
 	}
 
 	export interface ModeMenuOption {

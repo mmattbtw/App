@@ -32,11 +32,19 @@ export class RestV2 {
 		);
 	}
 
-	GetEmotes(page = 1, pageSize = 16, options?: Partial<RestV2.GetEmotesOptions>): Observable<{ emotes: DataStructure.Emote[]; total_estimated_size: number; }> {
+	SearchEmotes(page = 1, pageSize = 16, options?: Partial<RestV2.GetEmotesOptions>): Observable<{ emotes: DataStructure.Emote[]; total_estimated_size: number; }> {
 		return this.gql.query<{ search_emotes: DataStructure.Emote[] }>({
 			query: `
 				{
-					search_emotes(query: "${options?.query ?? ''}", limit: ${pageSize}, page: ${page}, pageSize: ${pageSize}) {
+					search_emotes(
+						query: "${options?.query ?? ''}",
+						limit: ${pageSize},
+						page: ${page},
+						pageSize: ${pageSize}
+						${(options?.globalState && `, globalState: "${options.globalState}"`) ?? ''}
+						${(options?.sortBy && `, sortBy: "${options.sortBy}"`) ?? ''}
+						${typeof options?.sortOrder === 'number' ? `, sortOrder: ${options.sortOrder}` : ''}
+					) {
 						id,
 						visibility,
 						owner {
@@ -176,6 +184,8 @@ export namespace RestV2 {
 		query: string;
 		channel: string;
 		submitter: string;
-		sort: number;
+		globalState: 'only' | 'hide';
+		sortBy: 'age' | 'popularity';
+		sortOrder: 0 | 1;
 	}
 }

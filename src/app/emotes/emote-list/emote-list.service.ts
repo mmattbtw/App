@@ -94,7 +94,7 @@ export class EmoteListService {
 				return dialogRef.afterClosed().pipe(
 					filter(newOwner => newOwner !== null),
 					switchMap(newOwner => this.userService.getOne(newOwner).pipe(switchMap(user => user.getID().pipe(take(1))))),
-					switchMap(newOwnerID => emote?.edit({ owner_id: newOwnerID as string }, '', ['name', 'owner { _id, display_name, login, profile_image_url }']) ?? EMPTY)
+					switchMap(newOwnerID => emote?.edit({ owner_id: newOwnerID as string }, '', ['name', 'owner { id, display_name, login, profile_image_url }']) ?? EMPTY)
 				);
 			}
 		},

@@ -1,26 +1,49 @@
-<div class="container">
-    <div class="info-container">
-        <div class="user-container">
-
-        <span [ngSwitch]="(user | async)?.getRank()|async">
-            <p *ngSwitchDefault="0">User</p>
-
-            <p *ngSwitchCase="1">Moderator</p>
-            <mat-icon class="rank" *ngSwitchCase="100" svgIcon="admin"></mat-icon>
-        </span>
-
-        <p [appColor]="(((user | async)?.getUsername() | async) || 0) >= 1 ? themingService.primary : undefined" class="user">
-            {{(user | async)?.getUsername()|async}}</p>
+<div class="user h-100">
+    <!-- Heading -->
+    <div class="heading mat-elevation-z3" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+        <div class="row">
+            <app-user-name class="col-12 col-md-6" [user]="user | async"></app-user-name>
+            <div class="d-flex col-12 col-md-6 align-items-center justify-content-md-end" *ngIf="(user | async) !== null">
+                <span class="role-tag" [appColor]="(getRole() | async)?.getHexColor() | async">
+                   {{ (getRole() | async)?.getName() | async}} 
+                </span>
+            </div>
         </div>
-        <p *ngIf="isClientUser">This is you :)</p>
-        <p>Emotes added: 0</p>
-        <p>Other info</p>
-        <p>V1 ZULUL</p>
-
-
+        
     </div>
 
-    <div class="ava-container">
-        <img class="avatar" src="{{(user | async)?.getAvatarURL()|async}}">
+    <!-- Content -->
+    <div class="content flex-fill" [appColor]="themingService.bg.lighten(.035)" [isBackground]="true">
+        <!-- Grid -->
+        <div class="row w-100">
+            <div class="col-12 col-md-6">
+                <div class="ctx-block">
+                    <ng-template  *ngTemplateOutlet="contextblock;context:{ headerName: 'User Info' }"></ng-template>
+                    <div class="ctx-content mat-elevation-z1" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true"></div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="ctx-block">
+                    <ng-template  *ngTemplateOutlet="contextblock;context:{ headerName: 'Channel' }"></ng-template>
+                    <div class="ctx-content mat-elevation-z1" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row w-100">
+            <div class="col-12">
+                <div class="ctx-block">
+                    <ng-template  *ngTemplateOutlet="contextblock;context:{ headerName: 'Emotes' }"></ng-template>
+                    <div class="ctx-content mat-elevation-z1" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<ng-template #contextblock let-headerName="headerName">
+    <div class="ctx-heading mat-elevation-z2" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+        {{ headerName }}
+    </div>
+</ng-template>

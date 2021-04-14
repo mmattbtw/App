@@ -1,31 +1,10 @@
-<!-- Login / Current User -->
-<!-- Display Auth user 
-<div class="signed-in-user text-truncate">
-    <div class="signed-in-avatar" [style.border-style]="avatarBorder ? 'solid' : 'none'"
-        [appColor]="themingService.bg.lighten(.1)" [isBackground]="true" [style.height.em]="size[0]"
-        [style.width.em]="size[0]" *ngIf="showAvatar">
-        <img id="ava" [src]="target.getAvatarURL() | async">
-    </div>
-
-    <div class="mx-1"></div>
-
-    <span class="username-container" *ngIf="showUsername" [appColor]="((target.getRank() | async) || 0) >= 1 ? themingService.primary : undefined" [style.font-size.em]="size[1]">
-        <span [ngSwitch]="clickable">
-            <span class="is-username" *ngSwitchCase="true" >
-                {{this.target.getUsername() | async}}
-            </span>
-            <span class="is-username" *ngSwitchCase="false"> {{this.target.getUsername() | async}} </span>
-        </span>
-    </span>
-</div>-->
-
 <span class="user-name" (click)="onClick()" [class.clickable]="clickable">
     <span class="user-avatar" [style.width.em]="size[0]" *ngIf="showAvatar" [style.border-color]="getRoleColor() | async">
         <img [src]="target.getAvatarURL() | async">
     </span>
 
     <span *ngIf="showUsername" class="text-truncate username-container"
-        [appColor]="(getRoleColor() | async) || ''"
+        [appColor]="getRoleColor() | async"
         [style.max-width.px]="maxWidth"
         [style.font-size.em]="size[1]"
     >

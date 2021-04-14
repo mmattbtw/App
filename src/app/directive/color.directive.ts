@@ -7,7 +7,7 @@ import { map, take, takeUntil } from 'rxjs/operators';
 	selector: '[appColor]'
 })
 export class ColorDirective implements OnInit, OnDestroy {
-	@Input() appColor: string | Color | undefined = '';
+	@Input() appColor: string | Color | undefined | null = '';
 	@Input() isBackground = false;
 	@Input() isBorder = false;
 	@Input() onHoverOnly = false;

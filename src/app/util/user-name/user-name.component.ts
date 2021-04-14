@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map, take, takeUntil, tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
+import { RoleStructure } from 'src/app/util/role.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
 
@@ -24,9 +24,7 @@ export class UserNameComponent implements OnInit, OnDestroy {
 	@Input() maxWidth = 110;
 
 	/** [avatar size, font size]  */
-	@Input() size: [number, number] = [2, .75];
-
-	role = new BehaviorSubject<DataStructure.Role | null>(null);
+	@Input() size: [number, number] = [2, 1];
 
 	constructor(
 		private router: Router,
@@ -45,23 +43,20 @@ export class UserNameComponent implements OnInit, OnDestroy {
 		if (!this.clickable) return undefined;
 
 		this.target.getUsername().pipe(
+			takeUntil(this.destroyed),
 			tap(username => this.router.navigate(['/user', username]))
 		).subscribe();
 	}
 
 	getRoleColor(): Observable<string> {
-		return this.role.pipe(
+		return this.target.getRole().pipe(
 			takeUntil(this.destroyed),
-			map(role => `#${role?.color.toString(16)}` ?? ''),
+			take(1),
+			switchMap(role => (role as RoleStructure).getHexColor())
 		);
 	}
 
-	ngOnInit(): void {
-		this.target.getRole().pipe(
-			take(1),
-			tap(role => this.role.next(role))
-		).subscribe();
-	}
+	ngOnInit(): void {}
 
 	ngOnDestroy(): void {
 		this.destroyed.next(undefined);

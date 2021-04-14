@@ -6,7 +6,7 @@
 		<!-- Buttons -->
 		<div class="col-6">
 			<div class="d-flex justify-content-end" *ngIf="clientService.hasPermission('CREATE_EMOTE') | async">
-				<button mat-raised-button [disabled]="!(clientService.isAuthenticated() | async)" [routerLink]="['/emotes', 'create']">
+				<button mat-raised-button [disabled]="(clientService.isAuthenticated() | async) === (false)" [routerLink]="['/emotes', 'create']">
 					<mat-icon>add</mat-icon>
 					ADD EMOTE
 				</button>

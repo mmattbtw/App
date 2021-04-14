@@ -12,8 +12,15 @@
 			</div>
 			
 			<span class="ml-2"> {{emote?.getName() | async}} </span>
-			<button mat-icon-button (click)="rename()" *ngIf="emote?.canEdit(clientService) | async">
+
+			<!-- Rename Button -->
+			<button mat-icon-button (click)="rename()" *ngIf="emote?.canEdit(clientService) | async" matTooltip="Rename">
 				<mat-icon>edit</mat-icon>
+			</button>
+
+			<!-- Report Button -->
+			<button mat-icon-button *ngIf="clientService.hasPermission('CREATE_REPORTS') | async" matTooltip="Report">
+				<mat-icon>flag</mat-icon>
 			</button>
 		</div>
 
@@ -28,7 +35,7 @@
 
 		<!-- Emote Owner -->
 		<div class="d-flex align-items-center" *ngIf="emote?.getOwner() | async">
-			<span>Added by</span>
+			<span>by</span>
 			<app-user-name class="ml-1" [user]="emote?.getOwner() | async" [size]="[1.25, 1]"></app-user-name>
 		</div>
 	</div>

@@ -4,12 +4,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { BitField } from '@typings/src/BitField';
-import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
 import { delay, filter, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
-import { EmoteSearchComponent } from 'src/app/emotes/emote-search/emote-search.component';
 import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
@@ -17,7 +15,6 @@ import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
-import { UserService } from 'src/app/service/user.service';
 import { WindowRef } from 'src/app/service/window.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 
@@ -107,20 +104,24 @@ export class EmoteListComponent implements OnInit {
 				switchMap(({ isGlobal, emotes }) => this.clientService.isAuthenticated().pipe(map(isAuth => ({ isAuth, isGlobal, emotes })))),
 				map(({ emotes, isGlobal, isAuth }) => isAuth && !isGlobal && !emotes.includes(emote?.getID() as string))
 			),
-			click: emote => emote.addToChannel(this.clientService.id)
+			click: emote => this.clientService.isAuthenticated().pipe(
+				switchMap(ok => ok ? emote.addToChannel(this.clientService.id as string) : of(false))
+			)
 		},
 		{ // Remove from channel
 			label: 'Remove From Channel', icon: 'remove_circle',
 			condition: emote => this.clientService.getEmotes().pipe(
 				map(emotes => emotes.includes(emote?.getID() as string))
 			),
-			click: emote => emote.removeFromChannel(this.clientService.id)
+			click: emote => this.clientService.isAuthenticated().pipe(
+				switchMap(ok => ok ? emote.removeFromChannel(this.clientService.id as string) : of(false))
+			)
 		},
 		{
 			label: 'Make Private',
 			icon: 'lock',
-			condition: emote => emote.canEdit(this.clientService).pipe(
-				switchMap(canEdit => canEdit ? emote.isPrivate().pipe(map(isPrivate => !isPrivate)) : of(false))
+			condition: emote => emote?.canEdit(this.clientService).pipe(
+				switchMap(canEdit => canEdit ? emote?.isPrivate().pipe(map(isPrivate => !isPrivate)) ?? EMPTY : of(false))
 			),
 			click: emote => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
 		},
@@ -174,13 +175,13 @@ export class EmoteListComponent implements OnInit {
 	constructor(
 		private restService: RestService,
 		private clientService: ClientService,
-		private userService: UserService,
 		private renderer: Renderer2,
 		private router: Router,
 		private windowRef: WindowRef,
 		private appService: AppService,
 		private dialog: MatDialog,
 		private localStorage: LocalStorageService,
+		private emoteListService: EmoteListService,
 		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }
@@ -203,19 +204,13 @@ export class EmoteListComponent implements OnInit {
 		}, 775);
 	}
 
-	handleSearchChange(change: Partial<EmoteSearchComponent.SearchChange>): void {
-		const queryString = Object.keys(change).map(k => `${k}=${change[k as keyof EmoteSearchComponent.SearchChange]}`).join('&');
+	handleSearchChange(change: Partial<RestV2.GetEmotesOptions>): void {
+		const queryString = Object.keys(change).map(k => `${k}=${change[k as keyof RestV2.GetEmotesOptions]}`).join('&');
 
 		this.appService.pushTitleAttributes({ name: 'SearchOptions', value: `- ${queryString}` });
 
-		const searchOpts = {
-			query: change.name,
-			globalState: change.globalState,
-			sortBy: change.sortBy,
-			sortOrder: change.sortOrder
-		} as RestV2.GetEmotesOptions;
-		this.currentSearchOptions = searchOpts;
-		this.getEmotes(undefined, undefined, searchOpts).pipe(
+		this.currentSearchOptions = { ...this.currentSearchOptions, ...change as RestV2.GetEmotesOptions };
+		this.getEmotes(undefined, undefined, this.currentSearchOptions).pipe(
 			toArray(),
 			tap(() => this.emotes.next([])),
 			delay(50),
@@ -257,6 +252,11 @@ export class EmoteListComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.currentSearchOptions = {
+			sortBy: this.emoteListService.searchForm.get('sortBy')?.value,
+			sortOrder: this.emoteListService.searchForm.get('sortOrder')?.value,
+		} as RestV2.GetEmotesOptions;
+
 		// Get persisted page options?
 		const pageOptions = this.localStorage.getItem('pagination');
 		if (!!pageOptions) { // If persistence options found set the page

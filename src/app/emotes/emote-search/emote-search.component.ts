@@ -1,7 +1,8 @@
 import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { asyncScheduler, BehaviorSubject, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, mergeMap, take, tap, throttleTime } from 'rxjs/operators';
+import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 
@@ -12,17 +13,13 @@ import { ThemingService } from 'src/app/service/theming.service';
 	encapsulation: ViewEncapsulation.None,
 })
 export class EmoteSearchComponent implements OnInit {
-	@Output() searchChange = new EventEmitter<Partial<EmoteSearchComponent.SearchChange>>();
+	@Output() searchChange = new EventEmitter<Partial<RestV2.GetEmotesOptions>>();
 
-	form = new FormGroup({
-		name: new FormControl('', { updateOn: 'blur' }),
-		globalState: new FormControl('include'),
-		channel: new FormControl(false),
-		sortBy: new FormControl('popularity'),
-		sortOrder: new FormControl(0)
-	});
+	get form(): FormGroup {
+		return this.emoteListService.searchForm;
+	}
 	nameSearchBox: string | undefined;
-	current: Partial<EmoteSearchComponent.SearchChange> = {};
+	current: Partial<RestV2.GetEmotesOptions> = {};
 
 	/**
 	 * A list of options for changing what the text input does
@@ -30,7 +27,7 @@ export class EmoteSearchComponent implements OnInit {
 	modeMenuOptions = [
 		{ // Search emote names
 			label: 'Emote Name',
-			id: 'name'
+			id: 'query'
 		},
 		{ // Search by submitter name
 			label: 'Submitter Name',
@@ -53,6 +50,7 @@ export class EmoteSearchComponent implements OnInit {
 	selectedSearchMode = new BehaviorSubject<EmoteSearchComponent.ModeMenuOption>(this.modeMenuOptions[0]);
 
 	constructor(
+		private emoteListService: EmoteListService,
 		public themingService: ThemingService
 	) { }
 
@@ -64,7 +62,7 @@ export class EmoteSearchComponent implements OnInit {
 	changeSearchMode(opt: EmoteSearchComponent.ModeMenuOption): void {
 		this.selectedSearchMode.pipe(
 			take(1),
-			tap(mode => { delete this.current[mode.id as keyof EmoteSearchComponent.SearchChange]; }),
+			tap(mode => { delete this.current[mode.id as keyof RestV2.GetEmotesOptions]; }),
 			tap(o => this.selectedSearchMode.next(opt))
 		).subscribe();
 	}
@@ -104,7 +102,7 @@ export class EmoteSearchComponent implements OnInit {
 			) ?? EMPTY,
 
 			this.form.get('sortOrder')?.valueChanges.pipe(
-				map((value: EmoteSearchComponent.SearchChange['sortOrder']) => ({ sortOrder: value }))
+				map((value: RestV2.GetEmotesOptions['sortOrder']) => ({ sortOrder: value }))
 			) ?? EMPTY
 		], asyncScheduler).pipe(
 			mergeAll(),
@@ -118,14 +116,6 @@ export class EmoteSearchComponent implements OnInit {
 }
 
 export namespace EmoteSearchComponent {
-	export interface SearchChange {
-		name: string;
-		submitter: string;
-		sortBy: RestV2.GetEmotesOptions['sortBy'];
-		sortOrder: RestV2.GetEmotesOptions['sortOrder'];
-		globalState: RestV2.GetEmotesOptions['globalState'];
-	}
-
 	export interface ModeMenuOption {
 		label: string;
 		id: string;

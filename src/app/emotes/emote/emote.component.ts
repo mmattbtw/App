@@ -11,19 +11,16 @@ import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import { format } from 'date-fns';
-import * as Color from 'color';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserStructure } from 'src/app/util/user.structure';
 import { UserService } from 'src/app/service/user.service';
 import { ErrorDialogComponent } from 'src/app/util/dialog/error-dialog/error-dialog.component';
-import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emote-dialog.component';
 import { AppService } from 'src/app/service/app.service';
-import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Meta } from '@angular/platform-browser';
 import { AppComponent } from 'src/app/app.component';
 import { DOCUMENT } from '@angular/common';
-import { BitField } from '@typings/src/BitField';
+import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 
 @Component({
 	selector: 'app-emote',
@@ -60,91 +57,6 @@ export class EmoteComponent implements OnInit {
 		], asyncScheduler).pipe(mergeAll()))
 	) as Subject<string>;
 
-	/**
-	 * A list of interaction buttons to be rendered
-	 */
-	interactions = [
-		{ // Add to channel
-			label: 'add to channel', color: this.themingService.colors.twitch_purple, icon: 'add_circle',
-			condition: emote => this.clientService.getEmotes().pipe(
-				switchMap(emotes => emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
-				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(this.emote?.getID() as string))
-			),
-			click: emote => emote.addToChannel(this.clientService.id)
-		},
-		{ // Remove from channel
-			label: 'remove from channel', color: this.themingService.warning.desaturate(0.4).negate(), icon: 'remove_circle',
-			condition: emote => this.clientService.getEmotes().pipe(
-				map(emotes => emotes.includes(this.emote?.getID() as string))
-			),
-			click: emote => emote.removeFromChannel(this.clientService.id)
-		},
-		{
-			label: 'make private',
-			icon: 'lock', color: this.themingService.bg.darken(0.35),
-			condition: emote => emote?.canEdit(this.clientService).pipe(
-				switchMap(canEdit => canEdit ? this.emote?.isPrivate().pipe(map(isPrivate => !isPrivate)) ?? EMPTY : of(false))
-			),
-			click: emote => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
-		},
-		{
-			label: 'make public',
-			icon: 'lock_open', color: this.themingService.bg.lighten(3),
-			condition: emote => emote?.canEdit(this.clientService).pipe(
-				switchMap(canEdit => canEdit ? this.emote?.isPrivate() ?? EMPTY : of(false))
-			),
-			click: emote => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
-		},
-		{ // Make this emote global (Moderator only)
-			label: 'make global', color: this.themingService.accent, icon: 'star',
-			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
-				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
-				map(({ isGlobal, hasPermission }) => !isGlobal && hasPermission)
-			),
-			click: (emote) => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
-		},
-		{ // Remove this emote's global status (Moderator only)
-			label: 'revoke global', color: this.themingService.accent.negate(), icon: 'star_half',
-			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
-				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
-				map(({ isGlobal, hasPermission }) => isGlobal && hasPermission)
-			),
-			click: (emote) => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
-		},
-		{
-			label: 'Transfer Ownership', color: this.themingService.primary.lighten(0.1).negate(),
-			icon: 'swap_horiz',
-			condition: emote => this.emote?.canEdit(this.clientService),
-			click: emote => {
-				const dialogRef = this.dialog.open(EmoteOwnershipDialogComponent, {
-					data: { emote }
-				});
-
-				return dialogRef.afterClosed().pipe(
-					filter(newOwner => newOwner !== null),
-					switchMap(newOwner => this.userService.getOne(newOwner).pipe(switchMap(user => user.getID()))),
-					switchMap(newOwnerID => this.emote?.edit({ owner_id: newOwnerID as string }) ?? EMPTY)
-				);
-			}
-		},
-		{ // Delete this emote
-			label: 'Delete', color: this.themingService.warning, icon: 'delete',
-			condition: emote => emote.canEdit(this.clientService),
-
-			click: emote => {
-				const dialogRef = this.dialog.open(EmoteDeleteDialogComponent, {
-					data: { emote }
-				});
-
-				return dialogRef.afterClosed().pipe(
-					filter(reason => reason !== null && typeof reason === 'string'),
-					switchMap(reason => this.emote?.delete(reason) ?? EMPTY),
-					tap(() => this.router.navigate(['/emotes']))
-				);
-			}
-		}
-	] as EmoteComponent.InteractButton[];
-
 	constructor(
 		@Inject(DOCUMENT) private document: Document,
 		private metaService: Meta,
@@ -155,6 +67,7 @@ export class EmoteComponent implements OnInit {
 		private dialog: MatDialog,
 		private userService: UserService,
 		private appService: AppService,
+		private emoteListService: EmoteListService,
 		public themingService: ThemingService,
 		public clientService: ClientService
 	) { }
@@ -175,7 +88,7 @@ export class EmoteComponent implements OnInit {
 	/**
 	 * Method called when the client user interacts with a button
 	 */
-	onInteract(interaction: EmoteComponent.InteractButton): void {
+	onInteract(interaction: EmoteListService.InteractButton): void {
 		if (typeof interaction.click === 'function' && !!this.emote) {
 			interaction.click(this.emote).pipe(
 				switchMap(() => iif(() => interaction.label === 'add to channel' || interaction.label === 'remove from channel',
@@ -187,6 +100,10 @@ export class EmoteComponent implements OnInit {
 				error: (err: HttpErrorResponse) => this.interactError.next(this.restService.formatError(err))
 			});
 		}
+	}
+
+	get interactions(): EmoteListService.InteractButton[] {
+		return this.emoteListService.interactions;
 	}
 
 	/**
@@ -325,7 +242,7 @@ export class EmoteComponent implements OnInit {
 					this.dialog.open(ErrorDialogComponent, {
 						data: {
 							errorName: 'Cannot View Emote',
-							errorMessage: err.error?.error,
+							errorMessage: err.error?.error ?? err.error ?? err,
 							errorCode: String(err.status)
 						} as ErrorDialogComponent.Data
 					});
@@ -343,13 +260,4 @@ export namespace EmoteComponent {
 	}
 
 	export type AuditEntry = DataStructure.AuditLog.Entry & { action_user_instance?: UserStructure };
-
-	export interface InteractButton {
-		label: string;
-		color: Color;
-		icon?: string;
-		disabled?: boolean;
-		condition: (emote: EmoteStructure) => Observable<boolean>;
-		click?: (emote: EmoteStructure) => Observable<void>;
-	}
 }

@@ -12,7 +12,7 @@ import { LoggerService } from 'src/app/service/logger.service';
 import { RestService } from 'src/app/service/rest.service';
 import { environment } from 'src/environments/environment';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class EmoteFormService {
 	form = new FormGroup({
 		name: new FormControl('', [
@@ -39,7 +39,7 @@ export class EmoteFormService {
 	/**
 	 * Upload the emote file to the server and wait for emote data to be returned
 	 */
-	uploadEmote(): void {
+	uploadEmote(isV2 = true): void {
 		// Validate form
 		if (!this.form.valid) {
 			return this.processError.next(Object.keys(this.form.errors ?? {}).map(k => (this.form.errors ?? {})[k]).join(' '));
@@ -49,23 +49,25 @@ export class EmoteFormService {
 		let returnedData: DataStructure.Emote | null = null;
 		const formData = new FormData(); // Append file to form data
 
-		formData.append('data', new Blob([JSON.stringify({ // Append metadata to form data
-			name: this.form.get('name')?.value?.length > 0 ? this.form.get('name')?.value : null,
-			tags: this.form.get('tags')?.value ?? {}
-		})], {
-			type: 'application/json'
-		}), 'FORM_CONTENT');
-		formData.append('file', this.form.get('emote')?.value);
+		if (this.form.get('name')?.value?.length > 0) {
+			formData.append('name', this.form.get('name')?.value);
+		}
+		formData.append('tags', this.form.get('tags')?.value ?? '');
+		formData.append('emote', this.form.get('emote')?.value);
 
 		this.form.get('name')?.disable(); // Disable the form as the emote uploads
 		this.uploading.next(true); // Set uploading state as true
-		this.restService.v1.Emotes.Upload(formData, 0).pipe( // Begin upload
+
+		const o = isV2 ? this.restService.v2.CreateEmote(formData) : this.restService.v1.Emotes.Upload(formData);
+		o.pipe( // Begin upload
 			tap(progress => {
 				// Only accept progress emissions
 				if (progress instanceof HttpResponse || progress instanceof HttpHeaderResponse) return undefined; // Send progress updates
 				switch (progress.loaded >= (progress.total ?? 1)) {
 					case true: // Upload complete: processing will begin shortly
-						this.uploadStatus.next('Upload complete, waiting for server to begin processing...');
+						this.uploadStatus.next(isV2
+							? 'Upload complete, creating emote...'
+							: 'Upload complete, waiting for server to begin processing...');
 						this.uploadProgress.next(0);
 						break;
 					case false: // File is being uploaded to the server
@@ -84,53 +86,67 @@ export class EmoteFormService {
 				name: res.body?.name
 			}))
 		).subscribe({
-			complete(): void { done(); },
+			next(res): void { done(undefined, res.body ?? undefined); },
 			error(err: HttpErrorResponse): void { done(err); }
 		});
 
-		const done = (err?: HttpErrorResponse) => {
-			if (err) this.uploadError.next(err.error?.error ?? err.error);
+		const done = (err?: HttpErrorResponse, data?: DataStructure.Emote): void => {
+			if (err) {
+				this.reset();
+				this.uploadProgress.next(100);
+				this.processError.next(this.restService.formatError(err));
+				return;
+			}
 
-			// Connect to WebSocket
-			// Request the server for processing status
-			const ws = new WebSocket(environment.wsUrl);
-			ws.onopen = () => {
-				this.logger.info(`<WS> Connected to ${environment.wsUrl}`);
+			if (isV2) {
+				this.uploadStatus.next('Done!');
+				this.uploadProgress.next(100);
+				setTimeout(() => {
+					this.form.reset();
+					this.router.navigate(['/emotes', data?.id]);
+				}, 500);
+			} else {
+				// Connect to WebSocket
+				// Request the server for processing status
+				const ws = new WebSocket(environment.wsUrl);
+				ws.onopen = () => {
+					this.logger.info(`<WS> Connected to ${environment.wsUrl}`);
 
-				ws.onmessage = (ev) => { // Receive messages from the websocket
-					const { tasks, message } = JSON.parse(ev.data)?.payload;
-					let status = message;
-					this.logger.info(`<WS> Message Received: ${ev.data}`);
+					ws.onmessage = (ev) => { // Receive messages from the websocket
+						const { tasks, message } = JSON.parse(ev.data)?.payload;
+						let status = message;
+						this.logger.info(`<WS> Message Received: ${ev.data}`);
 
-					if (Array.isArray(tasks)) {
-						const progress = Number((tasks[0] / tasks[1] * 100).toFixed(1));
-						this.logger.info(`Processing Progress: ${progress}%`);
-						this.uploadProgress.next(progress);
+						if (Array.isArray(tasks)) {
+							const progress = Number((tasks[0] / tasks[1] * 100).toFixed(1));
+							this.logger.info(`Processing Progress: ${progress}%`);
+							this.uploadProgress.next(progress);
 
-						status = `${progress}% ${status}`; // Update progress
-					}
-					this.uploadStatus.next(status);
+							status = `${progress}% ${status}`; // Update progress
+						}
+						this.uploadStatus.next(status);
+					};
+					ws.onclose = (ev) => { // Listen for closure
+						this.logger.info(`<WS> Connection Closed (${ev.code} ${ev.reason})`);
+
+						if (ev.code === 1000) { // Normal Closure: upload was successful!
+							this.uploading.next(false);
+							this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?._id), 4));
+							setTimeout(() => {
+								this.form.reset();
+								this.router.navigate(['/emotes', returnedData?._id]);
+							}, 200);
+						} else { // Abnormal Closure (likely 1011): display error
+							this.processError.next(`Error: ${ev.reason ?? 'Unknown'}`);
+						}
+
+						this.reset(); // Done: reset the form.
+					};
+
+					// Send the message, requesting the server to start sending processing events
+					ws.send(JSON.stringify({ type: 'CreateEmote:Status', payload: { emoteId: returnedData?._id } }));
 				};
-				ws.onclose = (ev) => { // Listen for closure
-					this.logger.info(`<WS> Connection Closed (${ev.code} ${ev.reason})`);
-
-					if (ev.code === 1000) { // Normal Closure: upload was successful!
-						this.uploading.next(false);
-						this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?._id), 4));
-						setTimeout(() => {
-							this.form.reset();
-							this.router.navigate(['/emotes', returnedData?._id]);
-						}, 200);
-					} else { // Abnormal Closure (likely 1011): display error
-						this.processError.next(`Error: ${ev.reason ?? 'Unknown'}`);
-					}
-
-					this.reset(); // Done: reset the form.
-				};
-
-				// Send the message, requesting the server to start sending processing events
-				ws.send(JSON.stringify({ type: 'CreateEmote:Status', payload: { emoteId: returnedData?._id } }));
-			};
+			}
 		};
 	}
 

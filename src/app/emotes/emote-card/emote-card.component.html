@@ -4,7 +4,7 @@
 	[appColor]="themingService.bg.darken(.1)" [isBackground]="true"
 	[class.down-border]="(emote?.isGlobal() | async) || (emote?.isChannel() | async)"
 	[class.hovering]="hover | async"
-	[class.ladink]="!(emote?.getName() | async)">
+	[class.ladink]="(emote?.getName() | async) === (undefined)">
 
 	<!-- Emote Name Banner -->
 	<div class="title-banner" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
@@ -12,7 +12,7 @@
 	</div>
 	<!-- Submitter sub-banner -->
 	<div class="title-banner submitter" [appColor]="themingService.bg.alpha(.4).lighten(.7)" [isBackground]="true">
-		<app-user-name [clickable]="false" [user]="emote?.getOwner() | async" [showAvatar]="false"></app-user-name>
+		<app-user-name [clickable]="false" [user]="emote?.getOwner() | async" [showAvatar]="false" [size]="[0, .67]"></app-user-name>
 	</div>
 
 	<!-- Card Image wrapper (below title) -->
@@ -37,7 +37,7 @@
 	</div>
 </div>
 
-<div class="d-flex justify-content-center state-indicator" *ngIf="(emote?.isChannel() | async) && !(emote?.isGlobal() | async)" [matTooltip]="'Channel Emote'">
+<div class="d-flex justify-content-center state-indicator" *ngIf="(emote?.isChannel() | async) && (emote?.isGlobal() | async) === false" [matTooltip]="'Channel Emote'">
 	<div class="d-inline-flex justify-content-center align-items-center" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
 		<mat-icon [appColor]="channelBorderColor">check_circle</mat-icon>
 	</div>

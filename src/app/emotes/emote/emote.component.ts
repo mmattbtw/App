@@ -21,6 +21,7 @@ import { Meta } from '@angular/platform-browser';
 import { AppComponent } from 'src/app/app.component';
 import { DOCUMENT } from '@angular/common';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
+import { BitField } from '@typings/src/BitField';
 
 @Component({
 	selector: 'app-emote',
@@ -215,7 +216,7 @@ export class EmoteComponent implements OnInit {
 
 							const data = {
 								title: this.appService.pageTitle,
-								author_name: `${emoteData?.name} ${emoteData?.global ? '(Global Emote)' : `(${this.channels.getValue()?.length} Channels)`}`,
+								author_name: `${emoteData?.name} ${BitField.HasBits(emoteData?.visibility ?? 0, DataStructure.Emote.Visibility.GLOBAL) ? '(Global Emote)' : `(${this.channels.getValue()?.length} Channels)`}`,
 								author_url: `https://${appURL}`,
 								provider_name: `7TV.APP - It's like a third party thing`,
 								provider_url: 'https://7tv.app'

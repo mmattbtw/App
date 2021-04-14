@@ -1,5 +1,6 @@
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class RoleStructure {
 	private id: string | undefined;
@@ -18,6 +19,24 @@ export class RoleStructure {
 		this.data.next(data);
 
 		return this;
+	}
+
+	getName(): Observable<string> {
+		return this.data.pipe(
+			map(d => d?.name ?? '')
+		);
+	}
+
+	getColor(): Observable<number> {
+		return this.data.pipe(
+			map(d => d?.color ?? 0)
+		);
+	}
+
+	getHexColor(): Observable<string> {
+		return this.getColor().pipe(
+			map(c => `#${c.toString(16)}`)
+		);
 	}
 
 	getSnapshot(): DataStructure.Role | null | undefined {

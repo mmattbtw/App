@@ -37,7 +37,7 @@ export class RestService {
 			filter(x => typeof x === 'string'),
 			tap(tok => clientService.setToken(tok)),
 			switchMap(() => this.v2.GetUser('@me')),
-			switchMap(res => !!res.user?._id ? of(res.user) : throwError('Unknown Account')),
+			switchMap(res => !!res.user?.id ? of(res.user) : throwError('Unknown Account')),
 			tap(user => clientService.pushData(user))
 		).subscribe({
 			error: err => {

@@ -39,7 +39,7 @@
 						<mat-error> {{emoteFormService.uploadError | async}} </mat-error>
 
 						<!-- Uplaod Button -->
-						<div class="d-flex flex-column mt-2 justify-content-center" *ngIf="!(isUploaded() | async) && !!(emoteFormService.uploadedEmote | async) && emoteControl.dirty">
+						<div class="d-flex flex-column mt-2 justify-content-center" *ngIf="(isUploaded() | async) === (false) && (emoteFormService.uploadedEmote | async) !== (undefined) && emoteControl.dirty">
 							<button mat-stroked-button color="primary" (click)="emoteFormService.uploadEmote()" [disabled]="!form.valid || (emoteFormService.uploading | async)">
 								<div class="d-inline-flex" [ngSwitch]="isUploading() | async">
 									<mat-icon *ngSwitchCase="false">file_upload</mat-icon>

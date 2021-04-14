@@ -7,15 +7,15 @@ export namespace GQLFragments {
 			created_at,
 			name,
 			channels {
-				_id, login, display_name, role {
+				id, login, display_name, role {
 					name, color, allowed, denied, position
 				}, profile_image_url
 			},
 			owner {
-				_id,
+				id,
 				display_name, created_at, profile_image_url,
 				role {
-					name, color, allowed, denied, position
+					id, name, color, allowed, denied, position
 				}
 			},
 			visibility,
@@ -26,9 +26,9 @@ export namespace GQLFragments {
 		}
 	`;
 
-	export const FullUser = (includeFullEmotes = false) => `
+	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false) => `
 		fragment FullUser on User {
-			_id,  email, display_name, login,
+			id,  email, display_name, login,
 			rank,
 			role {
 				id,
@@ -40,6 +40,10 @@ export namespace GQLFragments {
 			},
 			${includeFullEmotes
 				? 'emotes { ...FullEmote },'
+				: ''
+			}
+			${includeOwnedEmotes
+				? 'owned_emotes { id, name, status, visibility },'
 				: ''
 			}
 			emote_ids,

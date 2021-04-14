@@ -49,9 +49,10 @@ export class RestV2 {
 						id,
 						visibility,
 						owner {
-							_id,
+							id,
 							display_name,
 							role {
+								id,
 								name,
 								color
 							}
@@ -186,7 +187,7 @@ export class RestV2 {
 export namespace RestV2 {
 	type KeysEnum<T> = { [P in keyof Required<T>]: true };
 	export const FullUser = {
-		_id: true, email: true, rank: true,
+		id: true, email: true, rank: true,
 		editor_ids: true, display_name: true,
 		broadcaster_type: true, profile_image_url: true,
 		created_at: true

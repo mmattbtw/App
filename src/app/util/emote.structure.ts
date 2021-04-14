@@ -42,54 +42,63 @@ export class EmoteStructure {
 
 	getName(): Observable<string | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => d?.name)
 		);
 	}
 
 	getOwnerID(): Observable<string | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => !!d?.owner ? String(d.owner) : undefined)
 		);
 	}
 
 	getOwnerName(): Observable<string | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => d?.owner?.display_name)
 		);
 	}
 
 	getOwner(): Observable<UserStructure | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => !!d?.owner ? UserService.Get().new(d.owner as DataStructure.TwitchUser) : undefined)
 		);
 	}
 
 	getChannels(): Observable<Partial<DataStructure.TwitchUser>[] | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => d?.channels)
 		);
 	}
 
 	getURL(size = 3): Observable<string | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => this.restService.CDN.Emote(String(d?.id), size))
 		);
 	}
 
 	getTags(): Observable<string[] | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => d?.tags)
 		);
 	}
 
 	getStatus(): Observable<Constants.Emotes.Status | undefined> {
 		return this.data.pipe(
+			take(1),
 			map(d => d?.status)
 		);
 	}
 
 	getStatusName(): Observable<(keyof typeof Constants.Emotes.Status) | undefined> {
 		return this.getStatus().pipe(
+			take(1),
 			map(status => !!status ? Constants.Emotes.Status[status] as (keyof typeof Constants.Emotes.Status) : undefined)
 		);
 	}
@@ -131,6 +140,7 @@ export class EmoteStructure {
 	 */
 	canEdit(user: UserStructure): Observable<boolean> {
 		return this.getOwner().pipe(
+			take(1),
 			map(owner => (!!owner?.id && !!user?.id) ? owner.id === user.id : false),
 			switchMap(ok => iif(() => ok,
 				of(true),
@@ -159,6 +169,7 @@ export class EmoteStructure {
 	 */
 	hasVisibility(flag: keyof typeof DataStructure.Emote.Visibility): Observable<boolean> {
 		return this.data.pipe(
+			take(1),
 			map(d => BitField.HasBits(d?.visibility ?? 0, DataStructure.Emote.Visibility[flag]))
 		);
 	}
@@ -169,6 +180,7 @@ export class EmoteStructure {
 
 	getCreatedAt(): Observable<Date | null> {
 		return this.data.pipe(
+			take(1),
 			map(d => !!d?.created_at ? new Date(d.created_at) : null)
 		);
 	}
@@ -181,7 +193,7 @@ export class EmoteStructure {
 
 		return this.restService.v2.AddChannelEmote(this.id, userID, reason).pipe(
 			tap(res => this.restService.clientService.mergeData(res.user)),
-			switchMap(() => this.restService.v2.GetEmote(this.id as string, false, ['channels { _id, display_name, login, profile_image_url }']).pipe(
+			switchMap(() => this.restService.v2.GetEmote(this.id as string, false, ['channels { id, display_name, login, profile_image_url }']).pipe(
 				catchError(() => of(undefined)),
 				tap(res => !!res?.emote ? this.mergeData(res?.emote) : noop())
 			)),

@@ -34,7 +34,7 @@ export class ClientService extends UserStructure {
 		}
 
 		if (this.isAuth) return this;
-		if (!!data?._id || !!data?.id) {
+		if (!!data?.id || !!data?.id) {
 			this.setAuthState(!!data);
 			this.logger.info(`Signed in as ${data.display_name}.`);
 		} else {

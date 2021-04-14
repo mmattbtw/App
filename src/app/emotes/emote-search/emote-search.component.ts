@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { asyncScheduler, BehaviorSubject, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, mergeMap, take, tap, throttleTime } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { ThemingService } from 'src/app/service/theming.service';
 	templateUrl: './emote-search.component.html',
 	styleUrls: ['./emote-search.component.scss'],
 	encapsulation: ViewEncapsulation.None,
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmoteSearchComponent implements OnInit {
 	@Output() searchChange = new EventEmitter<Partial<RestV2.GetEmotesOptions>>();

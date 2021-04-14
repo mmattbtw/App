@@ -1,11 +1,13 @@
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
+import { UserService } from 'src/app/service/user.service';
+import { RoleStructure } from 'src/app/util/role.structure';
 
 export class UserStructure {
 	debugID = Math.random().toString(36).substring(7);
-	id: string | null = null;
+	id = '';
 	protected data = new BehaviorSubject<Partial<DataStructure.TwitchUser> | null>(null).pipe(
 		filter(v => v !== null)
 	) as BehaviorSubject<Partial<DataStructure.TwitchUser> | null>;
@@ -23,9 +25,13 @@ export class UserStructure {
 			return this;
 		}
 
-		if (typeof data._id === 'string') {
-			this.id = data._id;
+		if (typeof data.id === 'string') {
+			this.id = data.id;
 		}
+		if (!!data.role) {
+			UserService.Get().cacheRole(data.role);
+		}
+
 		this.data.next(data);
 		this.snapshot = data;
 		if (!!data?.role?.allowed) {
@@ -43,7 +49,8 @@ export class UserStructure {
 
 	getID(): Observable<string> {
 		return this.data.asObservable().pipe(
-			map(data => !!data?._id ? String(data._id) : DataStructure.NullObjectId)
+			take(1),
+			map(data => !!data?.id ? String(data.id) : DataStructure.NullObjectId)
 		);
 	}
 
@@ -52,6 +59,7 @@ export class UserStructure {
 	 */
 	getUsername(): Observable<string | null> {
 		return this.data.asObservable().pipe(
+			take(1),
 			map(data => data?.display_name ?? null)
 		);
 	}
@@ -61,6 +69,7 @@ export class UserStructure {
 	 */
 	getAvatarURL(): Observable<string | null> {
 		return this.data.asObservable().pipe(
+			take(1),
 			map(data => data?.profile_image_url ?? null)
 		);
 	}
@@ -72,19 +81,16 @@ export class UserStructure {
 	 */
 	getRank(): Observable<Constants.Users.Rank> {
 		return this.data.asObservable().pipe(
+			take(1),
 			map(data => data?.rank ?? Constants.Users.Rank.DEFAULT)
 		);
 	}
 
-	getRole(): Observable<DataStructure.Role | null> {
+	getRole(): Observable<RoleStructure> {
 		return this.data.asObservable().pipe(
-			map(data => data?.role ?? null)
-		);
-	}
-
-	getRoleColor(): Observable<string | null> {
-		return this.getRole().pipe(
-			map(role => `#${role?.color.toString(16)}` ?? null)
+			take(1),
+			map(data => data?.role ?? { name: 'Default' } as DataStructure.Role),
+			map(role => UserService.Get().getRole(role.id))
 		);
 	}
 
@@ -93,6 +99,7 @@ export class UserStructure {
 	 */
 	getEmotes(): Observable<string[]> {
 		return this.data.asObservable().pipe(
+			take(1),
 			map(data => data?.emote_ids as string[] ?? [])
 		);
 	}

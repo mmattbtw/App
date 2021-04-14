@@ -9,7 +9,7 @@ const routes: Routes = [
 	{
 		path: '',
 		data: {
-			title:  'Home %cock'
+			title: 'Home %cock'
 		},
 		component: HomeComponent
 	},
@@ -23,7 +23,7 @@ const routes: Routes = [
 	},
 	{
 		path: 'admin',
-		canLoad: [ AdminGuard ],
+		canLoad: [AdminGuard],
 		loadChildren: () => import('src/app/admin/admin.module').then(m => m.AdminModule)
 	},
 	{
@@ -44,9 +44,9 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled'
-})],
-	providers: [ AdminGuard ],
+		initialNavigation: 'enabled'
+	})],
+	providers: [AdminGuard],
 	exports: [RouterModule]
 })
 export class AppRoutingModule { }

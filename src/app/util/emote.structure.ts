@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, EMPTY, iif, Observable, of, throwError } from 'rxjs';
-import { filter, map, mapTo, mergeAll, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, iif, noop, Observable, of, throwError } from 'rxjs';
+import { catchError, filter, map, mapTo, mergeAll, switchMap, take, tap } from 'rxjs/operators';
 import { RestService } from 'src/app/service/rest.service';
 import { UserService } from 'src/app/service/user.service';
 import { UserStructure } from 'src/app/util/user.structure';
@@ -32,6 +32,12 @@ export class EmoteStructure {
 		return this;
 	}
 
+	mergeData(data: Partial<DataStructure.Emote>): EmoteStructure {
+		const d = { ...this.getSnapshot(), ...data } as DataStructure.Emote;
+
+		return this.pushData(d);
+	}
+
 	getID(): string | undefined { return this.id; }
 
 	getName(): Observable<string | undefined> {
@@ -54,7 +60,7 @@ export class EmoteStructure {
 
 	getOwner(): Observable<UserStructure | undefined> {
 		return this.data.pipe(
-			map(d => !!d?.owner ? new UserStructure().pushData(d.owner) : undefined)
+			map(d => !!d?.owner ? UserService.Get().new(d.owner as DataStructure.TwitchUser) : undefined)
 		);
 	}
 
@@ -125,7 +131,7 @@ export class EmoteStructure {
 	 */
 	canEdit(user: UserStructure): Observable<boolean> {
 		return this.getOwner().pipe(
-			map(owner => !!owner ? owner.id === user.id : false),
+			map(owner => (!!owner?.id && !!user?.id) ? owner.id === user.id : false),
 			switchMap(ok => iif(() => ok,
 				of(true),
 				user.hasPermission('EDIT_EMOTE_ALL')
@@ -139,9 +145,9 @@ export class EmoteStructure {
 	 * @param data the new emote data
 	 * @param reason the reason for the action, which will be added with the audit log entry
 	 */
-	edit(data: Partial<DataStructure.Emote>, reason?: string): Observable<EmoteStructure> {
-		return this.restService.v2.EditEmote({ id: this.id as string, ...data }, reason).pipe(
-			tap(res => this.data.next({  ...this.data.getValue(), ...res.emote })),
+	edit(data: Partial<DataStructure.Emote>, reason?: string, extraFields?: string[]): Observable<EmoteStructure> {
+		return this.restService.v2.EditEmote({ id: this.id as string, ...data }, reason, extraFields).pipe(
+			tap(res => this.mergeData(res.emote)),
 			mapTo(this)
 		);
 	}
@@ -175,6 +181,10 @@ export class EmoteStructure {
 
 		return this.restService.v2.AddChannelEmote(this.id, userID, reason).pipe(
 			tap(res => this.restService.clientService.mergeData(res.user)),
+			switchMap(() => this.restService.v2.GetEmote(this.id as string, false, ['channels { _id, display_name, login, profile_image_url }']).pipe(
+				catchError(() => of(undefined)),
+				tap(res => !!res?.emote ? this.mergeData(res?.emote) : noop())
+			)),
 			mapTo(undefined)
 		);
 	}
@@ -187,6 +197,10 @@ export class EmoteStructure {
 
 		return this.restService.v2.RemoveChannelEmote(this.id, userID, reason).pipe(
 			tap(res => this.restService.clientService.mergeData(res.user)),
+			switchMap(res => this.data.pipe(
+				take(1),
+				tap(data => this.data.next({ ...data, channels: data?.channels?.filter(u => u.id && u.id !== res.user.id) ?? [] } as DataStructure.Emote))
+			)),
 			mapTo(undefined)
 		);
 	}
@@ -207,8 +221,7 @@ export class EmoteStructure {
 	delete(reason?: string): Observable<void> {
 		if (!this.id) return throwError(Error('Cannot delete unknown emote'));
 
-		return this.restService.v1.Emotes.Delete(this.id, reason).pipe(
-			RestService.onlyResponse(),
+		return this.restService.v2.DeleteEmote(this.id, reason).pipe(
 			mapTo(undefined)
 		);
 	}

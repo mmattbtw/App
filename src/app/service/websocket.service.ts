@@ -38,7 +38,6 @@ export class WebSocketService {
 
 				// Listen for closure
 				ws.onclose = ev => {
-					console.log('close, done', ev.code, ev.code === 1000)
 					if (ev.code === 1000)
 						observer.complete();
 					else

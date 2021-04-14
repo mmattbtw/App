@@ -27,7 +27,7 @@ export class RestV1 {
 				>('get', `/emotes?page=${page}&pageSize=${pageSize}${query ? `&${query}` : ''}`, { auth: true }),
 			Get: (id: string, includeActivity?: boolean) =>
 				this.restService.createRequest<DataStructure.Emote>('get', `/emotes/${id}${includeActivity ? '?include_activity=true' : ''}`, { auth: true }),
-			Upload: (data: FormData, length: number) => this.restService.createRequest<DataStructure.Emote>('post', '/emotes', {
+			Upload: (data: FormData) => this.restService.createRequest<DataStructure.Emote>('post', '/emotes', {
 				body: data,
 				auth: true
 			}),

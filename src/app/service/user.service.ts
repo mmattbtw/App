@@ -29,7 +29,9 @@ export class UserService {
 
 	new(data: DataStructure.TwitchUser): UserStructure {
 		const id = !!data._id ? String(data._id) : null;
-		const user = new UserStructure();
+		if (!id) throw Error('Invalid User ID');
+
+		const user = this.cache.get(id) ?? new UserStructure();
 		user.pushData(data);
 
 		user.getRole().pipe(

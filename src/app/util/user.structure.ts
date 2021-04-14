@@ -4,7 +4,8 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 export class UserStructure {
-	id = DataStructure.NullObjectId;
+	debugID = Math.random().toString(36).substring(7);
+	id: string | null = null;
 	protected data = new BehaviorSubject<Partial<DataStructure.TwitchUser> | null>(null).pipe(
 		filter(v => v !== null)
 	) as BehaviorSubject<Partial<DataStructure.TwitchUser> | null>;
@@ -22,8 +23,8 @@ export class UserStructure {
 			return this;
 		}
 
-		if (typeof data.id === 'string') {
-			this.id = data.id;
+		if (typeof data._id === 'string') {
+			this.id = data._id;
 		}
 		this.data.next(data);
 		this.snapshot = data;

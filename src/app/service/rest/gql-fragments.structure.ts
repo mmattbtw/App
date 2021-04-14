@@ -2,16 +2,17 @@
 
 export namespace GQLFragments {
 	export const FullEmote = (includeActivity = false) => `
-		fragment FullEmote on Emote {
+		fragment fullEmote on Emote {
 			id,
 			created_at,
 			name,
 			channels {
-				login, display_name, role {
+				_id, login, display_name, role {
 					name, color, allowed, denied, position
 				}, profile_image_url
 			},
 			owner {
+				_id,
 				display_name, created_at, profile_image_url,
 				role {
 					name, color, allowed, denied, position

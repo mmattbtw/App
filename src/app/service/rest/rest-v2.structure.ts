@@ -1,3 +1,4 @@
+import { HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Observable } from 'rxjs';
 import { map, mapTo } from 'rxjs/operators';
@@ -67,48 +68,35 @@ export class RestV2 {
 		);
 	}
 
-	GetEmote(id: string, includeActivity = false): Observable<{ emote: DataStructure.Emote }> {
+	GetEmote(id: string, includeActivity = false, filterFields?: string[]): Observable<{ emote: DataStructure.Emote }> {
+		const isFiltered = Array.isArray(filterFields) && filterFields.length > 0;
+
 		return this.gql.query<{ emote: DataStructure.Emote }>({
 			query: `
 				{
 					emote(id: "${id}") {
-						...fullEmote
+						${isFiltered
+							? (filterFields as string[]).join(', ')
+							: '...fullEmote'}
 					}
 				}
 
-				fragment fullEmote on Emote {
-					id,
-					created_at,
-					name,
-					channels {
-						login, display_name, role {
-							name, color, allowed, denied, position
-						}, profile_image_url
-					},
-					owner {
-						display_name, created_at, profile_image_url,
-						role {
-							name, color, allowed, denied, position
-						}
-					},
-					visibility,
-					mime,
-					status,
-					tags,
-					${includeActivity ? 'audit_entries' : ''}
-				}
+				${isFiltered ? '' : GQLFragments.FullEmote(includeActivity)}
 			`
 		}).pipe(
 			map(res => ({ emote: res?.body?.data.emote as DataStructure.Emote }))
 		);
 	}
 
-	EditEmote(data: { id: string } & Partial<DataStructure.Emote>, reason?: string): Observable<{ emote: DataStructure.Emote }> {
+	EditEmote(data: { id: string } & Partial<DataStructure.Emote>, reason?: string, extraFields?: string[]): Observable<{ emote: DataStructure.Emote }> {
 		return this.gql.query<{ editEmote: DataStructure.Emote }>({
 			query: `
 				mutation MutateEmote($em: EmoteInput!, $reason: String!) {
 					editEmote(emote: $em, reason: $reason) {
 						${Object.keys(data).join(', ')}
+						${Array.isArray(extraFields) && extraFields.length > 0
+							? ', ' + extraFields.join(', ')
+							: ''}
 					}
 				}
 			`,
@@ -119,6 +107,30 @@ export class RestV2 {
 			auth: true
 		}).pipe(
 			map(res => ({ emote: res?.body?.data.editEmote as DataStructure.Emote }))
+		);
+	}
+
+	CreateEmote(data: FormData): Observable<HttpProgressEvent | HttpResponse<DataStructure.Emote>> {
+		return this.restService.createRequest('post', '/emotes', {
+			body: data,
+			auth: true
+		}, 'v2');
+	}
+
+	DeleteEmote(emoteID: string, reason?: string): Observable<void> {
+		return this.gql.query({
+			query: `
+				mutation DeleteEmote($em: String!, $reason: String!) {
+					deleteEmote(id: $em, reason: $reason) {}
+				}
+			`,
+			variables: {
+				em: emoteID,
+				reason: reason ?? ''
+			},
+			auth: true
+		}).pipe(
+			mapTo(undefined)
 		);
 	}
 

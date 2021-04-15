@@ -1,6 +1,6 @@
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 export class RoleStructure {
 	private id: string | undefined;
@@ -23,19 +23,29 @@ export class RoleStructure {
 
 	getName(): Observable<string> {
 		return this.data.pipe(
+			take(1),
 			map(d => d?.name ?? '')
 		);
 	}
 
 	getColor(): Observable<number> {
 		return this.data.pipe(
+			take(1),
 			map(d => d?.color ?? 0)
 		);
 	}
 
 	getHexColor(): Observable<string> {
 		return this.getColor().pipe(
+			take(1),
 			map(c => `#${c.toString(16)}`)
+		);
+	}
+
+	getAllowed(): Observable<bigint> {
+		return this.data.pipe(
+			take(1),
+			map(d => BigInt(d?.allowed ?? 0))
 		);
 	}
 

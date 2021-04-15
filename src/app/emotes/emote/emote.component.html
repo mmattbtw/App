@@ -18,6 +18,11 @@
 				<mat-icon>edit</mat-icon>
 			</button>
 
+			<!-- Override Rules Button -->
+			<button mat-icon-button matTooltip="Override Rules" *ngIf="emote?.canEdit(clientService) | async">
+				<mat-icon>extension</mat-icon>
+			</button>
+
 			<!-- Report Button -->
 			<button mat-icon-button *ngIf="clientService.hasPermission('CREATE_REPORTS') | async" matTooltip="Report">
 				<mat-icon>flag</mat-icon>

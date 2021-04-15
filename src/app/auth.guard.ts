@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, CanLoad } from '@angular/router';
 import { Observable, of, throwError, TimeoutError } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
-import { take, catchError, timeout } from 'rxjs/operators';
+import { take, catchError, timeout, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 
 @Injectable({
@@ -25,8 +25,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 	}
 
 	private isAuth(): Observable<boolean> {
-		if (!this.clientService.localStorage.getItem('access_token')) return of(false);
-
 		return this.clientService.isAuthenticated().pipe(
 			filter(isAuth => isAuth === true),
 			timeout(2500),

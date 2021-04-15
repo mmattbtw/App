@@ -1,1 +1,5 @@
-<p>admin-users works!</p>
+<div class="admin-users">
+	<div *ngFor="let user of users | async">
+		{{ user.getUsername() | async }}
+	</div>
+</div>

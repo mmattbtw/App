@@ -7,6 +7,7 @@ import { AdminComponent } from 'src/app/admin/admin.component';
 const routes: Routes = [
 	{
 		path: '',
+		data: { title: 'Admin' },
 		component: AdminComponent,
 		children: [
 			{
@@ -15,10 +16,12 @@ const routes: Routes = [
 			},
 			{
 				path: 'users',
+				data: { title: 'Admin - Users', breadcrumb: 'Users' },
 				component: AdminUsersComponent
 			},
 			{
 				path: 'audit',
+				data: { title: 'Admin - Audit Log', breadcrumb: 'Users' },
 				component: AdminAuditLogsComponent
 			}
 		]

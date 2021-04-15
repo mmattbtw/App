@@ -97,96 +97,21 @@ export class EmoteListComponent implements OnInit {
 				this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]))
 			)))
 		},
-		{ // Add to channel
-			label: 'Add To Channel', icon: 'add_circle',
-			condition: emote => this.clientService.getEmotes().pipe(
-				switchMap(emotes => emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
-				switchMap(({ isGlobal, emotes }) => this.clientService.isAuthenticated().pipe(map(isAuth => ({ isAuth, isGlobal, emotes })))),
-				map(({ emotes, isGlobal, isAuth }) => isAuth && !isGlobal && !emotes.includes(emote?.getID() as string))
-			),
-			click: emote => this.clientService.isAuthenticated().pipe(
-				switchMap(ok => ok ? emote.addToChannel(this.clientService.id as string) : of(false))
-			)
-		},
-		{ // Remove from channel
-			label: 'Remove From Channel', icon: 'remove_circle',
-			condition: emote => this.clientService.getEmotes().pipe(
-				map(emotes => emotes.includes(emote?.getID() as string))
-			),
-			click: emote => this.clientService.isAuthenticated().pipe(
-				switchMap(ok => ok ? emote.removeFromChannel(this.clientService.id as string) : of(false))
-			)
-		},
-		{
-			label: 'Make Private',
-			icon: 'lock',
-			condition: emote => emote?.canEdit(this.clientService).pipe(
-				switchMap(canEdit => canEdit ? emote?.isPrivate().pipe(map(isPrivate => !isPrivate)) ?? EMPTY : of(false))
-			),
-			click: emote => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
-		},
-		{
-			label: 'Make Public',
-			icon: 'lock_open',
-			condition: emote => emote?.canEdit(this.clientService).pipe(
-				switchMap(canEdit => canEdit ? emote.isPrivate() : of(false))
-			),
-			click: emote => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.PRIVATE) })
-		},
-		{
-			label: 'Make Global',
-			icon: 'star',
-			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
-				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
-				map(({ isGlobal, hasPermission }) => !isGlobal && hasPermission)
-			),
-			click: (emote) => emote.edit({ visibility: BitField.AddBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
-		},
-		{
-			label: 'Revoke Global',
-			icon: 'star_half',
-			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
-				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
-				map(({ isGlobal, hasPermission }) => isGlobal && hasPermission)
-			),
-			click: (emote) => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
-		},
-		{
-			label: 'Delete',
-			icon: 'delete', color: this.themingService.warning,
-			condition: emote => emote?.canEdit(this.clientService),
-			click: emote => {
-				const dialogRef = this.dialog.open(EmoteDeleteDialogComponent, {
-					data: { emote }
-				});
-
-				return dialogRef.afterClosed().pipe(
-					filter(reason => reason !== null && typeof reason === 'string'),
-					switchMap(reason => emote?.delete(reason) ?? EMPTY),
-					switchMap(() => this.emotes.pipe(
-						take(1),
-						tap(emotes => this.emotes.next(emotes.filter(e => e.getID() !== emote.getID())))
-					))
-				);
-			}
-		}
-	] as EmoteListComponent.ContextMenuButtons[];
+		...this.emoteListService.interactions
+	] as EmoteListService.InteractButton[];
 
 	constructor(
 		private restService: RestService,
-		private clientService: ClientService,
 		private renderer: Renderer2,
 		private router: Router,
 		private windowRef: WindowRef,
 		private appService: AppService,
-		private dialog: MatDialog,
 		private localStorage: LocalStorageService,
 		private emoteListService: EmoteListService,
-		public svc: EmoteListService,
 		public themingService: ThemingService
 	) { }
 
-	onContextInteract(button: EmoteListComponent.ContextMenuButtons, emote: EmoteStructure): void {
+	onContextInteract(button: EmoteListService.InteractButton, emote: EmoteStructure): void {
 		if (typeof button.click === 'function' && !!emote) {
 			button.click(emote).subscribe();
 		}
@@ -279,14 +204,6 @@ export class EmoteListComponent implements OnInit {
 }
 
 export namespace EmoteListComponent {
-	export interface ContextMenuButtons {
-		label: string;
-		icon: string;
-		color?: string;
-		click: (emote: EmoteStructure) => Observable<void>;
-		condition?: (emote: EmoteStructure) => Observable<boolean>;
-	}
-
 	export interface PersistentPageOptions {
 		pageSize: number;
 		page: number;

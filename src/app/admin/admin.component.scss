@@ -19,3 +19,13 @@
 		}
 	}
 }
+
+.admin-content {
+	.admin-content-heading {
+		display: flex;
+		align-items: center;
+		height: 4em;
+		padding-left: 1em;
+		padding-right: 1em;
+	}
+}

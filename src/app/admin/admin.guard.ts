@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
-import { UrlTree, CanLoad } from '@angular/router';
-import { Constants } from '@typings/src/Constants';
-import { asapScheduler, iif, Observable, scheduled } from 'rxjs';
-import { concatAll, defaultIfEmpty, map, switchMap, take, toArray } from 'rxjs/operators';
+import { CanLoad } from '@angular/router';
+import { asapScheduler, Observable, scheduled } from 'rxjs';
+import { concatAll, defaultIfEmpty, map, take, tap, toArray } from 'rxjs/operators';
 import { AuthGuard } from 'src/app/auth.guard';
 import { ClientService } from 'src/app/service/client.service';
+import { RestService } from 'src/app/service/rest.service';
+import { UserService } from 'src/app/service/user.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AdminGuard extends AuthGuard implements CanLoad {
 	constructor(
-		protected clientService: ClientService
+		protected clientService: ClientService,
+		// tslint:disable:variable-name
+		_rs: RestService,
+		_us: UserService
+		// tslint:enable:variable-name
 	) {
 		super(clientService);
 	}
@@ -21,9 +26,8 @@ export class AdminGuard extends AuthGuard implements CanLoad {
 			super.canLoad(), // Client is authenticated?
 
 			// Get client's permissions and make sure it's high enough to access admin area
-			this.clientService.getRank().pipe(
+			this.clientService.canAccessAdminArea().pipe(
 				take(1),
-				map(rank => rank >= Constants.Users.Rank.MODERATOR),
 				defaultIfEmpty(false)
 			)
 		], asapScheduler).pipe(

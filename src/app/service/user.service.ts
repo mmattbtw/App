@@ -24,7 +24,6 @@ export class UserService {
 		clientService.isAuthenticated().pipe(
 			filter(b => b === true),
 			take(1),
-			tap(() => console.log('Client Snaapshot', clientService.getSnapshot())),
 			tap(() => this.new(clientService.getSnapshot() as DataStructure.TwitchUser))
 		).subscribe();
 	}
@@ -44,7 +43,6 @@ export class UserService {
 			user = this.clientService;
 		} else {
 			user = new UserStructure().pushData(data);
-			console.log(`Created New User ${user.id}:${user.getSnapshot()?.login} (DID: ${user.debugID})`);
 
 			this.cache.set(user.id, user);
 		}
@@ -56,8 +54,7 @@ export class UserService {
 		const id = !!data.id ? String(data.id) : null;
 		if (!id) return undefined;
 
-		const role = this.roles.get(id) ?? new RoleStructure();
-		role.pushData(data);
+		const role = this.roles.get(id) ?? new RoleStructure().pushData(data);
 
 		(!!id && !this.roles.has(id) ? this.roles.set(id, role) : noop());
 	}

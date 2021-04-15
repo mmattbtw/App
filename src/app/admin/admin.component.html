@@ -14,5 +14,12 @@
 		</div>
 	</div>
 
-	<router-outlet></router-outlet>
+	<!-- Content -->
+	<div class="admin-content h-100 w-100">
+		<div class="admin-content-heading mat-elevation-z3" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+			<span></span>
+		</div>
+
+		<router-outlet></router-outlet>
+	</div>
 </div>

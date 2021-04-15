@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { asapScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
-import { concatAll, count, filter, map, switchMap, tap } from 'rxjs/operators';
+import { concatAll, count, filter, map, mergeAll, switchMap, take, tap } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
@@ -34,7 +34,7 @@ export class ClientService extends UserStructure {
 		}
 
 		if (this.isAuth) return this;
-		if (!!data?.id || !!data?.id) {
+		if (!!data?.id) {
 			this.setAuthState(!!data);
 			this.logger.info(`Signed in as ${data.display_name}.`);
 		} else {
@@ -75,9 +75,10 @@ export class ClientService extends UserStructure {
 			this.hasPermission('MANAGE_USERS'),
 			this.hasPermission('BAN_USERS'),
 		], asapScheduler).pipe(
-			concatAll(),
+			mergeAll(),
 			filter(b => b === true),
 			count(),
+			tap(x => console.log('Perms', x)),
 			map(c => c > 0)
 		);
 	}

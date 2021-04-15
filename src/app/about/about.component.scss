@@ -1,4 +1,16 @@
-.centered {
-    width: 70vw;
-    margin: 4vh auto;
+.about {
+    display: flex;
+    flex-direction: column;
+
+    .heading {
+        z-index: 1;
+        padding: 1em;
+        display: flex;
+        align-items: center;
+    }
+
+    .content {
+        display: block;
+        padding: 2.5%;
+    }
 }

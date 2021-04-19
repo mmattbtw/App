@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, CanLoad } from '@angular/router';
-import { Observable, of, throwError, TimeoutError } from 'rxjs';
-import { filter } from 'rxjs/internal/operators/filter';
-import { take, catchError, timeout, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 
 @Injectable({
@@ -26,9 +25,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
 	private isAuth(): Observable<boolean> {
 		return this.clientService.isAuthenticated().pipe(
-			filter(isAuth => isAuth === true),
-			timeout(2500),
-			catchError(err => err instanceof TimeoutError ? of(false) : throwError(err)),
 			take(1)
 		);
 	}

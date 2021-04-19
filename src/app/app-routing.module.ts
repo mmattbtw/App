@@ -39,7 +39,9 @@ const routes: Routes = [
 		},
 		canActivate: [CallbackGuard],
 		component: HomeComponent
-	}
+	},
+
+	{ path: '**', redirectTo: '/' }
 ];
 
 @NgModule({

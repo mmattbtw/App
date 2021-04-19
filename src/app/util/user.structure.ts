@@ -1,14 +1,16 @@
 import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { defaultIfEmpty, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { UserService } from 'src/app/service/user.service';
 import { RoleStructure } from 'src/app/util/role.structure';
 
 export class UserStructure {
 	debugID = Math.random().toString(36).substring(7);
 	id = '';
+
+	protected pushed = false;
 	protected data = new BehaviorSubject<Partial<DataStructure.TwitchUser> | null>(null).pipe(
 		filter(v => v !== null)
 	) as BehaviorSubject<Partial<DataStructure.TwitchUser> | null>;
@@ -32,6 +34,7 @@ export class UserStructure {
 			UserService.Get().cacheRole(data.role);
 		}
 
+		this.pushed = true;
 		this.data.next(data);
 		this.snapshot = data;
 
@@ -102,14 +105,19 @@ export class UserStructure {
 	}
 
 	hasPermission(flag: keyof typeof DataStructure.Role.Permission): Observable<boolean> {
-		return this.getRole().pipe(
+		return this.data$(this.getRole().pipe(
 			take(1),
 			switchMap(role => role.getAllowed()),
-			map(allowed => BitField.HasBits64(allowed, DataStructure.Role.Permission[flag]) || BitField.HasBits64(allowed, DataStructure.Role.Permission.ADMINISTRATOR))
-		);
+			map(allowed => BitField.HasBits64(allowed, DataStructure.Role.Permission[flag]) || BitField.HasBits64(allowed, DataStructure.Role.Permission.ADMINISTRATOR)),
+			defaultIfEmpty(false)
+		), false);
 	}
 
 	getSnapshot(): Partial<DataStructure.TwitchUser> | null {
 		return this.snapshot;
+	}
+
+	protected data$<T, D>(withSource: Observable<T>, value: D): Observable<T> | Observable<D> {
+		return !this.pushed ? of(value) : withSource;
 	}
 }

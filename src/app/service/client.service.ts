@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { asapScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
-import { concatAll, count, filter, map, mergeAll, switchMap, take, tap } from 'rxjs/operators';
+import { map, zipAll } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
@@ -73,13 +73,10 @@ export class ClientService extends UserStructure {
 			this.hasPermission('MANAGE_ROLES'),
 			this.hasPermission('MANAGE_STACK'),
 			this.hasPermission('MANAGE_USERS'),
-			this.hasPermission('BAN_USERS'),
+			this.hasPermission('BAN_USERS')
 		], asapScheduler).pipe(
-			mergeAll(),
-			filter(b => b === true),
-			count(),
-			tap(x => console.log('Perms', x)),
-			map(c => c > 0)
+			zipAll(),
+			map(perms => perms.filter(b => b === true).length > 0)
 		);
 	}
 

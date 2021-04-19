@@ -22,6 +22,7 @@
           "options": {
             "outputPath": "dist/seventv-app/browser",
             "index": "src/index.html",
+            "showCircularDependencies": false,
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
@@ -47,6 +48,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "showCircularDependencies": false,
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,

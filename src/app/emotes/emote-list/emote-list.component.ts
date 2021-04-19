@@ -1,16 +1,11 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
-import { ChangeDetectionStrategy, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { BitField } from '@typings/src/BitField';
-import { DataStructure } from '@typings/typings/DataStructure';
-import { Subject, BehaviorSubject, Observable, EMPTY, of } from 'rxjs';
-import { delay, filter, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { Subject, BehaviorSubject, Observable, of } from 'rxjs';
+import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
-import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { AppService } from 'src/app/service/app.service';
-import { ClientService } from 'src/app/service/client.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
@@ -34,7 +29,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 			transition('* => *', [
 				query('.is-emote-card:enter', [
 					style({ opacity: 0, transform: 'translateX(5em) translateY(-20em)' }),
-					stagger(11, [
+					stagger(9, [
 						animate('475ms ease-in-out', keyframes([
 							style({ opacity: 0, offset: 0.475 }),
 							style({ opacity: 1, transform: 'none', offset: 1 })
@@ -45,7 +40,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 				group([
 					query('.is-emote-card:not(.selected-emote-card):leave', [
 						style({ opacity: 1 }),
-						stagger(-9.25, [
+						stagger(-6, [
 							animate('200ms', style({ transform: 'scale(0)' }))
 						])
 					], { optional: true }),
@@ -67,15 +62,17 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmoteListComponent implements OnInit {
+export class EmoteListComponent implements OnInit, AfterViewInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
 	emotes = new BehaviorSubject<any>(Array(16).fill(new EmoteStructure(this.restService))).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
 	totalEmotes = new BehaviorSubject<number>(0);
 	contextEmote: EmoteStructure | null = null;
 
+	@ViewChild('emotesContainer') emotesContainer: ElementRef<HTMLDivElement> | undefined;
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
 	pageOptions: EmoteListComponent.PersistentPageOptions | undefined;
+	pageSize = new BehaviorSubject<number>(16);
 	currentSearchOptions: RestV2.GetEmotesOptions | undefined;
 	currentSearchQuery = '';
 
@@ -176,7 +173,32 @@ export class EmoteListComponent implements OnInit {
 		).subscribe();
 	}
 
-	ngOnInit(): void {
+	/**
+	 * Calculate how many rows and columns according to the container's size
+	 *
+	 * @returns the result of rows * columns
+	 */
+	calculateSizedRows(): number | null {
+		if (!this.emotesContainer) {
+			return null;
+		}
+
+		const marginBuffer = 28; // The margin _in pixels between each card
+		const cardSize = 140; // The size of the cards in pixels
+		const width = this.emotesContainer.nativeElement.scrollWidth - 32; // The width of emotes container
+		const height = this.emotesContainer.nativeElement.scrollHeight - 16; // The height of the emotes container
+
+		const rows = Math.floor((width / (cardSize + marginBuffer))); // The calculated amount of rows
+		const columns = Math.floor(height / (cardSize + marginBuffer)); // The calculated amount of columns
+
+		// Return the result of rows multiplied by columns
+		return rows * columns;
+	}
+
+	ngAfterViewInit(): void {
+		const pageSize = this.calculateSizedRows() ?? 0;
+		this.pageSize.next(pageSize);
+
 		this.currentSearchOptions = {
 			sortBy: this.emoteListService.searchForm.get('sortBy')?.value,
 			sortOrder: this.emoteListService.searchForm.get('sortOrder')?.value,
@@ -194,12 +216,14 @@ export class EmoteListComponent implements OnInit {
 			});
 			this.pageOptions = o;
 		} else {
-			this.getEmotes().pipe(
+			this.getEmotes(1, pageSize).pipe(
 				toArray(),
 				map(emotes => this.emotes.next(emotes))
 			).subscribe();
 		}
 	}
+
+	ngOnInit(): void {}
 
 }
 

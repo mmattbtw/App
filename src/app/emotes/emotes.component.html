@@ -1,18 +1,25 @@
-<div class="emotes h-100 container">
-	<div class="row emotes-heading">
-		<!-- Title -->
-		<div class="col-6"></div>
+<div class="emotes">
+    <!-- Heading -->
+    <div class="heading mat-elevation-z3" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
+		<span>
+        	<mat-icon [svgIcon]="(themingService.getSvgIcon('zulul') | async) || ''"></mat-icon>
+        	<span class="ml-1">Emotes</span>
+		</span>
 
-		<!-- Buttons -->
-		<div class="col-6">
-			<div class="d-flex justify-content-end" *ngIf="clientService.hasPermission('CREATE_EMOTE') | async">
-				<button mat-raised-button [disabled]="(clientService.isAuthenticated() | async) === (false)" [routerLink]="['/emotes', 'create']">
-					<mat-icon>add</mat-icon>
-					ADD EMOTE
-				</button>
-			</div>
+		<div class="d-flex justify-content-end" [matTooltip]="(clientService.hasPermission('CREATE_EMOTE') | async) ? '' : 'You must be signed in to do that'">
+			<button mat-raised-button
+				[disabled]="(clientService.hasPermission('CREATE_EMOTE') | async) !== true"
+				
+				[routerLink]="['/emotes', 'create']"
+				color="primary"
+			>
+				<mat-icon>add</mat-icon>
+				ADD EMOTE
+			</button>
 		</div>
-	</div>
+    </div>
 
-	<router-outlet></router-outlet>
+	<div class="content flex-fill">
+		<router-outlet></router-outlet>
+	</div>
 </div>

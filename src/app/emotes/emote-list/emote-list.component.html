@@ -1,6 +1,6 @@
-<div class="row justify-content-center justify-content-lg-start">
+<div class="emote-list flex-fill row justify-content-center justify-content-lg-start">
 	<!-- Sidebar -->
-	<div class="emotes-sidebar col-9 col-lg-3 col-xl-3">
+	<div class="emotes-sidebar col-12 col-lg-3 col-xl-3">
 		<app-emote-search (searchChange)="handleSearchChange($event)"></app-emote-search>
 	</div>
 	<div class="col-12 d-block d-lg-none my-3"></div>
@@ -10,18 +10,20 @@
 
 		<div class="col p-2 emotes-list">
 			<!-- List Emote Cards -->
-			<div class="d-flex flex-wrap align-items-start justify-content-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
-				<div (click)="selectEmote(emoteEl, emote)"  #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
-					<app-emote-card [emote]="emote" [contextMenu]="emoteContextMenu" (openContext)="contextEmote = $event">
-		
-					</app-emote-card>
+			<div #emotesContainer class="d-flex flex-fill align-items-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
+				<div class="d-flex flex-wrap justify-content-center">
+					<div (click)="selectEmote(emoteEl, emote)"  #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
+						<app-emote-card [emote]="emote" [contextMenu]="emoteContextMenu" (openContext)="contextEmote = $event">
+			
+						</app-emote-card>
+					</div>
 				</div>
 			</div>
 		
 			<!-- Pagination menu -->
 			<mat-paginator #paginator (page)="onPageEvent($event)" [@fadeout]="selecting | async"
 				[showFirstLastButtons]="true" [pageIndex]="pageOptions?.page" [length]="pageOptions?.length"
-				[length]="totalEmotes | async" [pageSize]="16" [pageSizeOptions]="[8, 16, 32, 64]">
+				[length]="totalEmotes | async" [pageSize]="pageSize | async">
 		
 			</mat-paginator>
 		</div>

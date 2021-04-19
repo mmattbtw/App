@@ -1,5 +1,20 @@
 .emotes {
-	padding: 1em;
+    display: flex;
+    flex-direction: column;
+	height: 100%;
+
+    .heading {
+        z-index: 1;
+        padding: 1em;
+        display: flex;
+        align-items: center;
+		justify-content: space-between;
+    }
+
+	.content {
+        display: block;
+        padding: .75em;
+	}
 }
 
 .emotes-heading {

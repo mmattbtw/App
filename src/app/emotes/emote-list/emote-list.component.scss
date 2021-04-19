@@ -1,8 +1,23 @@
-.emotes-list div {
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
-}
 
-.is-emote-card {
-	margin: 1em;
+
+.emote-list {
+    display: flex;
+	height: 100%;
+	
+	.emotes-list {
+		display: flex;
+		flex-direction: column;
+		align-content: space-between;
+		height: 100%;
+
+		div {
+			border-top-left-radius: 8px;
+			border-top-right-radius: 8px;
+		}
+
+	}
+	
+	.is-emote-card {
+		margin: 1em;
+	}
 }

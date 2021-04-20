@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { noop, Observable, of, throwError } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { RoleStructure } from 'src/app/util/role.structure';

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Constants } from '@typings/src/Constants';
-import { asapScheduler, Observable, race, scheduled } from 'rxjs';
-import { concatAll, count, delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { delay, switchMap, take } from 'rxjs/operators';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { MatDrawer } from '@angular/material/sidenav';
 import { Title } from '@angular/platform-browser';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { map, mergeAll, tap, withLatestFrom } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { map, mergeAll, tap } from 'rxjs/operators';
 
 @Injectable({
 	providedIn: 'root'

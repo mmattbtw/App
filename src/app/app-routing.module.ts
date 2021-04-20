@@ -9,9 +9,9 @@ const routes: Routes = [
 	{
 		path: '',
 		data: {
-			title: 'Home %cock'
+			title: 'Home'
 		},
-		component: HomeComponent
+		loadChildren: () => import('src/app/home/home.module').then(m => m.HomeModule)
 	},
 	{
 		path: 'about',

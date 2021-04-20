@@ -53,6 +53,7 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
+              "commonChunk": true,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,

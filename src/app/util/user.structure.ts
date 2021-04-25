@@ -31,7 +31,7 @@ export class UserStructure {
 			this.id = data.id;
 		}
 		if (!!data.role) {
-			UserService.Get().cacheRole(data.role);
+			UserService.Get()?.cacheRole(data.role);
 		}
 
 		this.pushed = true;

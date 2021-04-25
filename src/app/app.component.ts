@@ -8,6 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { iconList } from 'src/app/icons-register';
 import { AppService } from 'src/app/service/app.service';
+import { UserService } from 'src/app/service/user.service';
 import { ViewportService } from 'src/app/service/viewport.service';
 
 @Component({
@@ -28,6 +29,8 @@ export class AppComponent implements OnInit {
 		sanitizer: DomSanitizer,
 		appService: AppService,
 		titleService: Title,
+		// tslint:disable-next-line:variable-name
+		private _userService: UserService,
 		private location: Location,
 		private router: Router,
 		private overlayRef: OverlayContainer,

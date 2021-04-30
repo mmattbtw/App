@@ -131,10 +131,10 @@ export class EmoteFormService {
 
 						if (ev.code === 1000) { // Normal Closure: upload was successful!
 							this.uploading.next(false);
-							this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?._id), 4));
+							this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?.id), 4));
 							setTimeout(() => {
 								this.form.reset();
-								this.router.navigate(['/emotes', returnedData?._id]);
+								this.router.navigate(['/emotes', returnedData?.id]);
 							}, 200);
 						} else { // Abnormal Closure (likely 1011): display error
 							this.processError.next(`Error: ${ev.reason ?? 'Unknown'}`);
@@ -144,7 +144,7 @@ export class EmoteFormService {
 					};
 
 					// Send the message, requesting the server to start sending processing events
-					ws.send(JSON.stringify({ type: 'CreateEmote:Status', payload: { emoteId: returnedData?._id } }));
+					ws.send(JSON.stringify({ type: 'CreateEmote:Status', payload: { emoteId: returnedData?.id } }));
 				};
 			}
 		};

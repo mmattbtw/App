@@ -60,7 +60,8 @@ export class RestV2 {
 						name
 					}
 				}
-			`
+			`,
+			auth: true
 		}).pipe(
 			map(res => ({
 				emotes: res?.body?.data.search_emotes ?? [],
@@ -83,7 +84,8 @@ export class RestV2 {
 				}
 
 				${isFiltered ? '' : GQLFragments.FullEmote(includeActivity)}
-			`
+			`,
+			auth: true
 		}).pipe(
 			map(res => ({ emote: res?.body?.data.emote as DataStructure.Emote }))
 		);

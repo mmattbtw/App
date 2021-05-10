@@ -18,12 +18,20 @@
 
 		<!-- Display Brwowser Downloads -->
 		<span class="d-flex flex-row browser-downloads">
-			<div [@browserIcon] matRipple [matRippleCentered]="true" [matRippleUnbounded]="true" [matRippleRadius]="8 * 6" class="browser-icon" *ngFor="let icon of browserIcons" [matTooltip]="'Install on ' + icon.icon">
-				<mat-icon [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null">
-
-				</mat-icon>
+			
+			<div *ngFor="let icon of browserIcons">
+				<div class="browser-icon">	
+					<div class="tag" [appColor]="icon.tag?.color" [isBackground]="true">
+						<span>{{icon.tag?.label}}</span>
+					</div>
+	
+					<div [@browserIcon] matRipple [matRippleCentered]="true" [matRippleUnbounded]="true" [matRippleRadius]="8 * 6" class="icon" [matTooltip]="'Install on ' + icon.icon">
+						<mat-icon [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null">
+		
+						</mat-icon>
+					</div>
+				</div>
 			</div>
-
 		</span>
 	</div>
 

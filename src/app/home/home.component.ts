@@ -27,15 +27,27 @@ export class HomeComponent implements OnInit {
 	browserIcons = [
 		{
 			icon: 'chrome',
-			click: () => window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank')
+			click: () => window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank'),
+			tag: {
+				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
+				label: '1.5.0'
+			}
 		},
 		{
 			icon: 'firefox',
-			click: () => window.open('https://github.com/SevenTV/SevenTV', '_blank')
+			click: () => window.open('https://addons.mozilla.org/en-US/firefox/addon/7tv/', '_blank'),
+			tag: {
+				color: this.themingService.accent.darken(.4).hex(),
+				label: 'NEW!'
+			}
 		},
 		{
 			icon: 'chatterino',
-			click: () => window.open('https://github.com/SevenTV/SevenTV', '_blank')
+			click: () => window.open('hhttps://github.com/SevenTV/SevenTV#chatterino', '_blank'),
+			tag: {
+				color: this.themingService.bg.darken(.75).hex(),
+				label: 'SOON'
+			}
 		}
 	] as HomeComponent.BrowserIcon[];
 
@@ -77,6 +89,10 @@ export namespace HomeComponent {
 	export interface BrowserIcon {
 		icon: string;
 		click: (ev: MouseEvent) => void;
+		tag?: {
+			label: string;
+			color: string;
+		};
 	}
 
 	export interface FooterOptions {

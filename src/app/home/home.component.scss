@@ -8,9 +8,35 @@
 }
 
 .browser-icon {
-	cursor: pointer;
-	border-radius: 50%;
-	margin: 2em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	.icon {
+		cursor: pointer;
+		border-radius: 50%;
+		margin-left: 2em;
+		margin-right: 2em;
+		margin-bottom: 1em;
+	}
+
+	.tag {
+		z-index: 1;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		margin-bottom: 1.15em;
+		border-radius: 1em;
+		max-width: 4em;
+		font-size: .65rem;
+		height: 16px;
+
+		span {
+			margin: .3em;
+		}
+	}
 }
 
 .browser-downloads {

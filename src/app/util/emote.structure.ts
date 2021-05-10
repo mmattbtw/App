@@ -1,32 +1,33 @@
-import { Injectable } from '@angular/core';
 import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, EMPTY, iif, noop, Observable, of, throwError } from 'rxjs';
+import { EMPTY, iif, noop, Observable, of, throwError } from 'rxjs';
 import { catchError, filter, map, mapTo, mergeAll, switchMap, take, tap } from 'rxjs/operators';
+import { AppInjector } from 'src/app/service/app.injector';
+import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
-import { UserService } from 'src/app/service/user.service';
+import { Structure } from 'src/app/util/abstract.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
-
-
-@Injectable({ providedIn: 'root'})
-export class EmoteStructure {
+export class EmoteStructure extends Structure<'emote'> {
 	private id: string | undefined;
-	private data = new BehaviorSubject<DataStructure.Emote | (null | undefined)>(undefined);
-	constructor(
-		private restService: RestService
-	) {}
+	restService: RestService;
+
+	constructor(dataService: DataService) {
+		super(dataService);
+
+		this.restService = AppInjector.get(RestService);
+	}
 
 	/**
 	 * Add data to this emote
 	 */
-	pushData(data: DataStructure.Emote | (null | undefined)): EmoteStructure {
+	pushData(data: DataStructure.Emote): EmoteStructure {
 		this.id = String(data?.id);
 		this.data.next(data);
 
 		if (!!data?.owner) {
-			UserService.Get()?.new(data.owner as DataStructure.TwitchUser);
+			this.dataService.add('user', data.owner);
 		}
 
 		return this;
@@ -64,7 +65,7 @@ export class EmoteStructure {
 	getOwner(): Observable<UserStructure | undefined> {
 		return this.data.pipe(
 			take(1),
-			map(d => !!d?.owner ? UserService.Get().new(d.owner as DataStructure.TwitchUser) : undefined)
+			map(d => !!d?.owner ? this.dataService.add('user', d.owner as DataStructure.TwitchUser)[0] : undefined)
 		);
 	}
 

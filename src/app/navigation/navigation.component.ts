@@ -39,7 +39,6 @@ export class NavigationComponent implements OnInit {
 			path: '/admin',
 			color: this.themingService.primary,
 			condition: this.clientService.getRole().pipe(
-				take(1),
 				delay(0),
 				switchMap(() => this.clientService.canAccessAdminArea())
 			),

@@ -13,7 +13,6 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 import { format } from 'date-fns';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserStructure } from 'src/app/util/user.structure';
-import { UserService } from 'src/app/service/user.service';
 import { ErrorDialogComponent } from 'src/app/util/dialog/error-dialog/error-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { DataStructure } from '@typings/typings/DataStructure';
@@ -22,6 +21,7 @@ import { AppComponent } from 'src/app/app.component';
 import { DOCUMENT } from '@angular/common';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { BitField } from '@typings/src/BitField';
+import { DataService } from 'src/app/service/data.service';
 
 @Component({
 	selector: 'app-emote',
@@ -66,9 +66,9 @@ export class EmoteComponent implements OnInit {
 		private router: Router,
 		private cdr: ChangeDetectorRef,
 		private dialog: MatDialog,
-		private userService: UserService,
 		private appService: AppService,
 		private emoteListService: EmoteListService,
+		private dataService: DataService,
 		public themingService: ThemingService,
 		public clientService: ClientService
 	) { }
@@ -129,7 +129,7 @@ export class EmoteComponent implements OnInit {
 
 		return this.emote.getChannels().pipe(
 			take(1),
-			map(channels => Array.isArray(channels) ? channels.map(user => this.userService.new(user as DataStructure.TwitchUser)) ?? [] : []),
+			map(channels => Array.isArray(channels) ? channels.map(user => this.dataService.add('user', user as DataStructure.TwitchUser)[0]) ?? [] : []),
 			tap(users => this.channels.next(users))
 		);
 	}
@@ -137,11 +137,6 @@ export class EmoteComponent implements OnInit {
 	readAuditActivity(): Observable<DataStructure.AuditLog.Entry[]> {
 		return this.emote?.getAuditActivityString().pipe(
 			map(entryString => JSON.parse(entryString) as DataStructure.AuditLog.Entry),
-			// Get action user
-			concatMap(entry => this.userService.getOne(String(entry.action_user)).pipe(
-				tap(user => (entry as EmoteComponent.AuditEntry).action_user_instance = user),
-				mapTo(entry)
-			)),
 
 			toArray(),
 			map(a => a.reverse())
@@ -174,12 +169,6 @@ export class EmoteComponent implements OnInit {
 		) ?? of(false);
 	}
 
-	getEmoteOwner(): Observable<UserStructure> {
-		return this.emote?.getOwnerID().pipe(
-			switchMap(ownerID => this.userService.getOne(ownerID as string))
-		) ?? EMPTY;
-	}
-
 	ngOnInit(): void {
 		// Look up requested emote from route uri
 		if (this.route.snapshot.paramMap.has('emote')) { // Route URI has emote param?
@@ -190,7 +179,7 @@ export class EmoteComponent implements OnInit {
 					{ name: 'EmoteName', value: res.emote?.name ?? '' },
 					{ name: 'OwnerName', value: `by ${res.emote?.owner?.display_name ?? ''}` }
 				])),
-				map(res => this.emote = new EmoteStructure(this.restService).pushData(res.emote)),
+				map(res => this.emote = this.dataService.add('emote', res.emote)[0]),
 				switchMap(emote => this.readChannels().pipe(mapTo(emote))),
 
 				// Update meta

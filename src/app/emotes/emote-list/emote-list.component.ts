@@ -1,11 +1,12 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, BehaviorSubject, Observable, of } from 'rxjs';
 import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { AppService } from 'src/app/service/app.service';
+import { DataService } from 'src/app/service/data.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
@@ -65,7 +66,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 export class EmoteListComponent implements OnInit, AfterViewInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
-	emotes = new BehaviorSubject<any>(Array(16).fill(new EmoteStructure(this.restService))).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
+	emotes = new BehaviorSubject<any>(Array(16).fill(new EmoteStructure(this.dataService))).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
 	totalEmotes = new BehaviorSubject<number>(0);
 	contextEmote: EmoteStructure | null = null;
 
@@ -105,6 +106,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 		private appService: AppService,
 		private localStorage: LocalStorageService,
 		private emoteListService: EmoteListService,
+		private dataService: DataService,
 		public themingService: ThemingService
 	) { }
 
@@ -132,7 +134,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 		this.appService.pushTitleAttributes({ name: 'SearchOptions', value: `- ${queryString}` });
 
 		this.currentSearchOptions = { ...this.currentSearchOptions, ...change as RestV2.GetEmotesOptions };
-		this.getEmotes(undefined, undefined, this.currentSearchOptions).pipe(
+		this.getEmotes(undefined, this.currentSearchOptions).pipe(
 			toArray(),
 			tap(() => this.emotes.next([])),
 			delay(50),
@@ -140,14 +142,16 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 		).subscribe();
 	}
 
-	getEmotes(page = 1, pageSize = 16, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure> {
-		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, this.pageOptions?.pageSize ?? pageSize, options ?? this.currentSearchOptions).pipe(
+	getEmotes(page = 1, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure> {
+		const pageSize = this.calculateSizedRows();
+
+		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, pageSize ?? undefined, options ?? this.currentSearchOptions).pipe(
 			tap(res => this.totalEmotes.next(res?.total_estimated_size ?? 0)),
 			tap(() => this.emotes.next([])),
 			delay(200),
 			map(res => res?.emotes ?? []),
 			mergeAll(),
-			map(data => new EmoteStructure(this.restService).pushData(data))
+			map(data => this.dataService.add('emote', data)[0])
 		);
 	}
 
@@ -167,7 +171,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 		this.appService.pushTitleAttributes({ name: 'PageIndex', value: `- ${ev.pageIndex + 1}/${Number((ev.length / ev.pageSize).toFixed(0)) + 1}` });
 
 		// Fetch new set of emotes
-		this.getEmotes(ev.pageIndex + 1, ev.pageSize).pipe(
+		this.getEmotes(ev.pageIndex + 1).pipe(
 			toArray(),
 			tap(emotes => this.emotes.next(emotes))
 		).subscribe();
@@ -184,7 +188,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 		}
 
 		const marginBuffer = 28; // The margin _in pixels between each card
-		const cardSize = 140; // The size of the cards in pixels
+		const cardSize = 137; // The size of the cards in pixels
 		const width = this.emotesContainer.nativeElement.scrollWidth - 32; // The width of emotes container
 		const height = this.emotesContainer.nativeElement.scrollHeight - 16; // The height of the emotes container
 
@@ -216,7 +220,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 			});
 			this.pageOptions = o;
 		} else {
-			this.getEmotes(1, pageSize).pipe(
+			this.getEmotes(1).pipe(
 				toArray(),
 				map(emotes => this.emotes.next(emotes))
 			).subscribe();

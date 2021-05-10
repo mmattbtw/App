@@ -4,8 +4,6 @@ import { asapScheduler, noop, Observable, scheduled } from 'rxjs';
 import { concatAll, defaultIfEmpty, map, take, tap, toArray } from 'rxjs/operators';
 import { AuthGuard } from 'src/app/auth.guard';
 import { ClientService } from 'src/app/service/client.service';
-import { RestService } from 'src/app/service/rest.service';
-import { UserService } from 'src/app/service/user.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -14,10 +12,6 @@ export class AdminGuard extends AuthGuard implements CanLoad {
 	constructor(
 		protected clientService: ClientService,
 		private router: Router,
-		// tslint:disable:variable-name
-		_rs: RestService,
-		_us: UserService
-		// tslint:enable:variable-name
 	) {
 		super(clientService);
 	}

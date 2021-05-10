@@ -1,4 +1,3 @@
-import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';

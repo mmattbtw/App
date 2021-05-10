@@ -3,9 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
+import { DataService } from 'src/app/service/data.service';
 import { LoggerService } from 'src/app/service/logger.service';
+import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
-import { UserService } from 'src/app/service/user.service';
 import { RoleStructure } from 'src/app/util/role.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
@@ -22,8 +23,9 @@ export class UserComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private route: ActivatedRoute,
-		private userService: UserService,
 		private loggerService: LoggerService,
+		private restService: RestService,
+		private dataService: DataService,
 		public clientService: ClientService,
 		public themingService: ThemingService
 	) { }
@@ -38,7 +40,9 @@ export class UserComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.route.paramMap.pipe(
 			map(params => params.get('user') as string),
-			switchMap(id => this.userService.getOne(id)),
+			switchMap(id => this.restService.v2.GetUser(id).pipe(
+				map(res => this.dataService.add('user', res.user)[0])
+			)),
 			tap(user => this.isClientUser = user.getSnapshot()?.id === this.clientService.getSnapshot()?.id),
 			tap(user => this.user.next(user))
 		).subscribe({

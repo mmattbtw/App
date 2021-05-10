@@ -1,28 +1,20 @@
 import { BitField } from '@typings/src/BitField';
-import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { defaultIfEmpty, filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { UserService } from 'src/app/service/user.service';
+import { Observable, of } from 'rxjs';
+import { defaultIfEmpty, map, switchMap } from 'rxjs/operators';
+import { Structure } from 'src/app/util/abstract.structure';
 import { RoleStructure } from 'src/app/util/role.structure';
 
-export class UserStructure {
+export class UserStructure extends Structure<'user'> {
 	debugID = Math.random().toString(36).substring(7);
 	id = '';
 
-	protected pushed = false;
-	protected data = new BehaviorSubject<Partial<DataStructure.TwitchUser> | null>(null).pipe(
-		filter(v => v !== null)
-	) as BehaviorSubject<Partial<DataStructure.TwitchUser> | null>;
-	protected snapshot: Partial<DataStructure.TwitchUser> | null = null;
-
-	constructor() {}
 	/**
 	 * Push data onto this user.
 	 *
 	 * @param data Twitch User data
 	 */
-	pushData(data: Partial<DataStructure.TwitchUser> | null): UserStructure {
+	pushData(data: DataStructure.TwitchUser | null): UserStructure {
 		if (!data) {
 			return this;
 		}
@@ -31,7 +23,7 @@ export class UserStructure {
 			this.id = data.id;
 		}
 		if (!!data.role) {
-			UserService.Get()?.cacheRole(data.role);
+			this.dataService.add('role', data.role);
 		}
 
 		this.pushed = true;
@@ -49,7 +41,6 @@ export class UserStructure {
 
 	getID(): Observable<string> {
 		return this.data.asObservable().pipe(
-			take(1),
 			map(data => !!data?.id ? String(data.id) : DataStructure.NullObjectId)
 		);
 	}
@@ -59,7 +50,6 @@ export class UserStructure {
 	 */
 	getUsername(): Observable<string | null> {
 		return this.data.asObservable().pipe(
-			take(1),
 			map(data => data?.display_name ?? null)
 		);
 	}
@@ -69,28 +59,14 @@ export class UserStructure {
 	 */
 	getAvatarURL(): Observable<string | null> {
 		return this.data.asObservable().pipe(
-			take(1),
 			map(data => data?.profile_image_url ?? null)
-		);
-	}
-
-	/**
-	 * Get the user's rank
-	 *
-	 * @deprecated no longer returned in v2, use role
-	 */
-	getRank(): Observable<Constants.Users.Rank> {
-		return this.data.asObservable().pipe(
-			take(1),
-			map(data => data?.rank ?? Constants.Users.Rank.DEFAULT)
 		);
 	}
 
 	getRole(): Observable<RoleStructure> {
 		return this.data.asObservable().pipe(
-			take(1),
-			map(data => data?.role ?? { name: 'Default' } as DataStructure.Role),
-			map(role => UserService.Get().getRole(role.id))
+			map(data => data?.role ?? { id: 'Default', name: 'Default' } as DataStructure.Role),
+			map(role => this.dataService.add('role', role)[0])
 		);
 	}
 
@@ -99,14 +75,12 @@ export class UserStructure {
 	 */
 	getEmotes(): Observable<string[]> {
 		return this.data.asObservable().pipe(
-			take(1),
 			map(data => data?.emote_ids as string[] ?? [])
 		);
 	}
 
 	hasPermission(flag: keyof typeof DataStructure.Role.Permission): Observable<boolean> {
 		return this.data$(this.getRole().pipe(
-			take(1),
 			switchMap(role => role.getAllowed()),
 			map(allowed => BitField.HasBits64(allowed, DataStructure.Role.Permission[flag]) || BitField.HasBits64(allowed, DataStructure.Role.Permission.ADMINISTRATOR)),
 			defaultIfEmpty(false)

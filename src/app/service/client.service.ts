@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { asapScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
 import { map, zipAll } from 'rxjs/operators';
+import { DataService } from 'src/app/service/data.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
@@ -16,9 +17,10 @@ export class ClientService extends UserStructure {
 
 	constructor(
 		public localStorage: LocalStorageService,
-		private logger: LoggerService
+		private logger: LoggerService,
+		dataService: DataService
 	) {
-		super();
+		super(dataService);
 	}
 
 	/**

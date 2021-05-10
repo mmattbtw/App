@@ -14,9 +14,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { ThemingService } from 'src/app/service/theming.service';
 import * as Color from 'color';
 import { EmoteStructure } from 'src/app/util/emote.structure';
-import { UserService } from 'src/app/service/user.service';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
+import { DataService } from 'src/app/service/data.service';
+import { RestService } from 'src/app/service/rest.service';
 @Injectable({providedIn: 'root'})
 export class EmoteListService {
 	currentPage = Number(this.localStorage.getItem('el_pagination_page')) ?? 0;
@@ -93,7 +94,10 @@ export class EmoteListService {
 
 				return dialogRef.afterClosed().pipe(
 					filter(newOwner => newOwner !== null),
-					switchMap(newOwner => this.userService.getOne(newOwner).pipe(switchMap(user => user.getID().pipe(take(1))))),
+					switchMap(newOwner => this.restService.v2.GetUser(newOwner).pipe(
+						map(res => this.dataService.add('user', res.user)[0]),
+						switchMap(user => user.getID().pipe(take(1)))
+					)),
 					switchMap(newOwnerID => emote?.edit({ owner_id: newOwnerID as string }, '', ['name', 'owner { id, display_name, login, profile_image_url }']) ?? EMPTY)
 				);
 			}
@@ -119,10 +123,11 @@ export class EmoteListService {
 	constructor(
 		private localStorage: LocalStorageService,
 		private clientService: ClientService,
-		private userService: UserService,
 		private dialog: MatDialog,
 		private router: Router,
-		private themingService: ThemingService
+		private themingService: ThemingService,
+		private restService: RestService,
+		private dataService: DataService
 	) {}
 
 }

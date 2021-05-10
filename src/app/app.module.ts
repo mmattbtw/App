@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -14,6 +14,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { NavigationComponent } from 'src/app/navigation/navigation.component';
+import { setAppInjector } from 'src/app/service/app.injector';
 
 @NgModule({
 	declarations: [
@@ -42,4 +43,8 @@ import { NavigationComponent } from 'src/app/navigation/navigation.component';
 	],
 	bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+	constructor(injector: Injector) {
+		setAppInjector(injector);
+	}
+}

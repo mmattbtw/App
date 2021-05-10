@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { asyncScheduler, BehaviorSubject, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, mergeMap, take, tap, throttleTime } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
+import { ClientService } from 'src/app/service/client.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 
@@ -52,6 +53,7 @@ export class EmoteSearchComponent implements OnInit {
 
 	constructor(
 		private emoteListService: EmoteListService,
+		private clientService: ClientService,
 		public themingService: ThemingService
 	) { }
 
@@ -95,7 +97,7 @@ export class EmoteSearchComponent implements OnInit {
 			) ?? EMPTY,
 
 			this.form.get('channel')?.valueChanges.pipe(
-				map((value: boolean) => ({ channel: value ? '@me' : undefined }))
+				map((value: boolean) => ({ channel: value ? this.clientService.getSnapshot()?.login : '' }))
 			) ?? EMPTY,
 
 			this.form.get('sortBy')?.valueChanges.pipe(

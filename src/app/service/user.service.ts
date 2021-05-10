@@ -33,8 +33,7 @@ export class UserService {
 	}
 
 	new(data: DataStructure.TwitchUser): UserStructure {
-		const id = !!data.id ? String(data.id) : null;
-		if (!id) throw Error('Invalid User ID');
+		const id = !!data.id ? String(data.id) : 'DELETEDUSER';
 
 		let user: UserStructure | undefined = this.cache.get(id);
 		if (!!user) {

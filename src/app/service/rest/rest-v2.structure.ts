@@ -45,6 +45,7 @@ export class RestV2 {
 						${(options?.globalState && `, globalState: "${options.globalState}"`) ?? ''}
 						${(options?.sortBy && `, sortBy: "${options.sortBy}"`) ?? ''}
 						${typeof options?.sortOrder === 'number' ? `, sortOrder: ${options.sortOrder}` : ''}
+						${(options?.channel && `, channel: "${options.channel}"`) ?? ''}
 					) {
 						id,
 						visibility,

@@ -32,7 +32,7 @@ export namespace GQLFragments {
 		profile_image_url
 	`;
 
-	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false, includeEditors = false) => `
+	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false, includeEditors = false, includeEditorIn = false) => `
 		fragment FullUser on User {
 			id,  email, display_name, login,
 			rank,
@@ -56,6 +56,10 @@ export namespace GQLFragments {
 			editor_ids,
 			${includeEditors
 				? `editors { ${ShorthandPartialUser()} },`
+				: ''
+			}
+			${includeEditorIn
+				? `editor_in { ${ShorthandPartialUser()} },`
 				: ''
 			}
 			twitch_id,

@@ -19,7 +19,7 @@
 			</button>
 
 			<!-- Override Rules Button -->
-			<button mat-icon-button matTooltip="Override Rules" *ngIf="emote?.canEdit(clientService) | async">
+			<button mat-icon-button (click)="setOverrides()" matTooltip="Override Rules" *ngIf="emote?.canEdit(clientService) | async">
 				<mat-icon>extension</mat-icon>
 			</button>
 

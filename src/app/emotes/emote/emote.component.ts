@@ -22,6 +22,7 @@ import { DOCUMENT } from '@angular/common';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { BitField } from '@typings/src/BitField';
 import { DataService } from 'src/app/service/data.service';
+import { EmoteOverridesDialogComponent } from 'src/app/emotes/emote/overrides-emote-dialog.component';
 
 @Component({
 	selector: 'app-emote',
@@ -108,7 +109,7 @@ export class EmoteComponent implements OnInit {
 	}
 
 	/**
-	 * Bring up a dialog to the current emote
+	 * Bring up a dialog to rename the current emote
 	 */
 	rename(): void {
 		const dialogRef = this.dialog.open(EmoteRenameDialogComponent, {
@@ -118,6 +119,20 @@ export class EmoteComponent implements OnInit {
 		dialogRef.afterClosed().pipe(
 			filter(data => !!data && data.name !== null),
 			switchMap(data => this.emote?.edit({ name: data.name }, data.reason) ?? EMPTY),
+		).subscribe();
+	}
+
+	/**
+	 * Bring up a dialog to define overrides for the current emote
+	 */
+	setOverrides(): void {
+		const dialogRef = this.dialog.open(EmoteOverridesDialogComponent, {
+			data: { emote: this.emote, happening: 'set-overrides' },
+		});
+
+		dialogRef.afterClosed().pipe(
+			filter(data => typeof data === 'number'),
+			switchMap(data => this.emote?.edit({ visibility: data }, data.reason) ?? EMPTY),
 		).subscribe();
 	}
 

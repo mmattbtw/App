@@ -38,3 +38,10 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 }
+
+.visibility-tag {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: .44em;
+}

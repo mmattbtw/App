@@ -10,6 +10,7 @@ import { EmoteCreateComponent } from './emote-create/emote-create.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EmoteListComponent } from './emote-list/emote-list.component';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
+import { EmoteOverridesDialogComponent } from 'src/app/emotes/emote/overrides-emote-dialog.component';
 import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emote-dialog.component';
 import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { TagSystemComponent } from 'src/app/util/tag-system/tag-system.component';
@@ -34,6 +35,7 @@ import { UtilModule } from 'src/app/util/util.module';
 		EmoteCreateComponent,
 		EmoteListComponent,
 		EmoteRenameDialogComponent,
+		EmoteOverridesDialogComponent,
 		EmoteOwnershipDialogComponent,
 		EmoteDeleteDialogComponent,
 		TagSystemComponent,

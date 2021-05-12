@@ -42,56 +42,56 @@ export class EmoteStructure extends Structure<'emote'> {
 	getID(): string | undefined { return this.id; }
 
 	getName(): Observable<string | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => d?.name)
 		);
 	}
 
 	getOwnerID(): Observable<string | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => !!d?.owner ? String(d.owner) : undefined)
 		);
 	}
 
 	getOwnerName(): Observable<string | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => d?.owner?.display_name)
 		);
 	}
 
 	getOwner(): Observable<UserStructure | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => !!d?.owner ? this.dataService.add('user', d.owner as DataStructure.TwitchUser)[0] : undefined)
 		);
 	}
 
 	getChannels(): Observable<Partial<DataStructure.TwitchUser>[] | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => d?.channels)
 		);
 	}
 
 	getURL(size = 3): Observable<string | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => this.restService.CDN.Emote(String(d?.id), size))
 		);
 	}
 
 	getTags(): Observable<string[] | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => d?.tags)
 		);
 	}
 
 	getStatus(): Observable<Constants.Emotes.Status | undefined> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(d => d?.status)
 		);
@@ -119,7 +119,7 @@ export class EmoteStructure extends Structure<'emote'> {
 	}
 
 	getAuditActivity(): Observable<DataStructure.AuditLog.Entry> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(emote => (emote?.audit_entries ?? []) as DataStructure.AuditLog.Entry[]),
 			mergeAll(),
@@ -128,7 +128,7 @@ export class EmoteStructure extends Structure<'emote'> {
 	}
 
 	getAuditActivityString(): Observable<string> {
-		return this.data.pipe(
+		return this.dataOnce().pipe(
 			take(1),
 			map(emote => (emote?.audit_entries as unknown as string[] ?? []) as string[]),
 			mergeAll(),
@@ -177,6 +177,22 @@ export class EmoteStructure extends Structure<'emote'> {
 
 	getVisibility(): number {
 		return this.data.getValue()?.visibility ?? 0;
+	}
+
+	getVisibilities(): (keyof typeof DataStructure.Emote.Visibility)[] {
+		const result = [] as (keyof typeof DataStructure.Emote.Visibility)[];
+
+		const current = this.getVisibility();
+		for (const v of Object.keys(DataStructure.Emote.Visibility)) {
+			if (typeof v === 'number') continue;
+			const sum = Number(DataStructure.Emote.Visibility[v as unknown as DataStructure.Emote.Visibility]);
+			if (isNaN(sum)) continue;
+
+			if (BitField.HasBits(current, sum)) {
+				result.push(v as unknown as keyof typeof DataStructure.Emote.Visibility);
+			}
+		}
+		return result;
 	}
 
 	getCreatedAt(): Observable<Date | null> {
@@ -236,6 +252,13 @@ export class EmoteStructure extends Structure<'emote'> {
 
 		return this.restService.v2.DeleteEmote(this.id, reason).pipe(
 			mapTo(undefined)
+		);
+	}
+
+	// tslint:disable-next-line:typedef
+	protected dataOnce() {
+		return this.data.asObservable().pipe(
+			take(1)
 		);
 	}
 

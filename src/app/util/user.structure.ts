@@ -1,7 +1,7 @@
 import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Observable, of } from 'rxjs';
-import { defaultIfEmpty, map, switchMap } from 'rxjs/operators';
+import { defaultIfEmpty, map, switchMap, take } from 'rxjs/operators';
 import { Structure } from 'src/app/util/abstract.structure';
 import { RoleStructure } from 'src/app/util/role.structure';
 
@@ -40,7 +40,7 @@ export class UserStructure extends Structure<'user'> {
 	}
 
 	getID(): Observable<string> {
-		return this.data.asObservable().pipe(
+		return this.dataOnce().pipe(
 			map(data => !!data?.id ? String(data.id) : DataStructure.NullObjectId)
 		);
 	}
@@ -49,7 +49,7 @@ export class UserStructure extends Structure<'user'> {
 	 * Get the username of the client user
 	 */
 	getUsername(): Observable<string | null> {
-		return this.data.asObservable().pipe(
+		return this.dataOnce().pipe(
 			map(data => data?.display_name ?? null)
 		);
 	}
@@ -58,13 +58,13 @@ export class UserStructure extends Structure<'user'> {
 	 * Get an URL to the avatar of the client user
 	 */
 	getAvatarURL(): Observable<string | null> {
-		return this.data.asObservable().pipe(
+		return this.dataOnce().pipe(
 			map(data => data?.profile_image_url ?? null)
 		);
 	}
 
 	getRole(): Observable<RoleStructure> {
-		return this.data.asObservable().pipe(
+		return this.dataOnce().pipe(
 			map(data => data?.role ?? { id: 'Default', name: 'Default', color: 0 } as DataStructure.Role),
 			map(role => this.dataService.add('role', role)[0])
 		);
@@ -80,7 +80,7 @@ export class UserStructure extends Structure<'user'> {
 	 * Get the user's channel emotes
 	 */
 	getEmotes(): Observable<string[]> {
-		return this.data.asObservable().pipe(
+		return this.dataOnce().pipe(
 			map(data => data?.emote_ids as string[] ?? [])
 		);
 	}
@@ -95,6 +95,13 @@ export class UserStructure extends Structure<'user'> {
 
 	getSnapshot(): Partial<DataStructure.TwitchUser> | null {
 		return this.snapshot;
+	}
+
+	// tslint:disable-next-line:typedef
+	protected dataOnce() {
+		return this.data.asObservable().pipe(
+			take(1)
+		);
 	}
 
 	protected data$<T, D>(withSource: Observable<T>, value: D): Observable<T> | Observable<D> {

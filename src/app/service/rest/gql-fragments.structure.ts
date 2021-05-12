@@ -8,7 +8,7 @@ export namespace GQLFragments {
 			name,
 			channels {
 				id, login, display_name, role {
-					name, color, allowed, denied, position
+					id, name, color, allowed, denied, position
 				}, profile_image_url
 			},
 			owner {

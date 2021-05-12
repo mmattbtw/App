@@ -48,20 +48,6 @@ export class UserNameComponent implements OnInit, OnDestroy {
 		).subscribe();
 	}
 
-	getRoleColor(): Observable<string> {
-		if (!this.target) {
-			return of('');
-		}
-
-		return this.target.getRole().pipe(
-			takeUntil(this.destroyed),
-			switchMap(role => iif(() => !role,
-				of('#3d4ed'),
-				(role as RoleStructure)?.getHexColor()
-			))
-		);
-	}
-
 	ngOnInit(): void {}
 
 	ngOnDestroy(): void {

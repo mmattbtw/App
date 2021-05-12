@@ -1,7 +1,7 @@
 import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Observable, of } from 'rxjs';
-import { defaultIfEmpty, map, switchMap, take } from 'rxjs/operators';
+import { defaultIfEmpty, map, switchMap, take, tap } from 'rxjs/operators';
 import { Structure } from 'src/app/util/abstract.structure';
 import { RoleStructure } from 'src/app/util/role.structure';
 
@@ -65,14 +65,14 @@ export class UserStructure extends Structure<'user'> {
 
 	getRole(): Observable<RoleStructure> {
 		return this.dataOnce().pipe(
-			map(data => data?.role ?? { id: 'Default', name: 'Default', color: 0 } as DataStructure.Role),
-			map(role => this.dataService.add('role', role)[0])
+			map(data => data?.role),
+			map(role => !!role ? this.dataService.add('role', role)[0] : UserStructure.DefaultRole)
 		);
 	}
 
 	getColor(): Observable<string> {
 		return this.getRole().pipe(
-			switchMap(role => role?.getHexColor() ?? of(''))
+			switchMap(role => role.getHexColor())
 		);
 	}
 
@@ -107,4 +107,15 @@ export class UserStructure extends Structure<'user'> {
 	protected data$<T, D>(withSource: Observable<T>, value: D): Observable<T> | Observable<D> {
 		return !this.pushed ? of(value) : withSource;
 	}
+}
+
+export namespace UserStructure {
+	export const DefaultRole = new RoleStructure();
+	DefaultRole.pushData({
+		name: 'Default',
+		id: 'DEFAULT',
+		allowed: BigInt(523),
+		denied: BigInt(0),
+		color: 0
+	});
 }

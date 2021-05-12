@@ -80,6 +80,7 @@ export class DataService {
 			store.set(d.id, struct);
 			structs.push(struct as DataService.Structure<T>);
 		}
+
 		return structs;
 	}
 }

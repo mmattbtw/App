@@ -54,7 +54,7 @@
 	<div class="align-items-center flex-grow-0 d-none d-md-inline-flex">
 		<div [ngSwitch]="clientService.isAuthenticated() | async">
 			<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
-			<app-user-name [size]="[2, .75]" *ngSwitchCase="true" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
+			<app-user-name [user]="clientService" [size]="[2, .75]" *ngSwitchCase="true" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
 		</div>
 	</div>
 

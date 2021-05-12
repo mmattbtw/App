@@ -19,7 +19,6 @@ import { UserStructure } from 'src/app/util/user.structure';
 export class UserComponent implements OnInit, OnDestroy {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	user = new BehaviorSubject<UserStructure | null>(null);
-	isClientUser = false;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -43,7 +42,6 @@ export class UserComponent implements OnInit, OnDestroy {
 			switchMap(id => this.restService.v2.GetUser(id).pipe(
 				map(res => this.dataService.add('user', res.user)[0])
 			)),
-			tap(user => this.isClientUser = user.getSnapshot()?.id === this.clientService.getSnapshot()?.id),
 			tap(user => this.user.next(user))
 		).subscribe({
 			error: (err) => this.loggerService.error('Couldn\'t fetch user', err)
@@ -51,6 +49,7 @@ export class UserComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-
+		this.destroyed.next();
+		this.destroyed.complete();
 	}
 }

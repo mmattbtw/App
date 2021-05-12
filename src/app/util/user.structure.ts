@@ -65,8 +65,14 @@ export class UserStructure extends Structure<'user'> {
 
 	getRole(): Observable<RoleStructure> {
 		return this.data.asObservable().pipe(
-			map(data => data?.role ?? { id: 'Default', name: 'Default' } as DataStructure.Role),
+			map(data => data?.role ?? { id: 'Default', name: 'Default', color: 0 } as DataStructure.Role),
 			map(role => this.dataService.add('role', role)[0])
+		);
+	}
+
+	getColor(): Observable<string> {
+		return this.getRole().pipe(
+			switchMap(role => role?.getHexColor() ?? of(''))
 		);
 	}
 

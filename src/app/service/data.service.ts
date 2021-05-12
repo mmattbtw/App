@@ -66,6 +66,10 @@ export class DataService {
 		const structs = [] as DataService.Structure<T>[];
 
 		for (const d of data) {
+			if (!d?.id) {
+				continue;
+			}
+
 			let struct = store.get(d.id);
 			if (!struct) {
 				const S = DataService.StructureClass[type];

@@ -45,7 +45,7 @@ export class RoleStructure {
 	getAllowed(): Observable<bigint> {
 		return this.data.pipe(
 			take(1),
-			map(d => BigInt(d?.allowed ?? 0))
+			map(d => BigInt(String(d?.allowed ?? 0)))
 		);
 	}
 

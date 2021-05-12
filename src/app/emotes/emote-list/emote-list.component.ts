@@ -143,9 +143,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 	}
 
 	getEmotes(page = 1, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure> {
-		const pageSize = this.calculateSizedRows();
-
-		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, pageSize ?? undefined, options ?? this.currentSearchOptions).pipe(
+		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, this.pageOptions?.pageSize ?? 16, options ?? this.currentSearchOptions).pipe(
 			tap(res => this.totalEmotes.next(res?.total_estimated_size ?? 0)),
 			tap(() => this.emotes.next([])),
 			delay(200),

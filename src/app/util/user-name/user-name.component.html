@@ -1,13 +1,13 @@
 <span class="user-name" (click)="onClick()" [class.clickable]="clickable">
-    <span class="user-avatar" [style.width.em]="size[0]" *ngIf="showAvatar" [style.border-color]="getRoleColor() | async">
-        <img [src]="target.getAvatarURL() | async">
+    <span class="user-avatar" [style.width.em]="size[0]" *ngIf="showAvatar" [style.border-color]="user?.getColor() | async">
+        <img [src]="target?.getAvatarURL() | async">
     </span>
 
     <span *ngIf="showUsername" class="text-truncate username-container"
-        [appColor]="getRoleColor() | async"
+        [style.color]="user?.getColor() | async"
         [style.max-width.px]="maxWidth"
         [style.font-size.em]="size[1]"
     >
-        {{ target.getUsername() | async }}
+        {{ target?.getUsername() | async }}
     </span>
 </span>

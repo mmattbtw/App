@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
+import { iif, Observable, of, Subject } from 'rxjs';
 import { switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -28,19 +28,19 @@ export class UserNameComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private router: Router,
-		public clientService: ClientService,
 		public themingService: ThemingService
 	) {}
 
 	/**
 	 * Get the user targeted in this component. If it was not specified, default to client user
 	 */
-	get target(): UserStructure {
-		return this.user ?? this.clientService;
+	get target(): UserStructure | null {
+		return this.user ?? null;
 	}
 
 	onClick(): void {
 		if (!this.clickable) return undefined;
+		if (!this.target) return undefined;
 
 		this.target.getUsername().pipe(
 			takeUntil(this.destroyed),
@@ -49,10 +49,16 @@ export class UserNameComponent implements OnInit, OnDestroy {
 	}
 
 	getRoleColor(): Observable<string> {
+		if (!this.target) {
+			return of('');
+		}
+
 		return this.target.getRole().pipe(
 			takeUntil(this.destroyed),
-			take(1),
-			switchMap(role => (role as RoleStructure).getHexColor())
+			switchMap(role => iif(() => !role,
+				of('#3d4ed'),
+				(role as RoleStructure)?.getHexColor()
+			))
 		);
 	}
 

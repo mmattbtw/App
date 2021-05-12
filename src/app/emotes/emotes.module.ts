@@ -26,7 +26,9 @@ import { UtilModule } from 'src/app/util/util.module';
 		ReactiveFormsModule,
 		UtilModule
 	],
-	exports: [],
+	exports: [
+		EmoteCardComponent
+	],
 	declarations: [
 		EmotesComponent,
 		EmoteCardComponent,

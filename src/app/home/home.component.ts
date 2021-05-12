@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
 			icon: 'firefox',
 			click: () => window.open('https://addons.mozilla.org/en-US/firefox/addon/7tv/', '_blank'),
 			tag: {
-				color: this.themingService.accent.darken(.4).hex(),
+				color: this.themingService.accent.darken(.65).hex(),
 				label: 'NEW!'
 			}
 		},

@@ -34,7 +34,7 @@ export class EmoteListService {
 	interactions = [
 		{ // Add to channel
 			label: 'add to channel', color: this.themingService.colors.twitch_purple, icon: 'add_circle',
-			condition: emote => this.clientService.getEmotes().pipe(
+			condition: emote => this.clientService.getEmoteIDs().pipe(
 				switchMap(emotes => emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
 				map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(emote?.getID() as string))
 			),
@@ -44,7 +44,7 @@ export class EmoteListService {
 		},
 		{ // Remove from channel
 			label: 'remove from channel', color: this.themingService.warning.desaturate(0.4).negate(), icon: 'remove_circle',
-			condition: emote => this.clientService.getEmotes().pipe(
+			condition: emote => this.clientService.getEmoteIDs().pipe(
 				map(emotes => emotes.includes(emote?.getID() as string))
 			),
 			click: emote => this.clientService.isAuthenticated().pipe(

@@ -1,49 +1,68 @@
 <div class="user h-100">
     <!-- Heading -->
-    <div class="heading mat-elevation-z3" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
-        <div class="row">
-            <app-user-name class="col-12 col-md-6" [user]="user | async"></app-user-name>
-            <div class="d-flex col-12 col-md-6 align-items-center justify-content-md-end" *ngIf="(user | async) !== null">
-                <span class="role-tag" [appColor]="(getRole() | async)?.getHexColor() | async">
-                   {{ (getRole() | async)?.getName() | async}} 
-                </span>
+    <div class="heading">
+        <div class="user-block mat-elevation-z3" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+            <!-- Who is this? -->
+            <div class="user-who">
+                <!-- The user's avatar -->
+                <div class="user-who-avatar" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+                    <app-user-name [size]="[4, 0]" [showUsername]="false" [user]="user | async"></app-user-name>
+                </div>
+
+                <!-- The user's display name -->
+                <div class="user-who-text">
+                    <div class="user-who-displayname" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+                        <app-user-name [size]="[0, 1]" [showAvatar]="false" [user]="user | async"></app-user-name>
+                    </div>
+
+                    <!-- User's Role, if any -->
+                    <div class="user-role" [style.color]="(user | async)?.getColor() | async" >
+                        {{ ((user | async)?.getRole() | async)?.getName() | async }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="social-links">
+                <!-- Twitch -->
+                <button mat-icon-button (click)="openTwitchChannel()">
+                    <mat-icon [style.color]="themingService.colors.twitch_purple" [svgIcon]="(themingService.getSvgIcon('twitch') | async) || ''"></mat-icon>
+                </button>
             </div>
         </div>
-        
+
+        <!-- User Info -->
+        <div class="user-info p-2" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+            <!-- Channel Editors -->
+            <div class="channel-editors">
+                <p>Channel Editors</p>
+                <div class="channel-editor mt-1" *ngFor="let usr of getEditors() | async">
+                    <app-user-name [user]="usr"></app-user-name>
+                    <button mat-icon-button (click)="removeEditor(usr)">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+
+                <!-- Add Editor Button -->
+                <div [ngSwitch]="addingEditor" *ngIf="canEdit() | async">
+                    <div *ngSwitchCase="false" class="add-editor-button mt-2 p-1">
+                        <button mat-flat-button (click)="addingEditor = true"> ADD EDITOR... </button>
+                    </div>
+
+                    <div *ngSwitchCase="true" class="mt-2">
+                        <mat-form-field (keyup.enter)="addEditor($event)">
+                            <input matInput [formControl]="editorControl">
+                            <mat-label> New Editor </mat-label>
+                            <mat-hint>Enter their username</mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Content -->
-    <div class="content flex-fill" [appColor]="themingService.bg.lighten(.035)" [isBackground]="true">
-        <!-- Grid -->
-        <div class="row w-100">
-            <div class="col-12 col-md-6">
-                <div class="ctx-block">
-                    <ng-template  *ngTemplateOutlet="contextblock;context:{ headerName: 'User Info' }"></ng-template>
-                    <div class="ctx-content mat-elevation-z1" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true"></div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6">
-                <div class="ctx-block">
-                    <ng-template  *ngTemplateOutlet="contextblock;context:{ headerName: 'Channel' }"></ng-template>
-                    <div class="ctx-content mat-elevation-z1" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row w-100">
-            <div class="col-12">
-                <div class="ctx-block">
-                    <ng-template  *ngTemplateOutlet="contextblock;context:{ headerName: 'Emotes' }"></ng-template>
-                    <div class="ctx-content mat-elevation-z1" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true"></div>
-                </div>
-            </div>
-        </div>
+    <div class="content flex-fill">
+        <router-outlet></router-outlet>
     </div>
 </div>
-
-<ng-template #contextblock let-headerName="headerName">
-    <div class="ctx-heading mat-elevation-z2" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
-        {{ headerName }}
-    </div>
-</ng-template>

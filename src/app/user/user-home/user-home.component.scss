@@ -1,0 +1,26 @@
+.channel-emote-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	padding: 2em;
+	border-radius: 8px;
+	flex-grow: 1;
+
+	.heading {
+		display: flex;
+		align-items: center;
+		height: 32px;
+		font-size: 1.2em;
+	}
+
+	.is-emote-card {
+		margin: 1em;
+	}
+}
+
+.user-home {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	width: 100%;
+}

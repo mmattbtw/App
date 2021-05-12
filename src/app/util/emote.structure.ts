@@ -238,7 +238,7 @@ export class EmoteStructure extends Structure<'emote'> {
 	 * Whether or not the emote is added to the client user's channel
 	 */
 	isChannel(): Observable<boolean> {
-		return this.restService.clientService.getEmotes().pipe(
+		return this.restService.clientService.getEmoteIDs().pipe(
 			take(1),
 			map(a => !!this.id && a.includes(this.id))
 		);

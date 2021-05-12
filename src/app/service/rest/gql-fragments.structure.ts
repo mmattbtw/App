@@ -2,7 +2,7 @@
 
 export namespace GQLFragments {
 	export const FullEmote = (includeActivity = false) => `
-		fragment fullEmote on Emote {
+		fragment FullEmote on Emote {
 			id,
 			created_at,
 			name,
@@ -26,7 +26,13 @@ export namespace GQLFragments {
 		}
 	`;
 
-	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false) => `
+	export const ShorthandPartialUser = () => `
+		id, display_name, login,
+		role { id, name, position, color, allowed, denied },
+		profile_image_url
+	`;
+
+	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false, includeEditors = false) => `
 		fragment FullUser on User {
 			id,  email, display_name, login,
 			rank,
@@ -48,6 +54,10 @@ export namespace GQLFragments {
 			}
 			emote_ids,
 			editor_ids,
+			${includeEditors
+				? `editors { ${ShorthandPartialUser()} },`
+				: ''
+			}
 			twitch_id,
 			broadcaster_type,
 			profile_image_url,

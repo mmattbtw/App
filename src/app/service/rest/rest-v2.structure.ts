@@ -13,7 +13,7 @@ export class RestV2 {
 
 	}
 
-	GetUser(id: string): Observable<{ user: DataStructure.TwitchUser }> {
+	GetUser(id: string, opt?: Partial<RestV2.GetUserOptions>): Observable<{ user: DataStructure.TwitchUser }> {
 		return this.gql.query<{ user: DataStructure.TwitchUser }>({
 			query: `
 				{
@@ -22,7 +22,7 @@ export class RestV2 {
 					}
 				}
 
-				${GQLFragments.FullUser(false)}
+				${GQLFragments.FullUser(opt?.includeFullEmotes, opt?.includeOwnedEmotes, opt?.includeEditors)}
 			`,
 			variables: {},
 			auth: true
@@ -80,7 +80,7 @@ export class RestV2 {
 					emote(id: "${id}") {
 						${isFiltered
 							? (filterFields as string[]).join(', ')
-							: '...fullEmote'}
+							: '...FullEmote'}
 					}
 				}
 
@@ -182,6 +182,58 @@ export class RestV2 {
 		);
 	}
 
+	AddChannelEditor(channelID: string, editorID: string, reason = ''): Observable<{ user: DataStructure.TwitchUser }> {
+		return this.gql.query<{ addChannelEditor: DataStructure.TwitchUser }>({
+			query: `
+				mutation AddChannelEditor($ch: String!, $em: String!, $re: String!) {
+					addChannelEditor(channel_id: $ch, editor_id: $em, reason: $re) {
+						id,
+						editor_ids,
+						editors {
+							${GQLFragments.ShorthandPartialUser()}
+						}
+					}
+				}
+			`,
+			variables: {
+				ch: channelID,
+				em: editorID,
+				re: reason
+			},
+			auth: true
+		}).pipe(
+			map(res => ({
+				user: res?.body?.data.addChannelEditor as DataStructure.TwitchUser
+			}))
+		);
+	}
+
+	RemoveChannelEditor(channelID: string, editorID: string, reason = ''): Observable<{ user: DataStructure.TwitchUser }> {
+		return this.gql.query<{ removeChannelEditor: DataStructure.TwitchUser }>({
+			query: `
+				mutation RemoveChannelEditor($ch: String!, $em: String!, $re: String!) {
+					removeChannelEditor(channel_id: $ch, editor_id: $em, reason: $re) {
+						id,
+						editor_ids,
+						editors {
+							${GQLFragments.ShorthandPartialUser()}
+						}
+					}
+				}
+			`,
+			variables: {
+				ch: channelID,
+				em: editorID,
+				re: reason
+			},
+			auth: true
+		}).pipe(
+			map(res => ({
+				user: res?.body?.data.removeChannelEditor as DataStructure.TwitchUser
+			}))
+		);
+	}
+
 	GetAuthURL(): string {
 		return `${this.restService.BASE.v2}/auth`;
 	}
@@ -195,6 +247,12 @@ export namespace RestV2 {
 		broadcaster_type: true, profile_image_url: true,
 		created_at: true
 	} as KeysEnum<DataStructure.TwitchUser>;
+
+	export interface GetUserOptions {
+		includeEditors: boolean;
+		includeFullEmotes: boolean;
+		includeOwnedEmotes: boolean;
+	}
 
 	export interface GetEmotesOptions {
 		query: string;

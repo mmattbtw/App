@@ -1,0 +1,16 @@
+<div class="user-home">
+	<!-- User's Channel Emotes -->
+	
+	<h3>Emotes Enabled</h3>
+	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
+		<div class="is-emote-card" *ngFor="let emote of channelEmotes | async">
+			<app-emote-card [size]="8" [emote]="emote"></app-emote-card>
+		</div>
+	</div>
+</div>
+
+<ng-template #contextblock let-headerName="headerName">
+    <div class="ctx-heading mat-elevation-z2" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+        {{ headerName }}
+    </div>
+</ng-template>

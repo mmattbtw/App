@@ -22,7 +22,7 @@ export class RestV2 {
 					}
 				}
 
-				${GQLFragments.FullUser(opt?.includeFullEmotes, opt?.includeOwnedEmotes, opt?.includeEditors)}
+				${GQLFragments.FullUser(opt?.includeFullEmotes, opt?.includeOwnedEmotes, opt?.includeEditors, opt?.includeEditorIn)}
 			`,
 			variables: {},
 			auth: true
@@ -250,6 +250,7 @@ export namespace RestV2 {
 
 	export interface GetUserOptions {
 		includeEditors: boolean;
+		includeEditorIn: boolean;
 		includeFullEmotes: boolean;
 		includeOwnedEmotes: boolean;
 	}

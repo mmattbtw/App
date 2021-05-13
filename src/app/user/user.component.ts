@@ -60,7 +60,7 @@ export class UserComponent implements OnInit, OnDestroy {
 			switchMap(user => (this.clientService.hasPermission('MANAGE_USERS')).pipe(
 				map(isMod => ({ isMod, user }))
 			)),
-			map(({ isMod, user }) => isMod || (!!user && user.getSnapshot() === this.clientService.getSnapshot()?.id))
+			map(({ isMod, user }) => isMod || (!!user && user.getSnapshot()?.id === this.clientService.getSnapshot()?.id))
 		);
 	}
 

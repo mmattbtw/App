@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { delay, switchMap, take } from 'rxjs/operators';
+import { delay, map, switchMap, take } from 'rxjs/operators';
+import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
+import { UserStructure } from 'src/app/util/user.structure';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -47,6 +50,8 @@ export class NavigationComponent implements OnInit {
 	] as NavigationComponent.NavButton[];
 
 	constructor(
+		private dialogRef: MatDialog,
+		private cdr: ChangeDetectorRef,
 		public clientService: ClientService,
 		public viewportService: ViewportService,
 		public themingService: ThemingService,
@@ -58,6 +63,27 @@ export class NavigationComponent implements OnInit {
 	 */
 	get isEnvironmentProd(): boolean {
 		return environment.production === true;
+	}
+
+	/**
+	 * @returns whether the client user is an editor of at least one channeml
+	 */
+	isAnEditor(): Observable<boolean> {
+		return this.clientService.getEditorIn().pipe(
+			take(1),
+			map(a => a.length > 0)
+		);
+	}
+
+	impersonate(): void {
+		const dialog = this.dialogRef.open(EditorDialogComponent);
+
+		dialog.afterClosed().pipe(
+			map((editor: UserStructure) => this.clientService.impersonating = editor),
+			take(1)
+		).subscribe({
+			complete: () => this.cdr.markForCheck()
+		});
 	}
 
 	ngOnInit(): void {}

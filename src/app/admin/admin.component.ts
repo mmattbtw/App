@@ -21,6 +21,11 @@ export class AdminComponent implements OnInit {
 			routerLink: ['/admin', 'audit']
 		},
 		{
+			title: 'WebSocket API',
+			description: 'Manage the WebSocket API & Connections',
+			icon: 'sensors'
+		},
+		{
 			title: 'Emotes',
 			description: 'Manage Emotes',
 			routerLink: ['/admin', 'emotes']

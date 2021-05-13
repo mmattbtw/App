@@ -15,6 +15,8 @@ export class ClientService extends UserStructure {
 	private authState = new BehaviorSubject<boolean>(false);
 	private isAuth = false;
 
+	impersonating: UserStructure | null = null;
+
 	constructor(
 		public localStorage: LocalStorageService,
 		private logger: LoggerService,

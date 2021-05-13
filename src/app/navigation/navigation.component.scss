@@ -72,3 +72,27 @@
 
 	}
 }
+
+.user-as-self {
+	display: flex;
+	align-items: center;
+}
+
+.user-as-editor {
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+	margin-top: .15em;
+
+	.edited-user {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-left: .4em;
+
+		mat-icon {
+			transform: rotate(180deg); transform: scaleX(-1);
+			margin-right: .25em;
+		}
+	}
+}

@@ -38,7 +38,7 @@
                 <p>Channel Editors</p>
                 <div class="channel-editor mt-1" *ngFor="let usr of getEditors() | async">
                     <app-user-name [user]="usr"></app-user-name>
-                    <button mat-icon-button (click)="removeEditor(usr)">
+                    <button mat-icon-button (click)="removeEditor(usr)" *ngIf="canEdit() | async">
                         <mat-icon>close</mat-icon>
                     </button>
                 </div>
@@ -50,7 +50,7 @@
                     </div>
 
                     <div *ngSwitchCase="true" class="mt-2">
-                        <mat-form-field (keyup.enter)="addEditor($event)">
+                        <mat-form-field (keyup.enter)="addEditor()">
                             <input matInput [formControl]="editorControl">
                             <mat-label> New Editor </mat-label>
                             <mat-hint>Enter their username</mat-hint>

@@ -15,11 +15,13 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { NavigationComponent } from 'src/app/navigation/navigation.component';
 import { setAppInjector } from 'src/app/service/app.injector';
+import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		NavigationComponent,
+		EditorDialogComponent,
 		TwitchButtonComponent
 	],
 	imports: [

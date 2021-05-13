@@ -66,12 +66,11 @@ export class UserComponent implements OnInit, OnDestroy {
 	/**
 	 * This method makes the editor addition box appear
 	 */
-	addEditor(editor: Event): void {
+	addEditor(): void {
 		const channelID = this.user.getValue()?.id;
 		if (!channelID) return;
 
 		this.addingEditor = false;
-		console.log('Cock', editor, channelID, this.editorControl);
 		this.restService.v2.GetUser(this.editorControl.value).pipe(
 			switchMap(u => this.restService.v2.AddChannelEditor(channelID, u.user.id, '')),
 			switchMap(u => this.dataService.add('user', u.user))

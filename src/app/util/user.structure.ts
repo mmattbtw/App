@@ -105,6 +105,15 @@ export class UserStructure extends Structure<'user'> {
 		);
 	}
 
+	getEditorIn(): Observable<UserStructure[]> {
+		return this.dataOnce().pipe(
+			map(data => data?.editor_in ?? []),
+			mergeAll(),
+			map(u => this.dataService.add('user', u)[0]),
+			toArray()
+		);
+	}
+
 	hasPermission(flag: keyof typeof DataStructure.Role.Permission): Observable<boolean> {
 		return this.data$(this.getRole().pipe(
 			switchMap(role => role.getAllowed()),

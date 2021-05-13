@@ -52,12 +52,12 @@
 	</div>
 
 	<div class="align-items-center flex-grow-0 d-none d-md-inline-flex h-100">
-		<div class="d-flex mr-2" *ngIf="isAnEditor() | async" [ngSwitch]="!!clientService.impersonating">
+		<div class="d-flex mr-2" *ngIf="isAnEditor() | async" [ngSwitch]="clientService.isImpersonating">
 			<button mat-icon-button matTooltip="Swap Editor Channel" (click)="impersonate()" *ngSwitchCase="false">
 				<mat-icon>swap_vert</mat-icon>
 			</button>
 
-			<button mat-icon-button matTooltip="Quit Impersonating" *ngSwitchCase="true" (click)="clientService.impersonating = null">
+			<button mat-icon-button matTooltip="Quit Impersonating" *ngSwitchCase="true" (click)="clientService.impersonating.next(null)">
 				<mat-icon>logout</mat-icon>
 			</button>
 		</div>
@@ -67,7 +67,7 @@
 				<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
 			</span>
 
-			<span class="h-100" *ngSwitchCase="true"  [ngSwitch]="!!clientService.impersonating">
+			<span class="h-100" *ngSwitchCase="true"  [ngSwitch]="clientService.isImpersonating">
 				<span class="user-as-editor" *ngSwitchCase="true">
 					<app-user-name [user]="clientService" [size]="[1.65, .585]" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
 
@@ -75,7 +75,7 @@
 						<mat-icon>
 							keyboard_return
 						</mat-icon>
-						<app-user-name [user]="clientService.impersonating" [showAvatar]="true" [size]="[1, .48]"></app-user-name>
+						<app-user-name [user]="clientService.impersonating | async" [showAvatar]="true" [size]="[1, .48]"></app-user-name>
 					</span>
 				</span>
 

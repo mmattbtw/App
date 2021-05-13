@@ -79,7 +79,7 @@ export class NavigationComponent implements OnInit {
 		const dialog = this.dialogRef.open(EditorDialogComponent);
 
 		dialog.afterClosed().pipe(
-			map((editor: UserStructure) => this.clientService.impersonating = editor),
+			map((editor: UserStructure) => this.clientService.impersonating.next(editor)),
 			take(1)
 		).subscribe({
 			complete: () => this.cdr.markForCheck()

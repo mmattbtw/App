@@ -1,8 +1,8 @@
 import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { EMPTY, iif, noop, Observable, of, throwError } from 'rxjs';
-import { catchError, filter, map, mapTo, mergeAll, switchMap, take, tap } from 'rxjs/operators';
+import { EMPTY, iif, Observable, of, throwError } from 'rxjs';
+import { filter, map, mapTo, mergeAll, switchMap, take, tap } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -205,15 +205,14 @@ export class EmoteStructure extends Structure<'emote'> {
 	/**
 	 * Add this emote to the client user's channel
 	 */
-	addToChannel(userID: string, reason?: string): Observable<void> {
+	addToChannel(user: UserStructure, reason?: string): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.v2.AddChannelEmote(this.id, userID, reason).pipe(
-			tap(res => this.restService.clientService.mergeData(res.user)),
-			switchMap(() => this.restService.v2.GetEmote(this.id as string, false, ['channels { id, display_name, login, profile_image_url }']).pipe(
-				catchError(() => of(undefined)),
-				tap(res => !!res?.emote ? this.mergeData(res?.emote) : noop())
-			)),
+		return this.restService.v2.AddChannelEmote(this.id, user.id, reason).pipe(
+			tap(res => {
+				const newIDs = res.user.emote_ids as string[];
+				user.pushData({ id: user.id, emote_ids: newIDs } as DataStructure.TwitchUser);
+			}),
 			mapTo(undefined)
 		);
 	}
@@ -221,15 +220,14 @@ export class EmoteStructure extends Structure<'emote'> {
 	/**
 	 * Remove this emote from the client user's channel
 	 */
-	removeFromChannel(userID: string, reason?: string): Observable<void> {
+	removeFromChannel(user: UserStructure, reason?: string): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.v2.RemoveChannelEmote(this.id, userID, reason).pipe(
-			tap(res => this.restService.clientService.mergeData(res.user)),
-			switchMap(res => this.data.pipe(
-				take(1),
-				tap(data => this.data.next({ ...data, channels: data?.channels?.filter(u => u.id && u.id !== res.user.id) ?? [] } as DataStructure.Emote))
-			)),
+		return this.restService.v2.RemoveChannelEmote(this.id, user.id, reason).pipe(
+			tap(res => {
+				const newIDs = res.user.emote_ids;
+				user.pushData({ id: user.id, emote_ids: newIDs } as DataStructure.TwitchUser);
+			}),
 			mapTo(undefined)
 		);
 	}

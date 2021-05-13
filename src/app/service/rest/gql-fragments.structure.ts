@@ -29,7 +29,8 @@ export namespace GQLFragments {
 	export const ShorthandPartialUser = () => `
 		id, display_name, login,
 		role { id, name, position, color, allowed, denied },
-		profile_image_url
+		profile_image_url,
+		emote_ids
 	`;
 
 	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false, includeEditors = false, includeEditorIn = false) => `

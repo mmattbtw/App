@@ -77,7 +77,7 @@ export class DataService {
 			}
 
 			struct.pushData(d as any);
-			store.set(d.id, struct);
+			if (!store.has(d.id)) store.set(d.id, struct);
 			structs.push(struct as DataService.Structure<T>);
 		}
 

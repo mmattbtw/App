@@ -1,4 +1,4 @@
-import { HttpProgressEvent, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Observable } from 'rxjs';
 import { map, mapTo } from 'rxjs/operators';
@@ -262,5 +262,14 @@ export namespace RestV2 {
 		globalState: 'only' | 'hide';
 		sortBy: 'age' | 'popularity';
 		sortOrder: 0 | 1;
+	}
+
+	export interface ErrorGQL extends HttpErrorResponse {
+		error: {
+			errors: {
+				message: string;
+				path: string[];
+			}[];
+		};
 	}
 }

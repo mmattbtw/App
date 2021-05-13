@@ -8,6 +8,7 @@ import { ClientService } from 'src/app/service/client.service';
 import { DataService } from 'src/app/service/data.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { RestService } from 'src/app/service/rest.service';
+import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 import { RoleStructure } from 'src/app/util/role.structure';
 import { UserStructure } from 'src/app/util/user.structure';
@@ -72,13 +73,15 @@ export class UserComponent implements OnInit, OnDestroy {
 
 		this.addingEditor = false;
 		this.restService.v2.GetUser(this.editorControl.value).pipe(
+			filter(u => !!u.user),
 			switchMap(u => this.restService.v2.AddChannelEditor(channelID, u.user.id, '')),
 			switchMap(u => this.dataService.add('user', u.user))
 		).subscribe({
 			complete: () => {
 				this.cdr.markForCheck();
 				this.editorControl.reset();
-			}
+			},
+			error: (err: RestV2.ErrorGQL) => this.clientService.openSnackBar(err.error.errors[0].message, '')
 		});
 	}
 

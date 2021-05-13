@@ -16,6 +16,7 @@ import { environment } from '../environments/environment';
 import { NavigationComponent } from 'src/app/navigation/navigation.component';
 import { setAppInjector } from 'src/app/service/app.injector';
 import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
 	declarations: [
@@ -32,6 +33,7 @@ import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.componen
 		MaterialModule,
 		UtilModule,
 		NgbModule,
+		MatSnackBarModule,
 		ServiceWorkerModule.register('ngsw-worker.js', {
 			enabled: environment.serviceWorker,
 			// Register the ServiceWorker as soon as the app is stable

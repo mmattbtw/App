@@ -3,24 +3,35 @@
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { asapScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
-import { map, zipAll } from 'rxjs/operators';
+import { filter, map, take, zipAll } from 'rxjs/operators';
 import { DataService } from 'src/app/service/data.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ClientService extends UserStructure {
 	private token = '';
 	private authState = new BehaviorSubject<boolean>(false);
 	private isAuth = false;
 
-	impersonating: UserStructure | null = null;
+	impersonating = new BehaviorSubject<UserStructure | null>(null);
+	get isImpersonating(): boolean {
+		return this.impersonating.getValue() !== null;
+	}
+	getImpersonatedUser(): Observable<UserStructure> {
+		return this.impersonating.asObservable().pipe(
+			take(1),
+			filter(usr => usr !== null)
+		) as Observable<UserStructure>;
+	}
 
 	constructor(
 		public localStorage: LocalStorageService,
+		public dataService: DataService,
 		private logger: LoggerService,
-		dataService: DataService
+		private snackBar: MatSnackBar,
 	) {
 		super(dataService);
 	}
@@ -43,6 +54,9 @@ export class ClientService extends UserStructure {
 			this.logger.info(`Signed in as ${data.display_name}.`);
 		} else {
 			this.logger.info('Signed out.');
+		}
+		if (Array.isArray(data.editor_in)) {
+			this.dataService.add('user', ...data.editor_in);
 		}
 
 		return this;
@@ -82,6 +96,12 @@ export class ClientService extends UserStructure {
 			zipAll(),
 			map(perms => perms.filter(b => b === true).length > 0)
 		);
+	}
+
+	openSnackBar(message: string, action: string): void {
+		this.snackBar.open(message, action, {
+			duration: 5000
+		});
 	}
 
 	/**

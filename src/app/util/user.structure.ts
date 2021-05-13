@@ -26,11 +26,16 @@ export class UserStructure extends Structure<'user'> {
 		if (!!data.role) {
 			this.dataService.add('role', data.role);
 		}
-		const newData = { ...this.data.getValue(), ...data } as DataStructure.TwitchUser;
+		const newData = { ...this.data.getValue() } as DataStructure.TwitchUser;
+		for (const k of Object.keys(data)) {
+			const key = k as keyof DataStructure.TwitchUser;
+
+			(newData as any)[key as any] = data[key];
+		}
 
 		this.pushed = true;
 		this.data.next(newData);
-		this.snapshot = data;
+		this.snapshot = newData;
 
 		return this;
 	}

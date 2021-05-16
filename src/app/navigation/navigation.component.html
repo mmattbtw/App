@@ -63,10 +63,12 @@
 		</div>
 
 		<div class="h-100" [ngSwitch]="clientService.isAuthenticated() | async">
-			<span *ngSwitchCase="false">
+			<!-- Login Button -->
+			<span class="h-100 login-button" *ngSwitchCase="false">
 				<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
 			</span>
 
+			<!-- User / As Editor -->
 			<span class="h-100" *ngSwitchCase="true"  [ngSwitch]="clientService.isImpersonating">
 				<span class="user-as-editor" *ngSwitchCase="true">
 					<app-user-name [user]="clientService" [size]="[1.65, .585]" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	

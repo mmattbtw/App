@@ -65,16 +65,6 @@ export class NavigationComponent implements OnInit {
 		return environment.production === true;
 	}
 
-	/**
-	 * @returns whether the client user is an editor of at least one channeml
-	 */
-	isAnEditor(): Observable<boolean> {
-		return this.clientService.getEditorIn().pipe(
-			take(1),
-			map(a => a.length > 0)
-		);
-	}
-
 	stopImpersonate(): void {
 		this.clientService.impersonating.next(null);
 		this.clientService.openSnackBar(`You are no longer acting as an editor`, 'OK', {

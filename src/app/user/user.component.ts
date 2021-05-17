@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { asyncScheduler, BehaviorSubject, Observable, of, scheduled, Subject, throwError } from 'rxjs';
+import { filter, map, mapTo, mergeAll, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { DataService } from 'src/app/service/data.service';
@@ -22,6 +22,8 @@ import { UserStructure } from 'src/app/util/user.structure';
 export class UserComponent implements OnInit, OnDestroy {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	user = new BehaviorSubject<UserStructure | null>(null);
+	editors = new BehaviorSubject<UserStructure[]>([]);
+	edited = new BehaviorSubject<UserStructure[]>([]);
 
 	addingEditor = false;
 	editorControl = new FormControl('');
@@ -48,12 +50,6 @@ export class UserComponent implements OnInit, OnDestroy {
 		window.open(`https://twitch.tv/${this.user.getValue()?.getSnapshot()?.login}`, '_blank');
 	}
 
-	getEditors(): Observable<UserStructure[]> {
-		return this.user.pipe(
-			switchMap(user => user?.getEditors() ?? of([]))
-		);
-	}
-
 	canEdit(): Observable<boolean> {
 		return this.user.pipe(
 			filter(user => !!user),
@@ -78,10 +74,11 @@ export class UserComponent implements OnInit, OnDestroy {
 			switchMap(u => this.dataService.add('user', u.user))
 		).subscribe({
 			complete: () => {
+				this.updateEditors();
 				this.cdr.markForCheck();
 				this.editorControl.reset();
 			},
-			error: (err: RestV2.ErrorGQL) => this.clientService.openSnackBar(err.error.errors[0].message, '', {
+			error: (err: RestV2.ErrorGQL) => this.clientService.openSnackBar(err.error.errors[0].message ?? err.error, '', {
 				verticalPosition: 'top', horizontalPosition: 'left'
 			})
 		});
@@ -94,7 +91,18 @@ export class UserComponent implements OnInit, OnDestroy {
 		this.restService.v2.RemoveChannelEditor(channelID, user.id, '').pipe(
 			tap(u => this.dataService.add('user', u.user))
 		).subscribe({
-			complete: () => this.cdr.markForCheck()
+			complete: () => {
+				this.updateEditors();
+				this.cdr.markForCheck();
+			}
+		});
+	}
+
+	updateEditors(): void {
+		this.user.pipe(
+			switchMap(user => user?.getEditors() ?? []),
+		).subscribe({
+			next: (editors) => this.editors.next(editors)
 		});
 	}
 
@@ -102,10 +110,19 @@ export class UserComponent implements OnInit, OnDestroy {
 		this.route.paramMap.pipe(
 			takeUntil(this.destroyed),
 			map(params => params.get('user') as string),
-			switchMap(id => this.restService.v2.GetUser(id, { includeEditors: true, includeOwnedEmotes: true, includeFullEmotes: true }).pipe(
+			switchMap(id => this.restService.v2.GetUser(id, {
+				includeEditors: true,
+				includeEditorIn: true,
+				includeOwnedEmotes: true,
+				includeFullEmotes: true
+			}).pipe(
 				map(res => this.dataService.add('user', res.user)[0])
 			)),
 			tap(user => this.user.next(user)),
+			switchMap(user => scheduled([
+				user.getEditors().pipe(map(editors => this.editors.next(editors))),
+				user.getEditorIn().pipe(map(edited => this.edited.next(edited)))
+			], asyncScheduler).pipe(mergeAll(), mapTo(user))),
 			tap(user => {
 				this.appService.pageTitleAttr.next([ // Update page title
 					{ name: 'User', value: user.getSnapshot()?.display_name ?? '' }

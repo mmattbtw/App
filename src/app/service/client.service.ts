@@ -102,6 +102,16 @@ export class ClientService extends UserStructure {
 		);
 	}
 
+	/**
+	 * @returns whether the client user is an editor of at least one channeml
+	 */
+	 isAnEditor(): Observable<boolean> {
+		return this.getEditorIn().pipe(
+			take(1),
+			map(a => a.length > 0)
+		);
+	}
+
 	openSnackBar(message: string, action: string, opt?: MatSnackBarConfig): void {
 		this.snackBar.open(message, action, {
 			duration: 5000,

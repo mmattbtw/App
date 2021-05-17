@@ -29,6 +29,9 @@ export class UserStructure extends Structure<'user'> {
 		if (Array.isArray(data.owned_emotes)) {
 			this.dataService.add('emote', ...data.owned_emotes);
 		}
+		if (Array.isArray(data.editors)) {
+			this.dataService.add('user', ...data.editors);
+		}
 		const newData = { ...this.data.getValue() } as DataStructure.TwitchUser;
 		for (const k of Object.keys(data)) {
 			const key = k as keyof DataStructure.TwitchUser;

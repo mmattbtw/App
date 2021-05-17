@@ -53,7 +53,7 @@
 	</div>
 
 	<div class="align-items-center flex-grow-0 d-none d-md-inline-flex h-100">
-		<div class="d-flex mr-2" *ngIf="isAnEditor() | async" [ngSwitch]="clientService.isImpersonating">
+		<div class="d-flex mr-2" *ngIf="clientService.isAnEditor() | async" [ngSwitch]="clientService.isImpersonating">
 			<button mat-icon-button matTooltip="Swap Editor Channel" (click)="impersonate()" *ngSwitchCase="false">
 				<mat-icon>swap_vert</mat-icon>
 			</button>

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { delay, map, switchMap, take } from 'rxjs/operators';
+import { delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
@@ -41,8 +41,8 @@ export class NavigationComponent implements OnInit {
 			name: 'admin',
 			path: '/admin',
 			color: this.themingService.primary,
-			condition: this.clientService.getRole().pipe(
-				delay(0),
+			condition: this.clientService.isAuthenticated().pipe(
+				filter(yes => yes),
 				switchMap(() => this.clientService.canAccessAdminArea())
 			),
 			icon: 'build'
@@ -75,10 +75,23 @@ export class NavigationComponent implements OnInit {
 		);
 	}
 
+	stopImpersonate(): void {
+		this.clientService.impersonating.next(null);
+		this.clientService.openSnackBar(`You are no longer acting as an editor`, 'OK', {
+			verticalPosition: 'top',
+			horizontalPosition: 'left'
+		});
+	}
+
 	impersonate(): void {
 		const dialog = this.dialogRef.open(EditorDialogComponent);
 
 		dialog.afterClosed().pipe(
+			filter((editor: UserStructure) => !!editor),
+			tap(editor => this.clientService.openSnackBar(`You are now impersonating ${editor.getSnapshot()?.display_name}`, 'OK', {
+				verticalPosition: 'top',
+				horizontalPosition: 'left'
+			})),
 			map((editor: UserStructure) => this.clientService.impersonating.next(editor)),
 			take(1)
 		).subscribe({

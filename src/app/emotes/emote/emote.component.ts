@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import { asyncScheduler, BehaviorSubject, EMPTY, from, iif, Observable, of, scheduled, Subject, timer } from 'rxjs';
-import { catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { catchError, filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -23,6 +23,7 @@ import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { BitField } from '@typings/src/BitField';
 import { DataService } from 'src/app/service/data.service';
 import { EmoteOverridesDialogComponent } from 'src/app/emotes/emote/overrides-emote-dialog.component';
+import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 
 @Component({
 	selector: 'app-emote',
@@ -90,7 +91,7 @@ export class EmoteComponent implements OnInit {
 	/**
 	 * Method called when the client user interacts with a button
 	 */
-	onInteract(interaction: EmoteListService.InteractButton): void {
+	onInteract(interaction: ContextMenuComponent.InteractButton): void {
 		if (typeof interaction.click === 'function' && !!this.emote) {
 			interaction.click(this.emote).pipe(
 				switchMap(() => iif(() => interaction.label === 'add to channel' || interaction.label === 'remove from channel',
@@ -104,7 +105,7 @@ export class EmoteComponent implements OnInit {
 		}
 	}
 
-	get interactions(): EmoteListService.InteractButton[] {
+	get interactions(): ContextMenuComponent.InteractButton[] {
 		return this.emoteListService.interactions;
 	}
 
@@ -144,7 +145,6 @@ export class EmoteComponent implements OnInit {
 
 		return this.emote.getChannels().pipe(
 			take(1),
-			map(channels => Array.isArray(channels) ? channels.map(user => this.dataService.add('user', user as DataStructure.TwitchUser)[0]) ?? [] : []),
 			tap(users => this.channels.next(users))
 		);
 	}

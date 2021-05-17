@@ -2,7 +2,7 @@ import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { EMPTY, iif, Observable, of, throwError } from 'rxjs';
-import { filter, map, mapTo, mergeAll, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, mapTo, mergeAll, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -10,7 +10,7 @@ import { Structure } from 'src/app/util/abstract.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
 export class EmoteStructure extends Structure<'emote'> {
-	private id: string | undefined;
+	private id = '';
 	restService: RestService;
 
 	constructor(dataService: DataService) {
@@ -29,6 +29,9 @@ export class EmoteStructure extends Structure<'emote'> {
 		if (!!data?.owner) {
 			this.dataService.add('user', data.owner);
 		}
+		if (Array.isArray(data?.channels)) {
+			this.dataService.add('user', ...data.channels as DataStructure.TwitchUser[]);
+		}
 
 		return this;
 	}
@@ -39,7 +42,7 @@ export class EmoteStructure extends Structure<'emote'> {
 		return this.pushData(d);
 	}
 
-	getID(): string | undefined { return this.id; }
+	getID(): string { return this.id; }
 
 	getName(): Observable<string | undefined> {
 		return this.dataOnce().pipe(
@@ -65,14 +68,24 @@ export class EmoteStructure extends Structure<'emote'> {
 	getOwner(): Observable<UserStructure | undefined> {
 		return this.dataOnce().pipe(
 			take(1),
-			map(d => !!d?.owner ? this.dataService.add('user', d.owner as DataStructure.TwitchUser)[0] : undefined)
+			map(d => !!d?.owner ? this.dataService.get('user', d.owner as DataStructure.TwitchUser)[0] : undefined)
 		);
 	}
 
-	getChannels(): Observable<Partial<DataStructure.TwitchUser>[] | undefined> {
+	getChannels(): Observable<UserStructure[]> {
 		return this.dataOnce().pipe(
 			take(1),
-			map(d => d?.channels)
+			map(d => {
+				const users = [] as UserStructure[];
+				for (const ch of d?.channels ?? []) {
+					const found = this.dataService.get('user', ch);
+					for (const u of found) {
+						users.push(u);
+					}
+				}
+
+				return users;
+			})
 		);
 	}
 
@@ -236,9 +249,9 @@ export class EmoteStructure extends Structure<'emote'> {
 	 * Whether or not the emote is added to the client user's channel
 	 */
 	isChannel(): Observable<boolean> {
-		return this.restService.clientService.getEmoteIDs().pipe(
-			take(1),
-			map(a => !!this.id && a.includes(this.id))
+		return this.restService.clientService.getActorUser().pipe(
+			switchMap(usr => usr.hasEmote(this.id)),
+			take(1)
 		);
 	}
 

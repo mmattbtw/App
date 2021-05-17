@@ -34,16 +34,12 @@ export class UserStructure extends Structure<'user'> {
 		}
 
 		this.pushed = true;
-		this.data.next(newData);
 		this.snapshot = newData;
+		if (!!data.id) {
+			this.data.next(newData);
+		}
 
 		return this;
-	}
-
-	mergeData(data: Partial<DataStructure.TwitchUser>): UserStructure {
-		const d = { ...this.getSnapshot(), ...data } as DataStructure.TwitchUser;
-
-		return this.pushData(d);
 	}
 
 	getID(): Observable<string> {
@@ -92,6 +88,12 @@ export class UserStructure extends Structure<'user'> {
 		);
 	}
 
+	hasEmote(id: string): Observable<boolean> {
+		return this.dataOnce().pipe(
+			map(data => data?.emote_ids?.includes(id) ?? false)
+		);
+	}
+
 	getEmotes(): Observable<EmoteStructure[]> {
 		return this.dataOnce().pipe(
 			map(data => data?.emotes ?? []),
@@ -105,7 +107,7 @@ export class UserStructure extends Structure<'user'> {
 		return this.dataOnce().pipe(
 			map(data => data?.editors ?? []),
 			mergeAll(),
-			map(u => this.dataService.add('user', u)[0]),
+			map(u => this.dataService.get('user', u)[0]),
 			toArray()
 		);
 	}
@@ -114,7 +116,7 @@ export class UserStructure extends Structure<'user'> {
 		return this.dataOnce().pipe(
 			map(data => data?.editor_in ?? []),
 			mergeAll(),
-			map(u => this.dataService.add('user', u)[0]),
+			map(u => this.dataService.get('user', u)[0]),
 			toArray()
 		);
 	}

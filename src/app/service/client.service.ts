@@ -8,7 +8,7 @@ import { DataService } from 'src/app/service/data.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService extends UserStructure {
@@ -20,10 +20,14 @@ export class ClientService extends UserStructure {
 	get isImpersonating(): boolean {
 		return this.impersonating.getValue() !== null;
 	}
-	getImpersonatedUser(): Observable<UserStructure> {
+
+	/**
+	 * Get the current actor user, which is the client user unless they are impersonating somebody
+	 */
+	getActorUser(): Observable<UserStructure> {
 		return this.impersonating.asObservable().pipe(
 			take(1),
-			filter(usr => usr !== null)
+			map(usr => !!usr ? usr : this),
 		) as Observable<UserStructure>;
 	}
 
@@ -98,9 +102,10 @@ export class ClientService extends UserStructure {
 		);
 	}
 
-	openSnackBar(message: string, action: string): void {
+	openSnackBar(message: string, action: string, opt?: MatSnackBarConfig): void {
 		this.snackBar.open(message, action, {
-			duration: 5000
+			duration: 5000,
+			...opt ?? {}
 		});
 	}
 

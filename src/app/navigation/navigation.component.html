@@ -21,13 +21,14 @@
 
 	<!-- Navigation Buttons -->
 	<div class="nav-button-list justify-content-center flex-grow-1 d-none d-md-flex">
-		<div [routerLink]="btn.path" [routerLinkActive]="['selected']"
-			[routerLinkActiveOptions]="{ exact: true }"
-			matRipple
-			class="nav-button"
+		<div matRipple
 			*ngFor="let btn of navButtons">
+			<div class="d-flex flex-grow-1 align-items-center nav-button"
+				[routerLinkActive]="['selected']"
+				[routerLinkActiveOptions]="{ exact: true }"
+				[routerLink]="btn.path" *ngIf="!btn.condition || (btn.condition | async)"
+			>
 
-			<div class="d-flex flex-grow-1 align-items-center" *ngIf="!btn.condition || (btn.condition | async)">
 				<!-- Icon -->
 				<div [ngSwitch]="btn.svg" class="_icon" [appColor]="btn.color">
 					<mat-icon class=" d-flex align-self-center" *ngSwitchDefault [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''">
@@ -57,7 +58,7 @@
 				<mat-icon>swap_vert</mat-icon>
 			</button>
 
-			<button mat-icon-button matTooltip="Quit Impersonating" *ngSwitchCase="true" (click)="clientService.impersonating.next(null)">
+			<button mat-icon-button matTooltip="Quit Impersonating" *ngSwitchCase="true" (click)="stopImpersonate()">
 				<mat-icon>logout</mat-icon>
 			</button>
 		</div>

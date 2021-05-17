@@ -5,20 +5,19 @@ import { LocalStorageService } from 'src/app/service/localstorage.service';
 
 import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { defer, EMPTY, iif, Observable, of } from 'rxjs';
+import { defer, EMPTY, iif, of } from 'rxjs';
 import { switchMap, map, tap, filter, take } from 'rxjs/operators';
 import { EmoteDeleteDialogComponent } from 'src/app/emotes/emote/delete-emote-dialog.component';
 import { EmoteOwnershipDialogComponent } from 'src/app/emotes/emote/transfer-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ThemingService } from 'src/app/service/theming.service';
-import * as Color from 'color';
-import { EmoteStructure } from 'src/app/util/emote.structure';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
 import { UserStructure } from 'src/app/util/user.structure';
+import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 @Injectable({providedIn: 'root'})
 export class EmoteListService {
 	currentPage = Number(this.localStorage.getItem('el_pagination_page')) ?? 0;
@@ -35,35 +34,36 @@ export class EmoteListService {
 	interactions = [
 		{ // Add to channel
 			label: 'add to channel', color: this.themingService.colors.twitch_purple, icon: 'add_circle',
-			condition: emote => (this.clientService.isImpersonating ? this.clientService.getImpersonatedUser() : of(this.clientService)).pipe(
+			condition: emote => this.clientService.getActorUser().pipe(
 				take(1),
-				switchMap(usr => (usr as UserStructure).getEmoteIDs().pipe(
-					switchMap(emotes => emote?.isGlobal().pipe(map(isGlobal => ({ isGlobal, emotes }))) ?? EMPTY),
-					map(({ emotes, isGlobal }) => !isGlobal && !emotes.includes(emote?.getID() as string)))
-			)),
+				switchMap(usr => (usr as UserStructure).hasEmote(emote.getID())),
+				switchMap(hasEmote => iif(() => hasEmote,
+					of(false),
+					emote.isGlobal().pipe(map(isGlobal => !isGlobal)),
+				)),
+			),
 			click: emote => this.clientService.isAuthenticated().pipe(
-				switchMap(ok => ok ? iif(() => this.clientService.isImpersonating,
-					this.clientService.impersonating.pipe(
-						switchMap(usr => emote.addToChannel(usr as UserStructure))
+				switchMap(ok => iif(() => ok,
+					this.clientService.getActorUser().pipe(
+						switchMap(usr => emote.addToChannel(usr))
 					),
-					defer(() => emote.addToChannel(this.clientService))
-				) : of(false))
+					of(false)
+				)),
 			)
 		},
 		{ // Remove from channel
 			label: 'remove from channel', color: this.themingService.warning.desaturate(0.4).negate(), icon: 'remove_circle',
-			condition: emote => (this.clientService.isImpersonating ? this.clientService.getImpersonatedUser() : of(this.clientService)).pipe(
+			condition: emote => this.clientService.getActorUser().pipe(
 				take(1),
-				switchMap(usr => (usr as UserStructure).getEmoteIDs()),
-				map(emotes => emotes.includes(emote?.getID() as string))
+				switchMap(usr => (usr as UserStructure).hasEmote(emote.getID()))
 			),
 			click: emote => this.clientService.isAuthenticated().pipe(
-				switchMap(ok => ok ? iif(() => this.clientService.isImpersonating,
-					this.clientService.impersonating.pipe(
-						switchMap(usr => emote.removeFromChannel(usr as UserStructure))
+				switchMap(ok => iif(() => ok,
+					this.clientService.getActorUser().pipe(
+						switchMap(usr => emote.removeFromChannel(usr))
 					),
-					defer(() => emote.removeFromChannel(this.clientService))
-				) : of(false))
+					of(false)
+				)),
 			)
 		},
 		{
@@ -133,7 +133,7 @@ export class EmoteListService {
 				);
 			}
 		}
-	] as EmoteListService.InteractButton[];
+	] as ContextMenuComponent.InteractButton[];
 
 	constructor(
 		private localStorage: LocalStorageService,
@@ -148,12 +148,5 @@ export class EmoteListService {
 }
 
 export namespace EmoteListService {
-	export interface InteractButton {
-		label: string;
-		color: Color;
-		icon?: string;
-		disabled?: boolean;
-		condition: (emote: EmoteStructure) => Observable<boolean>;
-		click?: (emote: EmoteStructure) => Observable<void>;
-	}
+
 }

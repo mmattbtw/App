@@ -1,11 +1,12 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import * as Color from 'color';
 import { asapScheduler, BehaviorSubject, EMPTY, Observable, of, scheduled } from 'rxjs';
 import { defaultIfEmpty, delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
@@ -29,7 +30,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() size = 10;
 	@Input() emote: EmoteStructure | null = null;
-	@Input() contextMenu: MatMenu | undefined;
+	@Input() contextMenu: MatMenu | null = null;
 	@Output() openContext = new EventEmitter<EmoteStructure>();
 	@ViewChild(MatMenuTrigger) contextMenuTrigger: MatMenuTrigger | undefined;
 
@@ -76,15 +77,13 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	}
 
 	constructor(
+		private cdr: ChangeDetectorRef,
 		private restService: RestService,
+		private clientService: ClientService,
 		private router: Router,
 		private windowRef: WindowRef,
 		public themingService: ThemingService
 	) { }
-
-	ngOnInit(): void {
-		this.updateBorderColor();
-	}
 
 	updateBorderColor(): void {
 		this.getBorderColor().pipe(
@@ -123,6 +122,12 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 				channel: this.channelBorderColor
 			})[type] as Color : this.borderColor))
 		);
+	}
+
+
+	ngOnInit(): void {
+		this.updateBorderColor();
+		this.clientService.impersonating.subscribe({ next: () => this.cdr.markForCheck() });
 	}
 
 	ngOnDestroy(): void {

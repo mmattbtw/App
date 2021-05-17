@@ -38,7 +38,7 @@
                 <p>Channel Editors</p>
                 <div class="channel-editor mt-1" *ngFor="let usr of getEditors() | async">
                     <app-user-name [user]="usr"></app-user-name>
-                    <button mat-icon-button (click)="removeEditor(usr)" *ngIf="canEdit() | async">
+                    <button mat-icon-button (click)="removeEditor(usr)" *ngIf="canEdit() | async" matTooltip="Remove Editor">
                         <mat-icon>close</mat-icon>
                     </button>
                 </div>

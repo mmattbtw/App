@@ -79,9 +79,7 @@ export class EmoteStructure extends Structure<'emote'> {
 				const users = [] as UserStructure[];
 				for (const ch of d?.channels ?? []) {
 					const found = this.dataService.get('user', ch);
-					for (const u of found) {
-						users.push(u);
-					}
+					users.push(...found);
 				}
 
 				return users;

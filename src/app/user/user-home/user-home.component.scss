@@ -1,17 +1,25 @@
+
+.heading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 12em;
+	height: 32px;
+	padding: 1em;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+
+	font-size: 1.2em;
+}
+
 .channel-emote-list {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	padding: 2em;
 	border-radius: 8px;
+	border-top-left-radius: 0;
 	flex-grow: 1;
-
-	.heading {
-		display: flex;
-		align-items: center;
-		height: 32px;
-		font-size: 1.2em;
-	}
 
 	.is-emote-card {
 		margin: 1em;
@@ -19,8 +27,5 @@
 }
 
 .user-home {
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
-	width: 100%;
+	display: block;
 }

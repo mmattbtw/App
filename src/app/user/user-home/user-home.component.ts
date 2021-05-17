@@ -15,6 +15,7 @@ import { UserStructure } from 'src/app/util/user.structure';
 
 export class UserHomeComponent implements OnInit {
 	channelEmotes = new BehaviorSubject<EmoteStructure[]>([]);
+	ownedEmotes = new BehaviorSubject<EmoteStructure[]>([]);
 
 	constructor(
 		@Inject(UserComponent) private parent: UserComponent,
@@ -30,7 +31,8 @@ export class UserHomeComponent implements OnInit {
 		this.user.pipe(
 			filter(user => !!user),
 			switchMap(user => scheduled([
-				user.getEmotes().pipe(map(emotes => this.channelEmotes.next(emotes)))
+				user.getEmotes().pipe(map(emotes => this.channelEmotes.next(emotes))),
+				user.getOwnedEmotes().pipe(map(emotes => this.ownedEmotes.next(emotes)))
 			], asyncScheduler).pipe(mergeAll()))
 		).subscribe();
 	}

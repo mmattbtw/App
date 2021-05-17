@@ -26,6 +26,9 @@ export class UserStructure extends Structure<'user'> {
 		if (!!data.role) {
 			this.dataService.add('role', data.role);
 		}
+		if (Array.isArray(data.owned_emotes)) {
+			this.dataService.add('emote', ...data.owned_emotes);
+		}
 		const newData = { ...this.data.getValue() } as DataStructure.TwitchUser;
 		for (const k of Object.keys(data)) {
 			const key = k as keyof DataStructure.TwitchUser;
@@ -85,6 +88,20 @@ export class UserStructure extends Structure<'user'> {
 	getEmoteIDs(): Observable<string[]> {
 		return this.dataOnce().pipe(
 			map(data => data?.emote_ids as string[] ?? [])
+		);
+	}
+
+	getOwnedEmotes(): Observable<EmoteStructure[]> {
+		return this.dataOnce().pipe(
+			map(data => {
+				const emotes = [] as EmoteStructure[];
+				for (const e of data?.owned_emotes ?? []) {
+					const found = this.dataService.get('emote', e);
+					emotes.push(...found);
+				}
+
+				return emotes;
+			})
 		);
 	}
 

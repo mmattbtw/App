@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { DataService } from 'src/app/service/data.service';
@@ -81,7 +81,9 @@ export class UserComponent implements OnInit, OnDestroy {
 				this.cdr.markForCheck();
 				this.editorControl.reset();
 			},
-			error: (err: RestV2.ErrorGQL) => this.clientService.openSnackBar(err.error.errors[0].message, '')
+			error: (err: RestV2.ErrorGQL) => this.clientService.openSnackBar(err.error.errors[0].message, '', {
+				verticalPosition: 'top', horizontalPosition: 'left'
+			})
 		});
 	}
 
@@ -98,6 +100,7 @@ export class UserComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.route.paramMap.pipe(
+			takeUntil(this.destroyed),
 			map(params => params.get('user') as string),
 			switchMap(id => this.restService.v2.GetUser(id, { includeEditors: true, includeOwnedEmotes: true, includeFullEmotes: true }).pipe(
 				map(res => this.dataService.add('user', res.user)[0])

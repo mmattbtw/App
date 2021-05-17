@@ -1,9 +1,23 @@
 <div class="user-home">
+
 	<!-- User's Channel Emotes -->
-	
-	<h3>Emotes Enabled</h3>
+	<div class="heading" [appColor]="themingService.primary.darken(.075)" [isBackground]="true">
+		Emotes Enabled
+	</div>
 	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
 		<div class="is-emote-card" *ngFor="let emote of channelEmotes | async">
+			<app-emote-card [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.menu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
+		</div>
+	</div>
+
+	<mat-divider class="my-3"></mat-divider>
+
+	<!-- User's Uploaded Emotes -->
+	<div class="heading" [appColor]="themingService.primary.darken(.075)" [isBackground]="true">
+		Emotes by {{(user | async)?.getUsername() | async}}
+	</div>
+	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
+		<div class="is-emote-card" *ngFor="let emote of ownedEmotes | async">
 			<app-emote-card [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.menu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
 		</div>
 	</div>

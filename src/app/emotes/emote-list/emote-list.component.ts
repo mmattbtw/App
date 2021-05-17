@@ -68,7 +68,6 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
 	emotes = new BehaviorSubject<any>(Array(16).fill(new EmoteStructure(this.dataService))).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
 	totalEmotes = new BehaviorSubject<number>(0);
-	contextEmote: EmoteStructure | null = null;
 
 	@ViewChild('emotesContainer') emotesContainer: ElementRef<HTMLDivElement> | undefined;
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
@@ -77,44 +76,16 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 	currentSearchOptions: RestV2.GetEmotesOptions | undefined;
 	currentSearchQuery = '';
 
-	contextMenuOptions = [
-		{
-			label: 'Open in New Tab',
-			icon: 'open_in_new',
-			click: emote => {
-				const url = this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
-
-				return of(this.windowRef.getNativeWindow()?.open(url, '_blank'));
-			}
-		},
-		{
-			label: 'Copy Link',
-			icon: 'link',
-			click: emote => of(this.windowRef.copyValueToClipboard(''.concat(
-				`https://${this.windowRef.getNativeWindow()?.location.host}`, // Get window location.host
-				this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]))
-			)))
-		},
-		...this.emoteListService.interactions
-	] as EmoteListService.InteractButton[];
-
 	constructor(
 		private restService: RestService,
 		private renderer: Renderer2,
 		private router: Router,
-		private windowRef: WindowRef,
 		private appService: AppService,
 		private localStorage: LocalStorageService,
 		private emoteListService: EmoteListService,
 		private dataService: DataService,
 		public themingService: ThemingService
 	) { }
-
-	onContextInteract(button: EmoteListService.InteractButton, emote: EmoteStructure): void {
-		if (typeof button.click === 'function' && !!emote) {
-			button.click(emote).subscribe();
-		}
-	}
 
 	selectEmote(el: any, emote: EmoteStructure): void {
 		if (!emote.getID()) return undefined;

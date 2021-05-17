@@ -4,7 +4,7 @@
 	<h3>Emotes Enabled</h3>
 	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
 		<div class="is-emote-card" *ngFor="let emote of channelEmotes | async">
-			<app-emote-card [size]="8" [emote]="emote"></app-emote-card>
+			<app-emote-card [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.menu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
 		</div>
 	</div>
 </div>
@@ -14,3 +14,5 @@
         {{ headerName }}
     </div>
 </ng-template>
+
+<app-ctx-menu #contextMenu></app-ctx-menu>

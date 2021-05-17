@@ -1,0 +1,14 @@
+<!--
+	Render the emote context menu
+	This is passed to the emote cards themselves
+-->
+<mat-menu #contextMenu="matMenu">
+	<ng-template matMenuContent>
+		<button mat-menu-item *ngFor="let opt of contextMenuOptions.emote"
+			[class.d-none]="(!!opt.condition && !!contextEmote) && (opt.condition(contextEmote) | async) !== true"
+			(click)="(!!contextEmote && opt.click) ? onContextInteract(opt, contextEmote) : undefined">
+			<mat-icon [appColor]="opt.color"> {{opt.icon}} </mat-icon>
+			<span>{{opt.label | titlecase }}</span>
+		</button>
+	</ng-template>
+</mat-menu>

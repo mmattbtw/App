@@ -13,7 +13,7 @@
 			<div #emotesContainer class="d-flex flex-fill align-items-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
 				<div class="d-flex flex-wrap justify-content-center">
 					<div (click)="selectEmote(emoteEl, emote)"  #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
-						<app-emote-card [emote]="emote" [contextMenu]="emoteContextMenu" (openContext)="contextEmote = $event">
+						<app-emote-card [emote]="emote" [contextMenu]="contextMenu.menu" (openContext)="contextMenu.contextEmote = $event">
 			
 						</app-emote-card>
 					</div>
@@ -27,22 +27,7 @@
 		
 			</mat-paginator>
 		</div>
-
-		<!--
-			Render the emote context menu
-			This is passed to the emote cards themselves
-		-->
-		<mat-menu #emoteContextMenu="matMenu">
-			<ng-template matMenuContent>
-				<button mat-menu-item
-				*ngFor="let opt of contextMenuOptions"
-				[class.d-none]="(!!opt.condition && !!contextEmote) && (opt.condition(contextEmote) | async) !== true"
-				(click)="(!!contextEmote && opt.click) ? onContextInteract(opt, contextEmote) : undefined"
-				>
-					<mat-icon [appColor]="opt.color"> {{opt.icon}} </mat-icon>
-					<span>{{opt.label | titlecase }}</span>
-				</button>
-			</ng-template>
-		</mat-menu>
 	</div>
 </div>
+
+<app-ctx-menu #contextMenu></app-ctx-menu>

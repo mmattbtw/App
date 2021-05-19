@@ -20,17 +20,28 @@ export class CallbackGuard implements CanActivate {
 	canActivate(route: ActivatedRouteSnapshot): boolean {
 		const win = this.windowRef.getNativeWindow();
 
-		(win
-			?.opener as Window)
-			?.postMessage({
-				type: 'oauthCallback',
-				data: {
-					token: route.queryParamMap.get('token')
-						?? this.cookieService.get('auth')
-				}
-			}, win?.location.origin ?? '');
-		this.localStorage.setItem('pending-access-token', route.queryParamMap.get('token') as string);
-		win?.close();
+		setTimeout(() => {
+			const href = new URLSearchParams(win?.location.search.replace('?', ''));
+			let error: Error | null = null;
+			if (href.has('error')) {
+				const decoded = decodeURIComponent(href.get('error') as string);
+				error = new Error(decoded);
+			}
+
+			(win
+				?.opener as Window)
+				?.postMessage({
+					type: 'oauthCallback',
+					data: {
+						error,
+						token: route.queryParamMap.get('token')
+							?? this.cookieService.get('auth')
+					}
+				}, win?.location.origin ?? '');
+
+			win?.close();
+		}, 0);
+
 		return true;
 	}
 }

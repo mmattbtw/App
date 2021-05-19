@@ -38,6 +38,10 @@ export class OAuthService {
 				if (ev.data.type !== 'oauthCallback') return undefined;
 
 				this.logger.info(`Received auth message`, ev.data);
+				if (ev.data.data.error != null) {
+					observer.error(Error(ev.data.data.error));
+				}
+
 				observer.next(ev.data.data);
 				nativeWin.removeEventListener('message', listener);
 				return undefined;

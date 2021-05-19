@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
-import { iif, Observable, of, Subject } from 'rxjs';
-import { switchMap, take, takeUntil, tap } from 'rxjs/operators';
-import { ClientService } from 'src/app/service/client.service';
+import { Subject } from 'rxjs';
+import { take, takeUntil, tap } from 'rxjs/operators';
 import { ThemingService } from 'src/app/service/theming.service';
-import { RoleStructure } from 'src/app/util/role.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
 
@@ -22,6 +21,9 @@ export class UserNameComponent implements OnInit, OnDestroy {
 	@Input() showUsername: boolean | null = true;
 	@Input() clickable = true;
 	@Input() maxWidth = 110;
+	@Input() contextMenu: MatMenu | null = null;
+	@ViewChild(MatMenuTrigger) contextMenuTrigger: MatMenuTrigger | undefined;
+	@Output() openContext = new EventEmitter<UserStructure>();
 
 	/** [avatar size, font size]  */
 	@Input() size: [number, number] = [2, 1];
@@ -47,6 +49,17 @@ export class UserNameComponent implements OnInit, OnDestroy {
 			tap(username => this.router.navigate(['/user', username]))
 		).subscribe();
 	}
+
+	/**
+	 * On Right Click: open quick actions menu
+	 */
+	 @HostListener('contextmenu', ['$event'])
+	 onRightClick(ev: MouseEvent): void {
+		 ev.preventDefault(); // Stop the default context menu from opening
+
+		 if (!!this.user) this.openContext.next(this.user);
+		 this.contextMenuTrigger?.openMenu();
+	 }
 
 	ngOnInit(): void {}
 

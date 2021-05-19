@@ -11,3 +11,4 @@
         {{ target?.getUsername() | async }}
     </span>
 </span>
+<div *ngIf="contextMenu" [matMenuTriggerFor]="contextMenu" #contextMenuTrigger></div>

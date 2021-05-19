@@ -18,6 +18,7 @@ import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
 import { UserStructure } from 'src/app/util/user.structure';
 import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
+import { EmoteStructure } from 'src/app/util/emote.structure';
 @Injectable({providedIn: 'root'})
 export class EmoteListService {
 	currentPage = Number(this.localStorage.getItem('el_pagination_page')) ?? 0;
@@ -133,7 +134,7 @@ export class EmoteListService {
 				);
 			}
 		}
-	] as ContextMenuComponent.InteractButton[];
+	] as ContextMenuComponent.InteractButton<EmoteStructure>[];
 
 	constructor(
 		private localStorage: LocalStorageService,

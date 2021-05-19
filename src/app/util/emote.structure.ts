@@ -58,10 +58,10 @@ export class EmoteStructure extends Structure<'emote'> {
 		);
 	}
 
-	getOwnerName(): Observable<string | undefined> {
+	getOwnerName(): Observable<string> {
 		return this.dataOnce().pipe(
 			take(1),
-			map(d => d?.owner?.display_name)
+			map(d => d?.owner?.display_name ?? '')
 		);
 	}
 

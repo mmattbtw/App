@@ -41,7 +41,7 @@
 		<!-- Emote Owner -->
 		<div class="d-flex align-items-center" *ngIf="emote?.getOwner() | async">
 			<span>by</span>
-			<app-user-name class="ml-1" [user]="emote?.getOwner() | async" [size]="[1.25, 1]"></app-user-name>
+			<app-user-name class="ml-1" [user]="emote?.getOwner() | async" [size]="[1.25, 1]" [contextMenu]="contextMenu.userMenu" (openContext)="contextMenu.contextUser = $event"></app-user-name>
 		</div>
 	</div>
 	
@@ -134,3 +134,5 @@
 		</div>
 	</div>
 </div>
+
+<app-ctx-menu #contextMenu></app-ctx-menu>

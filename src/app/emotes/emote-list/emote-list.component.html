@@ -13,7 +13,7 @@
 			<div #emotesContainer class="d-flex flex-fill align-items-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
 				<div class="d-flex flex-wrap justify-content-center">
 					<div (click)="selectEmote(emoteEl, emote)"  #emoteEl *ngFor="let emote of emotes | async" class="is-emote-card">
-						<app-emote-card [emote]="emote" [contextMenu]="contextMenu.menu" (openContext)="contextMenu.contextEmote = $event">
+						<app-emote-card [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event">
 			
 						</app-emote-card>
 					</div>

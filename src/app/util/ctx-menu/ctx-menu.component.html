@@ -2,11 +2,26 @@
 	Render the emote context menu
 	This is passed to the emote cards themselves
 -->
-<mat-menu #contextMenu="matMenu">
+<mat-menu #emoteContextMenu="matMenu">
 	<ng-template matMenuContent>
 		<button mat-menu-item *ngFor="let opt of contextMenuOptions.emote"
 			[class.d-none]="(!!opt.condition && !!contextEmote) && (opt.condition(contextEmote) | async) !== true"
 			(click)="(!!contextEmote && opt.click) ? onContextInteract(opt, contextEmote) : undefined">
+			<mat-icon [appColor]="opt.color"> {{opt.icon}} </mat-icon>
+			<span>{{opt.label | titlecase }}</span>
+		</button>
+
+		<button mat-menu-item [matMenuTriggerFor]="userContextMenu" *ngIf="!!(contextEmote?.getOwner() | async)">
+			<app-user-name [showAvatar]="false" [clickable]="false" [user]="contextEmote?.getOwner() | async"></app-user-name>
+		</button>
+	</ng-template>
+</mat-menu>
+
+<mat-menu #userContextMenu="matMenu">
+	<ng-template matMenuContent>
+		<button mat-menu-item *ngFor="let opt of contextMenuOptions.user"
+			[class.d-none]="(!!opt.condition && !!contextUser) && (opt.condition(contextUser) | async) !== true"
+			(click)="(!!contextUser && opt.click) ? onContextInteract(opt, contextUser) : undefined">
 			<mat-icon [appColor]="opt.color"> {{opt.icon}} </mat-icon>
 			<span>{{opt.label | titlecase }}</span>
 		</button>

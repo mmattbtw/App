@@ -6,7 +6,7 @@
 	</div>
 	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
 		<div class="is-emote-card" *ngFor="let emote of channelEmotes | async">
-			<app-emote-card [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.menu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
+			<app-emote-card [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
 		</div>
 	</div>
 
@@ -18,7 +18,7 @@
 	</div>
 	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
 		<div class="is-emote-card" *ngFor="let emote of ownedEmotes | async">
-			<app-emote-card [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.menu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
+			<app-emote-card [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
 		</div>
 	</div>
 </div>

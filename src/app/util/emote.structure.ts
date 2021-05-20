@@ -2,11 +2,12 @@ import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { EMPTY, iif, Observable, of, throwError } from 'rxjs';
-import { filter, map, mapTo, mergeAll, switchMap, take, tap, toArray } from 'rxjs/operators';
+import { filter, map, mapTo, mergeAll, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
 import { Structure } from 'src/app/util/abstract.structure';
+import { AuditLogEntry } from 'src/app/util/audit.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
 export class EmoteStructure extends Structure<'emote'> {
@@ -129,11 +130,25 @@ export class EmoteStructure extends Structure<'emote'> {
 		return this.hasVisibility('GLOBAL');
 	}
 
-	getAuditActivity(): Observable<DataStructure.AuditLog.Entry> {
+	getAuditActivity(): Observable<AuditLogEntry> {
 		return this.dataOnce().pipe(
 			take(1),
-			map(emote => (emote?.audit_entries ?? []) as DataStructure.AuditLog.Entry[]),
-			mergeAll(),
+			switchMap(emote => (emote?.audit_entries as unknown as string[] ?? []) as string[]),
+			map(x => JSON.parse(x) as DataStructure.AuditLog.Entry),
+			mergeMap(entry => of(this.dataService.get('user', { id: String(entry.action_user) })).pipe(
+				switchMap(users => iif(() => users.length > 0,
+					of(users[0]),
+					this.restService.v2.GetUser(String(entry.action_user), {}).pipe(
+						map(res => this.dataService.add('user', res.user)[0])
+					)
+				)),
+				map(usr => {
+					const e = new AuditLogEntry(entry);
+					e.setActionUser(usr);
+
+					return e;
+				})
+			)),
 			filter(entry => typeof entry !== 'string')
 		);
 	}

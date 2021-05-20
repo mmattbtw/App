@@ -24,6 +24,7 @@ import { BitField } from '@typings/src/BitField';
 import { DataService } from 'src/app/service/data.service';
 import { EmoteOverridesDialogComponent } from 'src/app/emotes/emote/overrides-emote-dialog.component';
 import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
+import { AuditLogEntry } from 'src/app/util/audit.structure';
 
 @Component({
 	selector: 'app-emote',
@@ -49,7 +50,7 @@ export class EmoteComponent implements OnInit {
 	channels = new BehaviorSubject<UserStructure[]>([]);
 	emote: EmoteStructure | undefined;
 	sizes = new BehaviorSubject<EmoteComponent.SizeResult[]>([]);
-	audit = new BehaviorSubject<EmoteComponent.AuditEntry[]>([]);
+	audit = new BehaviorSubject<AuditLogEntry[]>([]);
 	interactError = new Subject<string>().pipe(
 		mergeMap(x => scheduled([
 			of(!!x ? 'ERROR: ' + x : ''),
@@ -149,10 +150,8 @@ export class EmoteComponent implements OnInit {
 		);
 	}
 
-	readAuditActivity(): Observable<DataStructure.AuditLog.Entry[]> {
-		return this.emote?.getAuditActivityString().pipe(
-			map(entryString => JSON.parse(entryString) as DataStructure.AuditLog.Entry),
-
+	readAuditActivity(): Observable<AuditLogEntry[]> {
+		return this.emote?.getAuditActivity().pipe(
 			toArray(),
 			map(a => a.reverse())
 		) ?? of([]);

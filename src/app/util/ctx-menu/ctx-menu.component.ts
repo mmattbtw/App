@@ -1,6 +1,6 @@
 
 
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import Color from 'color';
@@ -26,6 +26,7 @@ export class ContextMenuComponent implements OnInit {
 
 	constructor(
 		private router: Router,
+		private cdr: ChangeDetectorRef,
 		private themingService: ThemingService,
 		private emoteListService: EmoteListService,
 		private windowRef: WindowRef,
@@ -96,7 +97,7 @@ export class ContextMenuComponent implements OnInit {
 		this.interact.emit(button);
 	}
 
-	ngOnInit(): void { }
+	ngOnInit(): void {}
 }
 
 export namespace ContextMenuComponent {

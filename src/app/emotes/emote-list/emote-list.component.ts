@@ -2,7 +2,7 @@ import { trigger, transition, query, style, stagger, animate, keyframes, group, 
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, Observable, of } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, of, noop } from 'rxjs';
 import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { AppService } from 'src/app/service/app.service';
@@ -12,6 +12,7 @@ import { RestService } from 'src/app/service/rest.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
+import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 
 @Component({
@@ -71,6 +72,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 
 	@ViewChild('emotesContainer') emotesContainer: ElementRef<HTMLDivElement> | undefined;
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
+	@ViewChild('contextMenu') contextMenu: ContextMenuComponent | undefined;
 	pageOptions: EmoteListComponent.PersistentPageOptions | undefined;
 	pageSize = new BehaviorSubject<number>(16);
 	currentSearchOptions: RestV2.GetEmotesOptions | undefined;
@@ -122,6 +124,17 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 			mergeAll(),
 			map(data => this.dataService.add('emote', data)[0])
 		);
+	}
+
+	onOpenCardContextMenu(emote: EmoteStructure): void {
+		if (!this.contextMenu) {
+			return undefined;
+		}
+
+		this.contextMenu.contextEmote = emote;
+		emote.getOwner().pipe(
+			tap(usr => !!this.contextMenu ? this.contextMenu.contextUser = (usr ?? null) : noop())
+		).subscribe();
 	}
 
 	/**

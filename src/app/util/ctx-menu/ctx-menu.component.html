@@ -12,7 +12,7 @@
 		</button>
 
 		<button mat-menu-item [matMenuTriggerFor]="userContextMenu" *ngIf="!!(contextEmote?.getOwner() | async)">
-			<app-user-name [showAvatar]="false" [clickable]="false" [user]="contextEmote?.getOwner() | async"></app-user-name>
+			<app-user-name  [showAvatar]="false" [clickable]="false" [user]="contextEmote?.getOwner() | async"></app-user-name>
 		</button>
 	</ng-template>
 </mat-menu>

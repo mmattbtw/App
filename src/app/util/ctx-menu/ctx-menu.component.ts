@@ -1,15 +1,18 @@
 
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatMenu } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import Color from 'color';
 import { Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
 import { Structure } from 'src/app/util/abstract.structure';
+import { BanDialogComponent } from 'src/app/util/dialog/error-dialog/ban-dialog/ban-dialog.component';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
@@ -26,10 +29,10 @@ export class ContextMenuComponent implements OnInit {
 
 	constructor(
 		private router: Router,
-		private cdr: ChangeDetectorRef,
 		private themingService: ThemingService,
 		private emoteListService: EmoteListService,
 		private windowRef: WindowRef,
+		private dialog: MatDialog,
 		public clientService: ClientService,
 	) { }
 
@@ -78,13 +81,29 @@ export class ContextMenuComponent implements OnInit {
 			{
 				label: 'Change Role',
 				icon: 'flag',
-				condition: _ => this.clientService.hasPermission('MANAGE_ROLES')
+				click: victim => of(undefined),
+				condition: victim => this.clientService.hasPermission('MANAGE_ROLES').pipe(
+					switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
+					switchMap(({ canBan, victimRole }) => this.clientService.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
+					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition())
+				)
 			},
 			{
 				label: 'Ban',
 				icon: 'gavel',
 				color: this.themingService.warning,
-				condition: _ => this.clientService.hasPermission('BAN_USERS')
+				click: victim => new Observable<void>(observer => {
+					this.dialog.open(BanDialogComponent, {
+						data: { user: victim }
+					});
+
+					observer.complete();
+				}),
+				condition: victim => this.clientService.hasPermission('BAN_USERS').pipe(
+					switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
+					switchMap(({ canBan, victimRole }) => this.clientService.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
+					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition())
+				)
 			}
 		] as ContextMenuComponent.InteractButton<UserStructure>[]
 	};

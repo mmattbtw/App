@@ -1,0 +1,21 @@
+<h3 mat-dialog-title> Ban {{user.getUsername() | async}} </h3>
+<p [style.max-width.px]="200">Banning {{user.getUsername() | async}} will prevent them from signing into the app until it expires.</p>
+
+<form [formGroup]="form" mat-dialog-content class="d-flex flex-column py-3">
+	<mat-form-field appearance="outline"> 
+		<mat-label> Expiration Date </mat-label>
+		<input matInput [min]="MIN_EXPIRATION_DATE" formControlName="expiration" [matDatepicker]="expirePicker">
+		<mat-datepicker-toggle matSuffix [for]="expirePicker"></mat-datepicker-toggle>
+		<mat-datepicker #expirePicker></mat-datepicker>
+	</mat-form-field>
+
+	<mat-form-field appearance="outline">
+		<mat-label> Reason </mat-label>
+		<input matInput formControlName="reason">
+		<mat-hint> This will be shown to {{user.getUsername() | async}} when they attempt to sign in. </mat-hint>
+	</mat-form-field>
+</form>
+
+<div mat-dialog-actions>
+	<button mat-flat-button (click)="ban()" color="warn" [disabled]="!form.valid" matDialogClose>BAN</button>
+</div>

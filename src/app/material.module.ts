@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 
 // Import angular material
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { ColorDirective } from 'src/app/directive/color.directive';
-
+import { MatDatepickerModule } from '@angular/material/datepicker';
 const modules = [
 	MatToolbarModule,
 	MatRippleModule,
@@ -33,7 +33,9 @@ const modules = [
 	MatPaginatorModule,
 	MatDialogModule,
 	MatMenuModule,
-	MatRadioModule
+	MatRadioModule,
+	MatDatepickerModule,
+	MatNativeDateModule
 ];
 
 @NgModule({

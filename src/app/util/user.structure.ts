@@ -2,6 +2,8 @@ import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Observable, of } from 'rxjs';
 import { defaultIfEmpty, map, mergeAll, switchMap, take, toArray } from 'rxjs/operators';
+import { AppInjector } from 'src/app/service/app.injector';
+import { RestService } from 'src/app/service/rest.service';
 import { Structure } from 'src/app/util/abstract.structure';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import { RoleStructure } from 'src/app/util/role.structure';
@@ -9,6 +11,7 @@ import { RoleStructure } from 'src/app/util/role.structure';
 export class UserStructure extends Structure<'user'> {
 	debugID = Math.random().toString(36).substring(7);
 	id = '';
+	restService: RestService | null = null;
 
 	/**
 	 * Push data onto this user.
@@ -162,6 +165,20 @@ export class UserStructure extends Structure<'user'> {
 
 	protected data$<T, D>(withSource: Observable<T>, value: D): Observable<T> | Observable<D> {
 		return !this.pushed ? of(value) : withSource;
+	}
+
+	ban(expireAt: Date, reason = ''): Observable<void> {
+		return this.getRestService().v2.BanUser(this.id, expireAt, reason);
+	}
+
+	getRestService(): RestService {
+		if (!this.restService) {
+			try {
+				this.restService = AppInjector.get(RestService);
+			} catch (_) {}
+		}
+
+		return this.restService as any;
 	}
 }
 

@@ -234,6 +234,41 @@ export class RestV2 {
 		);
 	}
 
+	BanUser(victimID: string, expireAt: Date, reason = ''): Observable<void> {
+		return this.gql.query<{}>({
+			query: `
+				mutation BanUser($usr: String!, $ex: String, $rsn: String) {
+					banUser(victim_id: $usr, expire_at: $ex, reason: $rsn) {
+						status, message
+					}
+				}
+			`,
+			variables: {
+				usr: victimID,
+				ex: expireAt,
+				rsn: reason
+			},
+			auth: true
+		}).pipe(mapTo(undefined));
+	}
+
+	UnbanUser(victimID: string, reason = ''): Observable<void> {
+		return this.gql.query<{}>({
+			query: `
+				mutation UnbanUser($usr: String!, $rsn: String) {
+					unbanUser(victim_id: $usr, reason: $rsn) {
+						status, message
+					}
+				}
+			`,
+			variables: {
+				usr: victimID,
+				rsn: reason
+			},
+			auth: true
+		}).pipe(mapTo(undefined));
+	}
+
 	GetAuthURL(): string {
 		return `${this.restService.BASE.v2}/auth`;
 	}

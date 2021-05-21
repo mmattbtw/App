@@ -4,11 +4,13 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenu } from '@angular/material/menu';
 import { Router } from '@angular/router';
+import { DataStructure } from '@typings/typings/DataStructure';
 import Color from 'color';
 import { Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { ClientService } from 'src/app/service/client.service';
+import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
 import { Structure } from 'src/app/util/abstract.structure';
@@ -33,6 +35,7 @@ export class ContextMenuComponent implements OnInit {
 		private emoteListService: EmoteListService,
 		private windowRef: WindowRef,
 		private dialog: MatDialog,
+		private restService: RestService,
 		public clientService: ClientService,
 	) { }
 
@@ -102,7 +105,27 @@ export class ContextMenuComponent implements OnInit {
 				condition: victim => this.clientService.hasPermission('BAN_USERS').pipe(
 					switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
 					switchMap(({ canBan, victimRole }) => this.clientService.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
-					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition())
+					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition()),
+					switchMap(canBan => victim.isBanned().pipe(map(isBanned => ({ isBanned, canBan })))),
+					map(({ canBan, isBanned }) => canBan && !isBanned)
+				)
+			},
+			{
+				label: 'Unban',
+				icon: 'undo',
+				color: this.themingService.primary.negate(),
+				click: victim => this.restService.v2.UnbanUser(victim.id, '').pipe(
+					tap(() => {
+						victim.pushData({ banned: false } as DataStructure.TwitchUser);
+						this.clientService.openSnackBar(`${victim.getSnapshot()?.display_name} was unbanned`, '');
+					})
+				),
+				condition: victim => this.clientService.hasPermission('BAN_USERS').pipe(
+					switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
+					switchMap(({ canBan, victimRole }) => this.clientService.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
+					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition()),
+					switchMap(canBan => victim.isBanned().pipe(map(isBanned => ({ isBanned, canBan })))),
+					map(({ canBan, isBanned }) => canBan && isBanned)
 				)
 			}
 		] as ContextMenuComponent.InteractButton<UserStructure>[]

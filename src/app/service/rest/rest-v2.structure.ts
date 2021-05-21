@@ -56,7 +56,8 @@ export class RestV2 {
 								id,
 								name,
 								color
-							}
+							},
+							banned
 						}
 						name
 					}
@@ -68,6 +69,23 @@ export class RestV2 {
 				emotes: res?.body?.data.search_emotes ?? [],
 				total_estimated_size: Number(res?.headers.get('x-collection-size'))
 			}))
+		);
+	}
+
+	SearchUsers(): Observable<DataStructure.TwitchUser[]> {
+		return this.gql.query<{ search_users: DataStructure.TwitchUser[]; }>({
+			query: `
+				{
+					search_users(query: "") {
+						...FullUser
+					}
+
+					${GQLFragments.FullUser()}
+				}
+			`,
+			auth: true
+		}).pipe(
+			map(res => res?.body?.data.search_users ?? [])
 		);
 	}
 
@@ -245,7 +263,7 @@ export class RestV2 {
 			`,
 			variables: {
 				usr: victimID,
-				ex: expireAt,
+				ex: expireAt.toISOString(),
 				rsn: reason
 			},
 			auth: true

@@ -152,6 +152,12 @@ export class UserStructure extends Structure<'user'> {
 		), false);
 	}
 
+	isBanned(): Observable<boolean> {
+		return this.data.pipe(
+			map(d => d?.banned ?? false)
+		);
+	}
+
 	getSnapshot(): Partial<DataStructure.TwitchUser> | null {
 		return this.snapshot;
 	}

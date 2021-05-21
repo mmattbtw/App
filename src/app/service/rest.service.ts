@@ -22,27 +22,30 @@ export class RestService {
 	public v2 = new RestV2(this);
 
 	constructor(
-		@Inject(PLATFORM_ID) platformId: any,
+		@Inject(PLATFORM_ID) private platformId: any,
 		cookieService: CookieService,
 		public httpService: HttpClient,
 		public clientService: ClientService
 	) {
 		this.BASE.v1 = environment.platformApiUrl(platformId, 'v1');
 		this.BASE.v2 = environment.platformApiUrl(platformId, 'v2');
-		// Sign in the user?
-		const token = clientService.localStorage.getItem('access_token')
-			?? cookieService.get('auth');
-		of(token).pipe(
-			filter(x => typeof x === 'string'),
-			tap(tok => clientService.setToken(tok)),
-			switchMap(() => this.v2.GetUser('@me', { includeEditorIn: true })),
-			switchMap(res => !!res.user?.id ? of(res.user) : throwError('Unknown Account')),
-			tap(user => clientService.pushData(user))
-		).subscribe({
-			error: err => {
-				clientService.localStorage.removeItem('access_token');
-			}
-		});
+
+		if (platformId === 'browser') {
+			// Sign in the user?
+			const token = clientService.localStorage.getItem('access_token')
+				?? cookieService.get('auth');
+			of(token).pipe(
+				filter(x => typeof x === 'string'),
+				tap(tok => clientService.setToken(tok)),
+				switchMap(() => this.v2.GetUser('@me', { includeEditorIn: true })),
+				switchMap(res => !!res.user?.id ? of(res.user) : throwError('Unknown Account')),
+				tap(user => clientService.pushData(user))
+			).subscribe({
+				error: err => {
+					clientService.localStorage.removeItem('access_token');
+				}
+			});
+		}
 	}
 
 	// tslint:disable:typedef
@@ -74,6 +77,11 @@ export class RestService {
 			},
 			reportProgress: true
 		} as any;
+
+		// Don't make calls on SSR
+		if (this.platformId === 'server') {
+			return of({} as any);
+		}
 
 		return of(method).pipe(
 			switchMap(m => iif(() => (m === 'get') || (m === 'delete'),

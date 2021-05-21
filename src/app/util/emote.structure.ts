@@ -12,12 +12,10 @@ import { UserStructure } from 'src/app/util/user.structure';
 
 export class EmoteStructure extends Structure<'emote'> {
 	private id = '';
-	restService: RestService;
+	restService: RestService | null = null;
 
 	constructor(dataService: DataService) {
 		super(dataService);
-
-		this.restService = AppInjector.get(RestService);
 	}
 
 	/**
@@ -89,10 +87,12 @@ export class EmoteStructure extends Structure<'emote'> {
 	}
 
 	getURL(size = 3): Observable<string | undefined> {
-		return this.dataOnce().pipe(
+		const rest = this.getRestService();
+
+		return rest ? this.dataOnce().pipe(
 			take(1),
-			map(d => this.restService.CDN.Emote(String(d?.id), size))
-		);
+			map(d => this.getRestService().CDN.Emote(String(d?.id), size))
+		) : of('');
 	}
 
 	getTags(): Observable<string[] | undefined> {
@@ -113,6 +113,15 @@ export class EmoteStructure extends Structure<'emote'> {
 		return this.getStatus().pipe(
 			take(1),
 			map(status => !!status ? Constants.Emotes.Status[status] as (keyof typeof Constants.Emotes.Status) : undefined)
+		);
+	}
+
+	/**
+	 * Whether or not the emote is deleted
+	 */
+	isDeleted(): Observable<boolean> {
+		return this.getStatus().pipe(
+			map(s => s === Constants.Emotes.Status.DELETED)
 		);
 	}
 
@@ -138,7 +147,7 @@ export class EmoteStructure extends Structure<'emote'> {
 			mergeMap(entry => of(this.dataService.get('user', { id: String(entry.action_user) })).pipe(
 				switchMap(users => iif(() => users.length > 0,
 					of(users[0]),
-					this.restService.v2.GetUser(String(entry.action_user), {}).pipe(
+					this.getRestService().v2.GetUser(String(entry.action_user), {}).pipe(
 						map(res => this.dataService.add('user', res.user)[0])
 					)
 				)),
@@ -183,7 +192,7 @@ export class EmoteStructure extends Structure<'emote'> {
 	 * @param reason the reason for the action, which will be added with the audit log entry
 	 */
 	edit(data: Partial<DataStructure.Emote>, reason?: string, extraFields?: string[]): Observable<EmoteStructure> {
-		return this.restService.v2.EditEmote({ id: this.id as string, ...data }, reason, extraFields).pipe(
+		return this.getRestService().v2.EditEmote({ id: this.id as string, ...data }, reason, extraFields).pipe(
 			tap(res => this.mergeData(res.emote)),
 			mapTo(this)
 		);
@@ -234,7 +243,7 @@ export class EmoteStructure extends Structure<'emote'> {
 	addToChannel(user: UserStructure, reason?: string): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.v2.AddChannelEmote(this.id, user.id, reason).pipe(
+		return this.getRestService().v2.AddChannelEmote(this.id, user.id, reason).pipe(
 			tap(res => {
 				const newIDs = res.user.emote_ids as string[];
 				user.pushData({ id: user.id, emote_ids: newIDs } as DataStructure.TwitchUser);
@@ -249,7 +258,7 @@ export class EmoteStructure extends Structure<'emote'> {
 	removeFromChannel(user: UserStructure, reason?: string): Observable<void> {
 		if (!this.id) return EMPTY;
 
-		return this.restService.v2.RemoveChannelEmote(this.id, user.id, reason).pipe(
+		return this.getRestService().v2.RemoveChannelEmote(this.id, user.id, reason).pipe(
 			tap(res => {
 				const newIDs = res.user.emote_ids;
 				user.pushData({ id: user.id, emote_ids: newIDs } as DataStructure.TwitchUser);
@@ -262,10 +271,12 @@ export class EmoteStructure extends Structure<'emote'> {
 	 * Whether or not the emote is added to the client user's channel
 	 */
 	isChannel(): Observable<boolean> {
-		return this.restService.clientService.getActorUser().pipe(
+		const rest = this.getRestService();
+
+		return !!rest ? rest.clientService.getActorUser().pipe(
 			switchMap(usr => usr.hasEmote(this.id)),
 			take(1)
-		);
+		) : of(false);
 	}
 
 	/**
@@ -274,7 +285,7 @@ export class EmoteStructure extends Structure<'emote'> {
 	delete(reason?: string): Observable<void> {
 		if (!this.id) return throwError(Error('Cannot delete unknown emote'));
 
-		return this.restService.v2.DeleteEmote(this.id, reason).pipe(
+		return this.getRestService().v2.DeleteEmote(this.id, reason).pipe(
 			mapTo(undefined)
 		);
 	}
@@ -286,7 +297,25 @@ export class EmoteStructure extends Structure<'emote'> {
 		);
 	}
 
+	get width(): number[] {
+		return this.getSnapshot()?.width ?? [0, 0, 0, 0];
+	}
+
+	get height(): number[] {
+		return this.getSnapshot()?.height ?? [0, 0, 0, 0];
+	}
+
 	getSnapshot(): DataStructure.Emote | null | undefined {
 		return this.data.getValue();
+	}
+
+	getRestService(): RestService {
+		if (!this.restService) {
+			try {
+				this.restService = AppInjector.get(RestService);
+			} catch (_) {}
+		}
+
+		return this.restService as any;
 	}
 }

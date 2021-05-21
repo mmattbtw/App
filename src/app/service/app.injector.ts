@@ -15,10 +15,8 @@ export let AppInjector: Injector;
  */
 export function setAppInjector(injector: Injector): void {
 	if (AppInjector) {
-		// Should not happen
-		console.error('Programming error: AppInjector was already set');
+		return undefined;
 	}
-	else {
-		AppInjector = injector;
-	}
+
+	AppInjector = injector;
 }

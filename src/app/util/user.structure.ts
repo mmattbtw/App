@@ -172,6 +172,7 @@ export namespace UserStructure {
 		id: 'DEFAULT',
 		allowed: BigInt(523),
 		denied: BigInt(0),
-		color: 0
+		color: 0,
+		position: 0
 	});
 }

@@ -15,7 +15,20 @@
 			width: 100%;
 			img { width: 100%; }
 		}
-		span { text-align: center; }
+
+		.divider {
+			margin-top: .5em;
+			width: 100%;
+		}
+	}
+
+	.scope-label {
+		text-align: center;
+
+		.size-tag {
+			font-family: 'Work Sans', sans-serif;
+		}
+		.size-x { font-size: .65rem; }
 	}
 }
 

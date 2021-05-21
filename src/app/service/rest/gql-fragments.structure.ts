@@ -6,6 +6,7 @@ export namespace GQLFragments {
 			id,
 			created_at,
 			name,
+			width, height,
 			channels {
 				id, login, display_name, role {
 					id, name, color, allowed, denied, position
@@ -50,7 +51,7 @@ export namespace GQLFragments {
 				: ''
 			}
 			${includeOwnedEmotes
-				? 'owned_emotes { id, name, status, visibility },'
+				? 'owned_emotes { id, name, status, visibility, width, height },'
 				: ''
 			}
 			emote_ids,

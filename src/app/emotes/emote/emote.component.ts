@@ -83,7 +83,9 @@ export class EmoteComponent implements OnInit {
 		return from([1, 2, 3, 4]).pipe(
 			map(s => ({
 				scope: s,
-				url: this.restService.CDN.Emote(String(this.emote?.getID()), s)
+				url: this.restService.CDN.Emote(String(this.emote?.getID()), s),
+				width: this.emote?.width[s - 1],
+				height: this.emote?.height[s - 1]
 			} as EmoteComponent.SizeResult)),
 			toArray()
 		);
@@ -261,6 +263,8 @@ export namespace EmoteComponent {
 	export interface SizeResult {
 		scope: number;
 		url: string;
+		width: number;
+		height: number;
 	}
 
 	export type AuditEntry = DataStructure.AuditLog.Entry & { action_user_instance?: UserStructure };

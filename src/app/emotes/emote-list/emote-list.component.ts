@@ -67,7 +67,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 export class EmoteListComponent implements OnInit, AfterViewInit {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
-	emotes = new BehaviorSubject<any>(Array(16).fill(new EmoteStructure(this.dataService))).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
+	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
 	totalEmotes = new BehaviorSubject<number>(0);
 
 	@ViewChild('emotesContainer') emotesContainer: ElementRef<HTMLDivElement> | undefined;
@@ -207,6 +207,8 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 				map(emotes => this.emotes.next(emotes))
 			).subscribe();
 		}
+
+		this.emotes.next(Array(16).fill(new EmoteStructure(this.dataService)));
 	}
 
 	ngOnInit(): void {}

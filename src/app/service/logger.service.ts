@@ -8,11 +8,7 @@ import { Injectable } from '@angular/core';
 export class LoggerService {
 	traceEnabled = false;
 
-	constructor(
-
-	) {
-		this.info(`Developer console is enabled. Please report any errors`);
-	}
+	constructor() {}
 
 	// tslint:disable:no-console
 

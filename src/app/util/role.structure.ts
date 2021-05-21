@@ -49,6 +49,10 @@ export class RoleStructure {
 		);
 	}
 
+	getPosition(): number {
+		return this.data.getValue()?.position ?? 0;
+	}
+
 	getSnapshot(): DataStructure.Role | null | undefined {
 		return this.data.getValue();
 	}

@@ -48,7 +48,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 	bootstrap: [AppComponent]
 })
 export class AppModule {
-	constructor(injector: Injector) {
+	constructor(
+		injector: Injector
+	) {
 		setAppInjector(injector);
 	}
 }

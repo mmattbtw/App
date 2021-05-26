@@ -1,0 +1,19 @@
+<div mat-dialog-content>
+	<div>
+		<div class="title">
+			<h3>DOWNLOAD CHATTERINO7</h3>
+			<p class="notice">
+				This is an unofficial fork of Chatterino independently maintained by the 7TV Dev Team. It adds a new provider to serve 7TV emotes, and otherwise stays in line the upstream.
+				<a href="https://github.com/SevenTV/chatterino7/" target="_blank">View on GitHub.</a>
+			</p>
+		</div>
+
+		<div class="platform-icons">
+			<div class="platform-icon" [matTooltip]="'Download for ' + p.label"
+				(click)="download(p)"
+				*ngFor="let p of platforms">
+				<mat-icon [style.transform]="'scale(4)'" [svgIcon]="p.icon"></mat-icon>
+			</div>
+		</div>
+	</div>
+</div>

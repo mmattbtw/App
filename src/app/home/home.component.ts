@@ -1,7 +1,9 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatterino-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -37,16 +39,17 @@ export class HomeComponent implements OnInit {
 			icon: 'firefox',
 			click: () => window.open('https://addons.mozilla.org/en-US/firefox/addon/7tv/', '_blank'),
 			tag: {
-				color: this.themingService.accent.darken(.65).hex(),
-				label: 'NEW!'
+				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
+				label: '1.5.0'
 			}
 		},
 		{
 			icon: 'chatterino',
-			click: () => window.open('hhttps://github.com/SevenTV/SevenTV#chatterino', '_blank'),
+			click: () => this.openChatterinoDownloadsMenu(),
 			tag: {
 				color: this.themingService.bg.darken(.75).hex(),
-				label: 'SOON'
+				label: 'NEW!',
+				new: true
 			}
 		}
 	] as HomeComponent.BrowserIcon[];
@@ -69,9 +72,16 @@ export class HomeComponent implements OnInit {
 
 	constructor(
 		private restService: RestService,
+		private dialog: MatDialog,
 		public themingService: ThemingService,
 		public appService: AppService
 	) { }
+
+	openChatterinoDownloadsMenu(): void {
+		this.dialog.open(ChatterinoDialogComponent, {
+
+		});
+	}
 
 	ngOnInit(): void {
 		// Get Discord Widget
@@ -92,6 +102,7 @@ export namespace HomeComponent {
 		tag?: {
 			label: string;
 			color: string;
+			new?: boolean;
 		};
 	}
 

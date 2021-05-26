@@ -6,5 +6,6 @@ export const iconList = [
 	['twitch', 'icons/twitch.svg'],
 	['zulul', 'icons/zulul.svg'],
 	['discord', 'icons/discord.svg'],
-	['admin', 'icons/bowtie.svg']
+	['admin', 'icons/bowtie.svg'],
+	['windows', 'icons/windows.svg']
 ] as [string, string][];

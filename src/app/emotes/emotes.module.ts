@@ -17,6 +17,7 @@ import { TagSystemComponent } from 'src/app/util/tag-system/tag-system.component
 import { EmoteSearchComponent } from './emote-search/emote-search.component';
 import { EmoteChannelCardComponent } from 'src/app/emotes/emote/emote-channel-card.component';
 import { UtilModule } from 'src/app/util/util.module';
+import { EmoteWarningDialogComponent } from 'src/app/emotes/emote/warning-dialog.component';
 
 @NgModule({
 	imports: [
@@ -40,6 +41,7 @@ import { UtilModule } from 'src/app/util/util.module';
 		EmoteOverridesDialogComponent,
 		EmoteOwnershipDialogComponent,
 		EmoteDeleteDialogComponent,
+		EmoteWarningDialogComponent,
 		TagSystemComponent,
 		EmoteSearchComponent
 	],

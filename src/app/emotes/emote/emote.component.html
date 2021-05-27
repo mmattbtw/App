@@ -7,7 +7,7 @@
 				<mat-icon>arrow_back</mat-icon>
 			</button>
 			<div class="emote-title-preview" [ngSwitch]="isProcessing() | async">
-				<img [style.height.em]="1" [src]="emote?.getURL() | async" *ngSwitchCase="false">
+				<img [style.height.em]="1" [src]="emote?.getURL() | async" *ngSwitchCase="false" [class.is-blurred]="blurred | async">
 				<mat-spinner [diameter]="16" *ngSwitchCase="true"></mat-spinner>
 			</div>
 			
@@ -50,7 +50,7 @@
 		<div class="d-flex flex-row align-items-end justify-content-center sizes-preview mt-1">
 			<!-- Size -->
 			<div class="size-preview d-flex flex-column justify-content-end align-items-center" [style.height.px]="MAX_HEIGHT" *ngFor="let size of sizes | async">
-				<div class="preview-img" [ngSwitch]="isProcessing() | async">
+				<div class="preview-img" [class.is-blurred]="blurred | async" [ngSwitch]="isProcessing() | async">
 					<img [src]="size.url" *ngSwitchCase="false">
 					<mat-spinner [diameter]="32 * size.scope" *ngSwitchCase="true"></mat-spinner>
 				</div>

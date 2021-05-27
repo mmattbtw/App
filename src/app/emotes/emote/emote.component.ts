@@ -25,6 +25,7 @@ import { DataService } from 'src/app/service/data.service';
 import { EmoteOverridesDialogComponent } from 'src/app/emotes/emote/overrides-emote-dialog.component';
 import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 import { AuditLogEntry } from 'src/app/util/audit.structure';
+import { EmoteWarningDialogComponent } from 'src/app/emotes/emote/warning-dialog.component';
 
 @Component({
 	selector: 'app-emote',
@@ -49,6 +50,7 @@ export class EmoteComponent implements OnInit {
 
 	channels = new BehaviorSubject<UserStructure[]>([]);
 	emote: EmoteStructure | undefined;
+	blurred = new BehaviorSubject<boolean>(true);
 	sizes = new BehaviorSubject<EmoteComponent.SizeResult[]>([]);
 	audit = new BehaviorSubject<AuditLogEntry[]>([]);
 	interactError = new Subject<string>().pipe(
@@ -207,7 +209,7 @@ export class EmoteComponent implements OnInit {
 						this.metaService.addTags([
 							// { name: 'og:title', content: this.appService.pageTitle },
 							// { name: 'og:site_name', content: this.appService.pageTitle },
-							{ name: 'og:description', content: `uploaded by ${emoteData?.owner?.display_name}`},
+							{ name: 'og:description', content: `uploaded by ${emoteData?.owner?.display_name}` },
 							{ name: 'og:image', content: url ?? '' },
 							{ name: 'og:image:type', content: emote.getSnapshot()?.mime ?? 'image/png' },
 							{ name: 'theme-color', content: this.themingService.primary.hex() }
@@ -234,15 +236,39 @@ export class EmoteComponent implements OnInit {
 					})
 				)),
 
+				// Set emote sizes
 				switchMap(() => this.getSizes().pipe(
 					tap(result => this.sizes.next(result))
 				)),
+
+				// Add audit logs
 				switchMap(() => this.readAuditActivity().pipe(
 					tap(entries => this.audit.next(entries)),
 					catchError(err => of(undefined))
 				)),
 
-				tap(() => this.cdr.markForCheck())
+				tap(() => this.cdr.markForCheck()),
+
+				// Show warning dialog for hidden emote?
+				switchMap(() => (this.emote as EmoteStructure).hasVisibility('HIDDEN').pipe(
+					switchMap(isHidden => iif(() => !isHidden,
+						of(true),
+						new Observable<boolean>(observer => {
+							const dialogRef = this.dialog.open(EmoteWarningDialogComponent, {
+								maxWidth: 300,
+								disableClose: true
+							});
+
+							dialogRef.afterClosed().subscribe({
+								next(ok): void {
+									observer.next(ok);
+									observer.complete();
+								} // Send the result of the user either going ahead or going back
+							});
+						})
+					)),
+					tap(canShow => this.blurred.next(!canShow))
+				))
 			).subscribe({
 				error: (err: HttpErrorResponse) => {
 					this.dialog.open(ErrorDialogComponent, {

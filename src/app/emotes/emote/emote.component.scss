@@ -32,6 +32,10 @@
 	}
 }
 
+.is-blurred {
+	filter: blur(24px);
+}
+
 .section-container {
 	padding: 1em;
 

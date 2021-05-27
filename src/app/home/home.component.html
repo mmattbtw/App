@@ -47,8 +47,9 @@
 	<span></span>
 	<!-- Footer Links -->
 	<div class="d-flex flex-row footer-options">
-		<span class="d-flex flex-row align-items-center" *ngFor="let btn of footerOptions; let index = index;">
-			<a target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
+		<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
+			<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
+			<a *ngIf="!!btn.click" (click)="btn.click()"> {{btn.name}} </a>
 
 			<div *ngIf="footerOptions.length > (index + 1)" class="mx-1 separator-ball"></div>
 		</span>

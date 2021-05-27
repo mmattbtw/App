@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatterino-dialog.component';
@@ -56,14 +57,16 @@ export class HomeComponent implements OnInit {
 
 	footerOptions = [
 		{
-			name: 'Contact'
+			name: 'Contact',
+			path: 'mailto:cupofeggy@gmail.com'
 		},
 		{
 			name: 'GitHub',
 			path: 'https://github.com/SevenTV'
 		},
 		{
-			name: 'Privacy Policy'
+			name: 'Privacy Policy',
+			click: () => this.router.navigate(['/legal', 'privacy'])
 		},
 	] as HomeComponent.FooterOptions[];
 
@@ -73,6 +76,7 @@ export class HomeComponent implements OnInit {
 	constructor(
 		private restService: RestService,
 		private dialog: MatDialog,
+		private router: Router,
 		public themingService: ThemingService,
 		public appService: AppService
 	) { }
@@ -108,6 +112,7 @@ export namespace HomeComponent {
 
 	export interface FooterOptions {
 		name: string;
-		path: string;
+		path?: string;
+		click?: () => void;
 	}
 }

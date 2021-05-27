@@ -112,7 +112,9 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 			tap(() => this.emotes.next([])),
 			delay(50),
 			tap(emotes => this.emotes.next(emotes))
-		).subscribe();
+		).subscribe({
+			complete: () => this.goToFirstPage()
+		});
 	}
 
 	getEmotes(page = 1, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure> {
@@ -135,6 +137,14 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 		emote.getOwner().pipe(
 			tap(usr => !!this.contextMenu ? this.contextMenu.contextUser = (usr ?? null) : noop())
 		).subscribe();
+	}
+
+	goToFirstPage(): void {
+		this.paginator?.page.next({
+			pageIndex: 0,
+			pageSize: this.pageOptions?.pageSize ?? 0,
+			length: this.pageOptions?.length ?? 0,
+		});
 	}
 
 	/**

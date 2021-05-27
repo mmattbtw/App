@@ -9,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 export class ChatterinoDialogComponent implements OnInit {
 	platforms = [
 		{
+			label: 'Linux',
+			icon: 'linux',
+			url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino-x86_64.AppImage'
+		},
+		{
 			label: 'Windows',
 			icon: 'windows',
 			url: 'https://cdn.7tv.app/download/chatterino/7.3.2/win/chatterino-windows-x86-64.zip'
+		},
+		{
+			label: 'MacOS',
+			icon: 'apple',
+			url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino.dmg'
 		}
 	] as ChatterinoDialogComponent.PlatformIcon[];
 

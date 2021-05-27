@@ -77,10 +77,11 @@ export class RestV2 {
 			query: `
 				{
 					search_users(query: "") {
-						...FullUser
+						id, login, display_name,
+						twitch_id,
+						profile_image_url,
+						created_at
 					}
-
-					${GQLFragments.FullUser()}
 				}
 			`,
 			auth: true

@@ -47,7 +47,7 @@ export namespace GQLFragments {
 				denied
 			},
 			${includeFullEmotes
-				? 'emotes { ...FullEmote },'
+				? 'emotes { id, name, status, visibility, width, height },'
 				: ''
 			}
 			${includeOwnedEmotes
@@ -69,8 +69,6 @@ export namespace GQLFragments {
 			profile_image_url,
 			created_at
 		}
-
-		${includeFullEmotes ? FullEmote() : ''}
 	`;
 }
 

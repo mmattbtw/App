@@ -2,7 +2,7 @@
 
 	<!-- User's Channel Emotes -->
 	<div class="heading" [appColor]="themingService.primary.darken(.075)" [isBackground]="true">
-		Emotes Enabled
+		Emotes Enabled ({{(channelEmotes | async)?.length || 0}}/200)
 	</div>
 	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
 		<div class="is-emote-card" *ngFor="let emote of channelEmotes | async">
@@ -14,7 +14,7 @@
 
 	<!-- User's Uploaded Emotes -->
 	<div class="heading" [appColor]="themingService.primary.darken(.075)" [isBackground]="true">
-		Emotes by {{(user | async)?.getUsername() | async}}
+		Emotes by {{(user | async)?.getUsername() | async}} ({{(ownedEmotes | async)?.length || 0}})
 	</div>
 	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
 		<div class="is-emote-card" *ngFor="let emote of ownedEmotes | async">

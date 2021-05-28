@@ -3,12 +3,13 @@
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { asapScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
-import { filter, map, take, zipAll } from 'rxjs/operators';
+import { map, take, zipAll } from 'rxjs/operators';
 import { DataService } from 'src/app/service/data.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService extends UserStructure {
@@ -34,6 +35,7 @@ export class ClientService extends UserStructure {
 	constructor(
 		public localStorage: LocalStorageService,
 		public dataService: DataService,
+		private cookieService: CookieService,
 		private logger: LoggerService,
 		private snackBar: MatSnackBar,
 	) {
@@ -102,16 +104,6 @@ export class ClientService extends UserStructure {
 		);
 	}
 
-	/**
-	 * @returns whether the client user is an editor of at least one channeml
-	 */
-	 isAnEditor(): Observable<boolean> {
-		return this.getEditorIn().pipe(
-			take(1),
-			map(a => a.length > 0)
-		);
-	}
-
 	openSnackBar(message: string, action: string, opt?: MatSnackBarConfig): void {
 		this.snackBar.open(message, action, {
 			duration: 5000,
@@ -125,6 +117,9 @@ export class ClientService extends UserStructure {
 	 */
 	logout(): void {
 		this.localStorage.removeItem('access_token');
+		this.cookieService.set('auth', '');
+		this.cookieService.deleteAll('auth');
 		this.data.next(null);
+		this.setAuthState(false);
 	}
 }

@@ -8,9 +8,7 @@ import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { LoggerService } from 'src/app/service/logger.service';
 import { RestService } from 'src/app/service/rest.service';
-import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class EmoteFormService {
@@ -32,8 +30,7 @@ export class EmoteFormService {
 
 	constructor(
 		private restService: RestService,
-		private router: Router,
-		private logger: LoggerService
+		private router: Router
 	) { }
 
 	/**
@@ -98,55 +95,12 @@ export class EmoteFormService {
 				return;
 			}
 
-			if (isV2) {
-				this.uploadStatus.next('Done!');
-				this.uploadProgress.next(100);
-				setTimeout(() => {
-					this.form.reset();
-					this.router.navigate(['/emotes', data?.id]);
-				}, 500);
-			} else {
-				// Connect to WebSocket
-				// Request the server for processing status
-				const ws = new WebSocket(environment.wsUrl);
-				ws.onopen = () => {
-					this.logger.info(`<WS> Connected to ${environment.wsUrl}`);
-
-					ws.onmessage = (ev) => { // Receive messages from the websocket
-						const { tasks, message } = JSON.parse(ev.data)?.payload;
-						let status = message;
-						this.logger.info(`<WS> Message Received: ${ev.data}`);
-
-						if (Array.isArray(tasks)) {
-							const progress = Number((tasks[0] / tasks[1] * 100).toFixed(1));
-							this.logger.info(`Processing Progress: ${progress}%`);
-							this.uploadProgress.next(progress);
-
-							status = `${progress}% ${status}`; // Update progress
-						}
-						this.uploadStatus.next(status);
-					};
-					ws.onclose = (ev) => { // Listen for closure
-						this.logger.info(`<WS> Connection Closed (${ev.code} ${ev.reason})`);
-
-						if (ev.code === 1000) { // Normal Closure: upload was successful!
-							this.uploading.next(false);
-							this.uploadedEmote.next(this.restService.CDN.Emote(String(returnedData?.id), 4));
-							setTimeout(() => {
-								this.form.reset();
-								this.router.navigate(['/emotes', returnedData?.id]);
-							}, 200);
-						} else { // Abnormal Closure (likely 1011): display error
-							this.processError.next(`Error: ${ev.reason ?? 'Unknown'}`);
-						}
-
-						this.reset(); // Done: reset the form.
-					};
-
-					// Send the message, requesting the server to start sending processing events
-					ws.send(JSON.stringify({ type: 'CreateEmote:Status', payload: { emoteId: returnedData?.id } }));
-				};
-			}
+			this.uploadStatus.next('Done!');
+			this.uploadProgress.next(100);
+			setTimeout(() => {
+				this.reset();
+				this.router.navigate(['/emotes', data?.id]);
+			}, 500);
 		};
 	}
 
@@ -155,6 +109,9 @@ export class EmoteFormService {
 		this.uploadedEmote.next(EmoteFormService.DefaultUploadImg);
 		this.uploading.next(false);
 		this.uploadStatus.next('');
+		this.uploadProgress.next(null);
+		this.processError.next('');
+		this.uploadError.next('');
 		this.emoteData.next(null);
 		this.form.enable();
 	}

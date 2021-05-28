@@ -16,8 +16,10 @@
                     </div>
 
                     <!-- User's Role, if any -->
-                    <div class="user-role" [style.color]="(user | async)?.getColor() | async" >
-                        {{ ((user | async)?.getRole() | async)?.getName() | async }}
+                    <div class="user-role" [style.color]="(user | async)?.getColor() | async">
+                        <div [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+                            <span>{{ ((user | async)?.getRole() | async)?.getName() | async }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -59,7 +61,7 @@
 
                 <div class="mt-3"></div>
 
-                <p *ngIf="clientService.isAnEditor() | async">Editor Of</p>
+                <p *ngIf="(user | async)?.isAnEditor() | async">Editor Of</p>
                 <div class="channel-editor mt-1" *ngFor="let usr of edited | async">
                     <app-user-name [user]="usr"></app-user-name>
                 </div>

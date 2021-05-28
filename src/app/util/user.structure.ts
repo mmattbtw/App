@@ -75,6 +75,12 @@ export class UserStructure extends Structure<'user'> {
 		);
 	}
 
+	getDescription(): Observable<string> {
+		return this.dataOnce().pipe(
+			map(data => data?.description ?? '')
+		);
+	}
+
 	getRole(): Observable<RoleStructure> {
 		return this.dataOnce().pipe(
 			map(data => data?.role),
@@ -141,6 +147,16 @@ export class UserStructure extends Structure<'user'> {
 			mergeAll(),
 			map(u => this.dataService.get('user', u)[0]),
 			toArray()
+		);
+	}
+
+	/**
+	 * @returns whether the client user is an editor of at least one channeml
+	 */
+	 isAnEditor(): Observable<boolean> {
+		return this.getEditorIn().pipe(
+			take(1),
+			map(a => a.length > 0)
 		);
 	}
 

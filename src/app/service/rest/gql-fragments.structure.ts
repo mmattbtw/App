@@ -37,7 +37,7 @@ export namespace GQLFragments {
 	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false, includeEditors = false, includeEditorIn = false) => `
 		fragment FullUser on User {
 			id,  email, display_name, login,
-			rank,
+			description,
 			role {
 				id,
 				name,

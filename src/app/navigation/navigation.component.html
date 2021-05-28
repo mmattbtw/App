@@ -83,7 +83,7 @@
 				</span>
 
 				<span class="h-100 user-as-self">
-					<app-user-name [user]="clientService" [size]="[2, .75]" *ngSwitchCase="false" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
+					<app-user-name [clickable]="false" [matMenuTriggerFor]="personalMenu" [user]="clientService" [size]="[2, .75]" *ngSwitchCase="false" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
 				</span>
 			</span>
 		</div>
@@ -102,11 +102,21 @@
 	<app-user-name></app-user-name>	
 	<mat-divider></mat-divider>
 
+	<div *ngIf="!(clientService.isAuthenticated() | async)">
+		<app-twitch-button></app-twitch-button>
+	</div>
 	<button mat-menu-item [routerLink]="btn.path" *ngFor="let btn of navButtons" class="d-flex" [style.color]="btn.color">
 		<div [ngSwitch]="btn.svg">
 			<mat-icon [style.color]="btn.color" *ngSwitchCase="true" [svgIcon]="(themingService.getSvgIcon(btn.icon) | async) || ''"></mat-icon>
 			<mat-icon [style.color]="btn.color" *ngSwitchDefault> {{ btn.icon }} </mat-icon>
 		</div>
 		<span>{{ btn.name | uppercase}}</span>
+	</button>
+</mat-menu>
+
+<mat-menu #personalMenu="matMenu">
+	<button mat-menu-item [routerLink]="['/users', clientService.id]">VIEW PROFILE</button>
+	<button mat-menu-item (click)="clientService.logout()">
+		LOG OUT
 	</button>
 </mat-menu>

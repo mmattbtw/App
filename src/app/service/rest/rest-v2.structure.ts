@@ -46,6 +46,9 @@ export class RestV2 {
 						${(options?.sortBy && `, sortBy: "${options.sortBy}"`) ?? ''}
 						${typeof options?.sortOrder === 'number' ? `, sortOrder: ${options.sortOrder}` : ''}
 						${(options?.channel && `, channel: "${options.channel}"`) ?? ''}
+						${(options?.filter && `, filter: {
+							visibility: ${options.filter.visibility}
+						}`) ?? ''}
 					) {
 						id,
 						visibility,
@@ -72,7 +75,7 @@ export class RestV2 {
 		);
 	}
 
-	SearchUsers(): Observable<DataStructure.TwitchUser[]> {
+	SearchUsers(): Observable<{ users: DataStructure.TwitchUser[], total_size: number; }> {
 		return this.gql.query<{ search_users: DataStructure.TwitchUser[]; }>({
 			query: `
 				{
@@ -86,7 +89,12 @@ export class RestV2 {
 			`,
 			auth: true
 		}).pipe(
-			map(res => res?.body?.data.search_users ?? [])
+			map(res => {
+				return {
+					users: res?.body?.data.search_users ?? [],
+					total_size: Number(res?.headers.get('x-collection-size'))
+				};
+			})
 		);
 	}
 
@@ -316,6 +324,10 @@ export namespace RestV2 {
 		globalState: 'only' | 'hide';
 		sortBy: 'age' | 'popularity';
 		sortOrder: 0 | 1;
+		filter: Partial<{
+			visibility: number;
+			width_range: [number, number];
+		}>;
 	}
 
 	export interface ErrorGQL extends HttpErrorResponse {

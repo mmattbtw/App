@@ -6,7 +6,7 @@
 
 		<!-- Nav Cards -->
 		<div class="sidebar-content d-flex flex-column">
-			<div class="sidebar-item" matRipple *ngFor="let card of sidebarTabs" [routerLink]="card.routerLink" [routerLinkActive]="'active'">
+			<div class="sidebar-item" matRipple *ngFor="let card of sidebarTabs" (click)="switchTab(card)" [class.active]="card.active">
 				<mat-icon> {{card.icon}} </mat-icon>
 				<div class="mx-1"></div>
 				<span>{{ card.title }}</span>
@@ -17,7 +17,7 @@
 	<!-- Content -->
 	<div class="admin-content h-100 w-100">
 		<div class="admin-content-heading mat-elevation-z3" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
-			<span></span>
+			<span> {{(selectedTab | async)?.title}} </span>
 		</div>
 
 		<router-outlet></router-outlet>

@@ -1,5 +1,13 @@
 <div class="admin-users">
-	<div *ngFor="let user of users | async">
-		{{ user.getUsername() | async }}
+	<span>There are {{total | async}} users currently. </span>
+
+	<div *ngFor="let user of users | async; let last = last;" class="user-column">
+		<app-user-name [user]="user" [contextMenu]="contextMenu.userMenu" (openContext)="selectedUser.next($event)"></app-user-name>
+
+		<div *ngIf="!last" class="user-column-divider">
+			<mat-divider></mat-divider>
+		</div>
 	</div>
 </div>
+
+<app-ctx-menu #contextMenu [contextUser]="selectedUser | async"></app-ctx-menu>

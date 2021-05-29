@@ -202,6 +202,10 @@ export class UserStructure extends Structure<'user'> {
 
 		return this.restService as any;
 	}
+
+	toString(): string {
+		return this.getSnapshot()?.display_name ?? '';
+	}
 }
 
 export namespace UserStructure {

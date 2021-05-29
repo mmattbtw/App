@@ -1,0 +1,36 @@
+.admin-mod-queue {
+	margin: 2em;
+
+	.hidden-emote-list {
+		.hidden-emote { 
+			width: 100%; 
+			display: flex;
+
+			.emote-display {
+				display: flex;
+				align-items: center;
+				min-height: 64px;
+				margin-bottom: .33em;
+				margin-top: .33em;
+				width: 100%;
+				cursor: pointer;
+
+				img {
+					margin-right: 1em;
+					width: 64px;
+				}
+
+				span {
+					display: flex;
+					flex-direction: column;
+					margin-top: 4px;
+				}
+			}
+
+			.emote-actions {
+				justify-self: flex-end;
+				justify-content: end;
+			}
+		}
+	}
+}

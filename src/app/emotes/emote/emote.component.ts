@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit }
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
-import { asyncScheduler, BehaviorSubject, EMPTY, from, iif, Observable, of, scheduled, Subject, timer } from 'rxjs';
+import { asyncScheduler, BehaviorSubject, EMPTY, from, iif, Observable, of, scheduled, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, map, mapTo, mergeAll, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 import { ClientService } from 'src/app/service/client.service';
@@ -50,6 +50,7 @@ export class EmoteComponent implements OnInit {
 
 	channels = new BehaviorSubject<UserStructure[]>([]);
 	emote: EmoteStructure | undefined;
+	disableNotices = false;
 	blurred = new BehaviorSubject<boolean>(true);
 	sizes = new BehaviorSubject<EmoteComponent.SizeResult[]>([]);
 	audit = new BehaviorSubject<AuditLogEntry[]>([]);
@@ -188,9 +189,8 @@ export class EmoteComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		// Look up requested emote from route uri
-		if (this.route.snapshot.paramMap.has('emote')) { // Route URI has emote param?
-			this.restService.v2.GetEmote(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
+		const emoteGetter = this.route.snapshot.paramMap.has('emote')
+			? this.restService.v2.GetEmote(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
 				filter(res => res.emote !== null), // Initiate a new emote structure instance
 
 				tap(res => this.appService.pageTitleAttr.next([ // Update page title
@@ -198,90 +198,93 @@ export class EmoteComponent implements OnInit {
 					{ name: 'OwnerName', value: `by ${res.emote?.owner?.display_name ?? ''}` }
 				])),
 				map(res => this.emote = this.dataService.add('emote', res.emote)[0]),
-				switchMap(emote => this.readChannels().pipe(mapTo(emote))),
+				switchMap(emote => this.readChannels().pipe(mapTo(emote)))
+			)
+			: !!this.emote ? of(this.emote) : throwError(Error('Unknown Emote'));
+		// Look up requested emote from route uri
 
-				// Update meta
-				// Show this emote in discord etc!
-				switchMap(emote => emote.getURL(4).pipe(
-					tap(url => {
-						const appURL = this.document.location.host + this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
-						const emoteData = emote.getSnapshot();
-						this.metaService.addTags([
-							// { name: 'og:title', content: this.appService.pageTitle },
-							// { name: 'og:site_name', content: this.appService.pageTitle },
-							{ name: 'og:description', content: `uploaded by ${emoteData?.owner?.display_name}` },
-							{ name: 'og:image', content: url ?? '' },
-							{ name: 'og:image:type', content: emote.getSnapshot()?.mime ?? 'image/png' },
-							{ name: 'theme-color', content: this.themingService.primary.hex() }
-						]);
+		emoteGetter.pipe(
+			// Update meta
+			// Show this emote in discord etc!
+			switchMap(emote => emote.getURL(4).pipe(
+				tap(url => {
+					const appURL = this.document.location.host + this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
+					const emoteData = emote.getSnapshot();
+					this.metaService.addTags([
+						// { name: 'og:title', content: this.appService.pageTitle },
+						// { name: 'og:site_name', content: this.appService.pageTitle },
+						{ name: 'og:description', content: `uploaded by ${emoteData?.owner?.display_name}` },
+						{ name: 'og:image', content: url ?? '' },
+						{ name: 'og:image:type', content: emote.getSnapshot()?.mime ?? 'image/png' },
+						{ name: 'theme-color', content: this.themingService.primary.hex() }
+					]);
 
-						// Discord OEmbed
-						// TODO: Make this a proper service so it can be applied to other pages
-						if (AppComponent.isBrowser.getValue() !== true) {
-							const link = this.document.createElement('link');
-							link.setAttribute('type', 'application/json+oembed');
+					// Discord OEmbed
+					// TODO: Make this a proper service so it can be applied to other pages
+					if (AppComponent.isBrowser.getValue() !== true) {
+						const link = this.document.createElement('link');
+						link.setAttribute('type', 'application/json+oembed');
 
-							const data = {
-								title: this.appService.pageTitle,
-								author_name: `${emoteData?.name} ${BitField.HasBits(emoteData?.visibility ?? 0, DataStructure.Emote.Visibility.GLOBAL) ? '(Global Emote)' : `(${this.channels.getValue()?.length} Channels)`}`,
-								author_url: `https://${appURL}`,
-								provider_name: `7TV.APP - It's like a third party thing`,
-								provider_url: 'https://7tv.app'
-							};
-							if (!data) return undefined;
-							if (data) link.setAttribute('href', `http://${this.document.location.hostname}/og/oembed/emote.json` + `?data=${Buffer.from(JSON.stringify(data)).toString('base64')}`);
-							this.document.head.appendChild(link);
-						}
-						return undefined;
+						const data = {
+							title: this.appService.pageTitle,
+							author_name: `${emoteData?.name} ${BitField.HasBits(emoteData?.visibility ?? 0, DataStructure.Emote.Visibility.GLOBAL) ? '(Global Emote)' : `(${this.channels.getValue()?.length} Channels)`}`,
+							author_url: `https://${appURL}`,
+							provider_name: `7TV.APP - It's like a third party thing`,
+							provider_url: 'https://7tv.app'
+						};
+						if (!data) return undefined;
+						if (data) link.setAttribute('href', `http://${this.document.location.hostname}/og/oembed/emote.json` + `?data=${Buffer.from(JSON.stringify(data)).toString('base64')}`);
+						this.document.head.appendChild(link);
+					}
+					return undefined;
+				})
+			)),
+
+			// Set emote sizes
+			switchMap(() => this.getSizes().pipe(
+				tap(result => this.sizes.next(result))
+			)),
+
+			// Add audit logs
+			switchMap(() => this.readAuditActivity().pipe(
+				tap(entries => this.audit.next(entries)),
+				catchError(err => of(undefined))
+			)),
+
+			tap(() => this.cdr.markForCheck()),
+
+			// Show warning dialog for hidden emote?
+			switchMap(() => (this.emote as EmoteStructure).hasVisibility('HIDDEN').pipe(
+				switchMap(isHidden => iif(() => !isHidden || this.disableNotices,
+					of(true),
+					new Observable<boolean>(observer => {
+						const dialogRef = this.dialog.open(EmoteWarningDialogComponent, {
+							maxWidth: 300,
+							disableClose: true
+						});
+
+						dialogRef.afterClosed().subscribe({
+							next(ok): void {
+								observer.next(ok);
+								observer.complete();
+							} // Send the result of the user either going ahead or going back
+						});
 					})
 				)),
-
-				// Set emote sizes
-				switchMap(() => this.getSizes().pipe(
-					tap(result => this.sizes.next(result))
-				)),
-
-				// Add audit logs
-				switchMap(() => this.readAuditActivity().pipe(
-					tap(entries => this.audit.next(entries)),
-					catchError(err => of(undefined))
-				)),
-
-				tap(() => this.cdr.markForCheck()),
-
-				// Show warning dialog for hidden emote?
-				switchMap(() => (this.emote as EmoteStructure).hasVisibility('HIDDEN').pipe(
-					switchMap(isHidden => iif(() => !isHidden,
-						of(true),
-						new Observable<boolean>(observer => {
-							const dialogRef = this.dialog.open(EmoteWarningDialogComponent, {
-								maxWidth: 300,
-								disableClose: true
-							});
-
-							dialogRef.afterClosed().subscribe({
-								next(ok): void {
-									observer.next(ok);
-									observer.complete();
-								} // Send the result of the user either going ahead or going back
-							});
-						})
-					)),
-					tap(canShow => this.blurred.next(!canShow))
-				))
-			).subscribe({
-				error: (err: HttpErrorResponse) => {
-					this.dialog.open(ErrorDialogComponent, {
-						data: {
-							errorName: 'Cannot View Emote',
-							errorMessage: err.error?.error ?? err.error ?? err,
-							errorCode: String(err.status)
-						} as ErrorDialogComponent.Data
-					});
-					this.router.navigate(['/emotes']);
-				}
-			});
-		}
+				tap(canShow => this.blurred.next(!canShow))
+			))
+		).subscribe({
+			error: (err: HttpErrorResponse) => {
+				this.dialog.open(ErrorDialogComponent, {
+					data: {
+						errorName: 'Cannot View Emote',
+						errorMessage: err.error?.error ?? err.error ?? err,
+						errorCode: String(err.status)
+					} as ErrorDialogComponent.Data
+				});
+				this.router.navigate(['/emotes']);
+			}
+		});
 	}
 }
 

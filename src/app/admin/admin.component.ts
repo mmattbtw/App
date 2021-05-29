@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
@@ -21,26 +23,46 @@ export class AdminComponent implements OnInit {
 			routerLink: ['/admin', 'audit']
 		},
 		{
+			title: 'Mod Queue',
+			description: 'Take actions on items pending approval',
+			icon: 'pending',
+			routerLink: ['/admin', 'modq']
+		},
+		{
 			title: 'WebSocket API',
 			description: 'Manage the WebSocket API & Connections',
-			icon: 'sensors'
+			icon: 'sensors',
+			routerLink: ['/admin', 'ws']
 		},
-		{
-			title: 'Emotes',
-			description: 'Manage Emotes',
-			routerLink: ['/admin', 'emotes']
-		},
-		{
-			title: 'Monitoring',
-			icon: 'monitor',
-			description: 'View traffic and ongoing backend tasks',
-			routerLink: ['/admin', 'monitor']
-		}
+		// {
+		// 	title: 'Emotes',
+		// 	description: 'Manage Emotes',
+		// 	routerLink: ['/admin', 'emotes']
+		// },
+		// {
+		// 	title: 'Monitoring',
+		// 	icon: 'monitor',
+		// 	description: 'View traffic and ongoing backend tasks',
+		// 	routerLink: ['/admin', 'monitor']
+		// }
 	] as AdminComponent.SidebarTab[];
 
+	selectedTab = new BehaviorSubject<AdminComponent.SidebarTab>(this.sidebarTabs[0]);
+
 	constructor(
+		private router: Router,
 		public themingService: ThemingService
 	) { }
+
+	switchTab(tab: AdminComponent.SidebarTab): void {
+		for (const t of this.sidebarTabs) {
+			t.active = false;
+		}
+
+		tab.active = false;
+		this.selectedTab.next(tab);
+		this.router.navigate(tab.routerLink);
+	}
 
 	ngOnInit(): void {
 
@@ -54,5 +76,6 @@ export namespace AdminComponent {
 		icon: string;
 		description: string;
 		routerLink: string[];
+		active?: boolean;
 	}
 }

@@ -18,6 +18,8 @@ export class AppService {
 	pageTitle = '';
 	pageTitleAttr = new Subject<AppService.PageTitleAttribute[]>();
 
+	contactEmail = 'cupofeggy@gmail.com';
+
 	constructor(
 		titleService: Title
 	) {

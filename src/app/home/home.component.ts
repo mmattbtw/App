@@ -68,6 +68,10 @@ export class HomeComponent implements OnInit {
 			name: 'Privacy Policy',
 			click: () => this.router.navigate(['/legal', 'privacy'])
 		},
+		{
+			name: 'Terms of Service',
+			click: () => this.router.navigate(['/legal', 'tos'])
+		}
 	] as HomeComponent.FooterOptions[];
 
 	logoSize = 64 * 3;

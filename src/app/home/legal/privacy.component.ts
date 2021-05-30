@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppService } from 'src/app/service/app.service';
 
 @Component({
 	selector: 'app-legal-privacy',
@@ -7,7 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class LegalPrivacyComponent implements OnInit {
-	constructor() { }
+	constructor(
+		private appService: AppService
+	) { }
+
+	get email(): string {
+		return this.appService.contactEmail;
+	}
 
 	ngOnInit(): void { }
 }

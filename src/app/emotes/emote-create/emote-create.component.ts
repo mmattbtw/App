@@ -1,9 +1,12 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
 import { EmoteFormService } from 'src/app/emotes/emote-create/emote-form.service';
+import { TOSDialogComponent } from 'src/app/emotes/emote-create/tos-dialog/tos-dialog.component';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { ThemingService } from 'src/app/service/theming.service';
 
@@ -27,6 +30,8 @@ import { ThemingService } from 'src/app/service/theming.service';
 export class EmoteCreateComponent implements OnInit {
 	constructor(
 		private loggerService: LoggerService,
+		private dialog: MatDialog,
+		private localStorageService: LocalStorageService,
 		public themingService: ThemingService,
 		public emoteFormService: EmoteFormService
 	) { }
@@ -41,7 +46,21 @@ export class EmoteCreateComponent implements OnInit {
 	}
 	isUploading(): Observable<boolean> { return this.emoteFormService.uploading.asObservable(); }
 
-	ngOnInit(): void {}
+	ngOnInit(): void {
+		if (this.localStorageService.getItem('agree_tos') !== 'true') {
+			const dialogRef = this.dialog.open(TOSDialogComponent, {
+				disableClose: true
+			});
+
+			dialogRef.afterClosed().pipe(
+				filter(agree => agree === true)
+			).subscribe({
+				next: () => {
+					this.localStorageService.setItem('agree_tos', 'true');
+				}
+			});
+		}
+	}
 
 	uploadEmote(target: EventTarget | null): void {
 		const file = (target as any)?.files[0];

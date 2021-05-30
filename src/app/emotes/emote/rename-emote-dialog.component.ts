@@ -1,11 +1,11 @@
 
 
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constants } from '@typings/src/Constants';
 import { Subject } from 'rxjs';
-import { filter, take, tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 
 @Component({

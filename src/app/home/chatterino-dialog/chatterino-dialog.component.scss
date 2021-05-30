@@ -23,7 +23,20 @@
 				margin-top: 3em;
 				margin-right: 4em;
 				margin-left: 4em;
+				height: 100%;
 			}
 		}
+	}
+
+	.menu-trigger {
+		position: relative;
+		.trigger {
+			position: absolute;
+			width: 6em;
+			height: 6em;
+			top: -2em;
+			left: -2em;
+		}
+		z-index: 5;
 	}
 }

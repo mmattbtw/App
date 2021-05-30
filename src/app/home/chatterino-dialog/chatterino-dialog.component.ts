@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatMenu } from '@angular/material/menu';
+import { map } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-chatterino-dialog',
@@ -7,38 +10,46 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class ChatterinoDialogComponent implements OnInit {
-	platforms = [
-		{
-			label: 'Linux',
-			icon: 'linux',
-			url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino-x86_64.AppImage'
-		},
-		{
-			label: 'Windows',
-			icon: 'windows',
-			url: 'https://cdn.7tv.app/download/chatterino/7.3.2/win/chatterino-windows-x86-64.zip'
-		},
-		{
-			label: 'MacOS',
-			icon: 'apple',
-			url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino.dmg'
-		}
-	] as ChatterinoDialogComponent.PlatformIcon[];
+	@ViewChild('installTypeMenu', { static: true }) installTypeMenu: MatMenu | undefined;
+	platforms = [] as ChatterinoDialogComponent.PlatformIcon[];
 
-	constructor() { }
+	constructor(
+		private http: HttpClient
+	) { }
 
-	download(platform: ChatterinoDialogComponent.PlatformIcon): void{
-		window.open(platform.url, '_blank');
+	download(url: string | undefined): void {
+		if (!url) return undefined;
+
+		window.open(url, '_blank');
 	}
 
-	ngOnInit(): void { }
+	ngOnInit(): void {
+		this.platforms.push(
+			{
+				label: 'Linux',
+				icon: 'linux',
+				url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino-x86_64.AppImage'
+			},
+			{
+				label: 'Windows',
+				icon: 'windows',
+				menu: this.installTypeMenu
+			},
+			{
+				label: 'MacOS',
+				icon: 'apple',
+				url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino.dmg'
+			}
+		);
+	}
 }
 
 export namespace ChatterinoDialogComponent {
 	export interface PlatformIcon {
 		label: string;
 		icon: string;
-		url: string;
+		url?: string;
 		disabled?: boolean;
+		menu?: MatMenu;
 	}
 }

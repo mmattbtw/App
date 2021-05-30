@@ -10,10 +10,23 @@
 
 		<div class="platform-icons">
 			<div class="platform-icon" [matTooltip]="'Download for ' + p.label"
-				(click)="download(p)"
+				(click)="download(p.url)"
 				*ngFor="let p of platforms">
+
+				<div class="menu-trigger" *ngIf="p.menu" [matMenuTriggerFor]="p.menu">
+					<div class="trigger"></div>
+				</div>
 				<mat-icon [style.transform]="'scale(4)'" [svgIcon]="p.icon"></mat-icon>
 			</div>
 		</div>
 	</div>
 </div>
+
+<mat-menu #installTypeMenu>
+	<button mat-menu-item (click)="download('https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino.Installer.exe')">
+		INSTALLER
+	</button>
+	<button mat-menu-item (click)="download('https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino.Portable.zip')">
+		PORTABLE / STANDALONE EXE
+	</button>
+</mat-menu>

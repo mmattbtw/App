@@ -1,0 +1,15 @@
+.tos {
+	margin: 1em;
+
+	div {
+		p {
+			color: rgb(220, 220, 220);
+
+			&.bpad {
+				margin-bottom: 1.5em;
+			}
+		}
+		
+		margin: 1.25em;
+	}
+}

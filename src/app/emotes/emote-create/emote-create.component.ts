@@ -54,8 +54,8 @@ export class EmoteCreateComponent implements OnInit {
 			this.emoteFormService.uploadedEmote.next(String((e.target as { result?: string; }).result));
 
 			// Verify the emote is not too large
-			if (typeof reader.result === 'string' && reader.result.length > 2500000) {
-				this.emoteFormService.uploadError.next('File must be under 2.5MB');
+			if (typeof reader.result === 'string' && reader.result.length > 5000000) {
+				this.emoteFormService.uploadError.next('File must be under 5.0MB');
 
 				if (control) {
 					control.setErrors({ image_size_too_large: true });

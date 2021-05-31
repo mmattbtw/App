@@ -69,24 +69,23 @@ export class EmoteCreateComponent implements OnInit {
 		const reader = new FileReader();
 		const control = this.form.get('emote') as FormControl;
 
+		if (file.size > 5000000) {
+			this.emoteFormService.uploadError.next('File must be under 5.0MB');
+			control.setErrors({ image_size_too_large: true });
+
+			return undefined;
+		} else {
+			this.emoteFormService.uploadError.next('');
+			control.setErrors({ image_size_too_large: false });
+		}
+
 		reader.onload = (e: ProgressEvent) => {
 			this.emoteFormService.uploadedEmote.next(String((e.target as { result?: string; }).result));
 
-			// Verify the emote is not too large
-			if (typeof reader.result === 'string' && reader.result.length > 5000000) {
-				this.emoteFormService.uploadError.next('File must be under 5.0MB');
-
-				if (control) {
-					control.setErrors({ image_size_too_large: true });
-				}
-				return undefined;
-			} else {
-
-				if (control) {
-					control.patchValue(file);
-					control.setErrors(null);
-					control.markAsDirty();
-				}
+			if (control) {
+				control.patchValue(file);
+				control.setErrors(null);
+				control.markAsDirty();
 			}
 
 			return undefined;

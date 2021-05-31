@@ -32,7 +32,7 @@
 				<div class="col-12 col-md-4 emote-upload-box">
 					<label for="edit-emote">
 						<input hidden formControlName="emote"> 
-						<input type="file" accept="image/png, image/jpeg, image/gif" name="edit-emote" id="edit-emote" (change)="uploadEmote($event.target)" [disabled]="(isUploading() | async) || (isUploaded() | async)" />
+						<input type="file" accept="image/png, image/jpeg, image/gif, image/webp" name="edit-emote" id="edit-emote" (change)="uploadEmote($event.target)" [disabled]="(isUploading() | async) || (isUploaded() | async)" />
 						<img #emoteImg [src]="emoteFormService.uploadedEmote | async"
 							[style.border-color]="(emoteControl.dirty && emoteControl.valid) ? 'lime' : (emoteControl.pristine) ? 'inherit' : 'red'"
 							matTooltip="Edit Emote">

@@ -33,7 +33,8 @@ export class HomeComponent implements OnInit {
 			click: () => window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank'),
 			tag: {
 				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
-				label: '1.5.0'
+				label: '1.5.1',
+				new: true
 			}
 		},
 		{
@@ -41,16 +42,17 @@ export class HomeComponent implements OnInit {
 			click: () => window.open('https://addons.mozilla.org/en-US/firefox/addon/7tv/', '_blank'),
 			tag: {
 				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
-				label: '1.5.0'
+				label: '1.5.1',
+				new: true
 			}
 		},
 		{
 			icon: 'chatterino',
 			click: () => this.openChatterinoDownloadsMenu(),
 			tag: {
-				color: this.themingService.bg.darken(.75).hex(),
-				label: 'NEW!',
-				new: true
+				color: this.themingService.primary.hex(),
+				label: '7.3.2',
+				new: false
 			}
 		}
 	] as HomeComponent.BrowserIcon[];

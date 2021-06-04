@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
 			click: () => window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank'),
 			tag: {
 				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
-				label: '1.5.1',
+				label: '1.5.2',
 				new: true
 			}
 		},
@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
 			tag: {
 				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
 				label: '1.5.1',
-				new: true
+				new: false
 			}
 		},
 		{

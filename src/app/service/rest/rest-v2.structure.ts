@@ -75,18 +75,26 @@ export class RestV2 {
 		);
 	}
 
-	SearchUsers(): Observable<{ users: DataStructure.TwitchUser[], total_size: number; }> {
+	SearchUsers(query = ''): Observable<{ users: DataStructure.TwitchUser[], total_size: number; }> {
 		return this.gql.query<{ search_users: DataStructure.TwitchUser[]; }>({
 			query: `
-				{
-					search_users(query: "") {
+				query SearchUsers($query: String!) {
+					search_users(query: $query) {
 						id, login, display_name,
 						twitch_id,
 						profile_image_url,
-						created_at
+						created_at,
+						role {
+							id,
+							name,
+							color
+						}
 					}
 				}
 			`,
+			variables: {
+				query
+			},
 			auth: true
 		}).pipe(
 			map(res => {

@@ -1,6 +1,14 @@
-<div class="admin-users">
-	<span>There are {{total | async}} users currently. </span>
+<div class="pt-3 pl-2">
+	<p>{{total | async}} users</p>
+	<div class="search-box">
+		<mat-form-field appearance="outline">
+			<input matInput [formControl]="searchInput" (keyup.enter)="onSearchInput()">
+			<mat-label>Search Users</mat-label>
+		</mat-form-field>
+	</div>
+</div>
 
+<div class="admin-users">
 	<div *ngFor="let user of users | async; let last = last;" class="user-column">
 		<app-user-name [user]="user" [contextMenu]="contextMenu.userMenu" (openContext)="selectedUser.next($event)"></app-user-name>
 

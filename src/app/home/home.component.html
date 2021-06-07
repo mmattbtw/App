@@ -1,67 +1,74 @@
-<div class="h-100 d-flex flex-column justify-content-around align-items-center">
-	<div class="logo-container">
-		<div class="logo-spacer d-none d-md-block w-100 py-3"></div>
-		<div class="logo-wrapper">
-			<object data="assets/brand/7tv-light.svg" height="{{logoSize}}" type="image/svg+xml"></object>
+<div class="h-100 d-flex flex-row justify-content-between">
+	<div></div>
+	<div class="d-flex flex-column justify-content-around align-items-center">
+		<div class="logo-container">
+			<div class="logo-spacer d-none d-md-block w-100 py-3"></div>
+			<div class="logo-wrapper">
+				<object data="assets/brand/7tv-light.svg" height="{{logoSize}}" type="image/svg+xml"></object>
+			</div>
+
 		</div>
 
-	</div>
-
-	<!-- Intro & Download Button -->
-	<div class="d-flex flex-column intro align-items-center justify-content-center">
-		
-		<h1 class="slogan-text">
-			{{appService.description}}
-		</h1>
-
-		<span class="my-1"></span>
-
-		<!-- Display Brwowser Downloads -->
-		<span class="d-flex flex-row browser-downloads">
+		<!-- Intro & Download Button -->
+		<div class="d-flex flex-column intro align-items-center justify-content-center">
 			
-			<div *ngFor="let icon of browserIcons">
-				<div class="browser-icon">	
-					<div class="tag" [class.new]="icon.tag?.new" [appColor]="icon.tag?.color" [isBackground]="icon.tag?.new || true">
-						<span>{{icon.tag?.label}}</span>
-					</div>
-	
-					<div [@browserIcon] matRipple [matRippleCentered]="true" [matRippleUnbounded]="true" [matRippleRadius]="8 * 6" class="icon" [matTooltip]="'Install on ' + icon.icon">
-						<mat-icon [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null">
+			<h1 class="slogan-text">
+				{{appService.description}}
+			</h1>
+
+			<span class="my-1"></span>
+
+			<!-- Display Brwowser Downloads -->
+			<span class="d-flex flex-row browser-downloads">
+				
+				<div *ngFor="let icon of browserIcons">
+					<div class="browser-icon">	
+						<div class="tag" [class.new]="icon.tag?.new" [appColor]="icon.tag?.color" [isBackground]="icon.tag?.new || true">
+							<span>{{icon.tag?.label}}</span>
+						</div>
 		
-						</mat-icon>
+						<div [@browserIcon] matRipple [matRippleCentered]="true" [matRippleUnbounded]="true" [matRippleRadius]="8 * 6" class="icon" [matTooltip]="'Install on ' + icon.icon">
+							<mat-icon [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null">
+			
+							</mat-icon>
+						</div>
 					</div>
 				</div>
-			</div>
+			</span>
+		</div>
+
+		<!-- Discord Call To Action -->
+		<span [appColor]="themingService.colors.discord_blurple"
+			class="discord-cta"
+			matRipple
+			[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
+			(click)="openDiscordInvite()"
+			[class.d-none]="(discordWidget | async) === (null)"
+			[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
+		>
+			<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
+				<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
+			</a>
+
+			<div class="my-1"></div>
+			<p>{{discordWidget.getValue()?.name}} on Discord</p>
+			<p class="font-italic">
+				<span>{{discordWidget.getValue()?.presence_count}}</span>
+				members online now
+			</p>
 		</span>
+
+		<span></span>
+		<span></span>
+		<!-- Footer Links -->
+		<div class="d-flex flex-sm-row flex-column footer-options mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+			<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
+				<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
+				<a *ngIf="!!btn.click" (click)="btn.click()"> {{btn.name}} </a>
+
+				<div *ngIf="footerOptions.length > (index + 1)" class="mx-1 separator-ball d-none d-sm-block"></div>
+			</span>
+		</div>
 	</div>
-
-	<!-- Discord Call To Action -->
-	<span [appColor]="themingService.colors.discord_blurple"
-		class="discord-cta"
-		matRipple
-		[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
-		(click)="openDiscordInvite()"
-		[class.d-none]="(discordWidget | async) === (null)"
-		[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
-	>
-		<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
-			<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
-		</a>
-
-		<div class="my-1"></div>
-		<p>{{discordWidget.getValue()?.name}} on Discord</p>
-		<p>({{discordWidget.getValue()?.presence_count}} members online now)</p>
-	</span>
-
-	<span></span>
-	<span></span>
-	<!-- Footer Links -->
-	<div class="d-flex flex-sm-row flex-column footer-options mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
-		<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
-			<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
-			<a *ngIf="!!btn.click" (click)="btn.click()"> {{btn.name}} </a>
-
-			<div *ngIf="footerOptions.length > (index + 1)" class="mx-1 separator-ball d-none d-sm-block"></div>
-		</span>
-	</div>
+	<div></div>
 </div>

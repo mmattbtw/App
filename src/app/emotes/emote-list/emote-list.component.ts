@@ -207,7 +207,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 
 			this.paginator?.page.next({
 				pageIndex: o.page,
-				pageSize,
+				pageSize: Math.max(16, pageSize),
 				length: o.length,
 			});
 			this.pageOptions = o;

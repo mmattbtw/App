@@ -93,6 +93,11 @@
 }
 
 .footer-options {
+	min-height: 4em;
+	min-width: 8em;
+	border-radius: 4px;
+	padding: 2em;
+
 	.separator-ball {
 		width: .5em;
 		height: .5em;
@@ -106,6 +111,14 @@
 }
 
 .discord-cta {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	border-radius: 5px;
+	padding: .85em;
+	cursor: pointer;
+
 	p {
 		line-height: .3em;
 	}

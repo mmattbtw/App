@@ -35,23 +35,33 @@
 		</span>
 	</div>
 
-	<span [appColor]="themingService.colors.discord_blurple" class="discord-cta" [class.d-none]="(discordWidget | async) === (null)">
-		<a mat-icon-button target="_blank" [href]="(discordWidget | async)?.instant_invite" class="d-flex flex-column align-items-center">
+	<!-- Discord Call To Action -->
+	<span [appColor]="themingService.colors.discord_blurple"
+		class="discord-cta"
+		matRipple
+		[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
+		(click)="openDiscordInvite()"
+		[class.d-none]="(discordWidget | async) === (null)"
+		[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
+	>
+		<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
 			<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
-			<div class="my-1"></div>
-			<p>{{discordWidget.getValue()?.name}} on Discord</p>
-			<p>({{discordWidget.getValue()?.presence_count}} members online now)</p>
 		</a>
+
+		<div class="my-1"></div>
+		<p>{{discordWidget.getValue()?.name}} on Discord</p>
+		<p>({{discordWidget.getValue()?.presence_count}} members online now)</p>
 	</span>
+
 	<span></span>
 	<span></span>
 	<!-- Footer Links -->
-	<div class="d-flex flex-row footer-options">
+	<div class="d-flex flex-sm-row flex-column footer-options mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
 		<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
 			<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
 			<a *ngIf="!!btn.click" (click)="btn.click()"> {{btn.name}} </a>
 
-			<div *ngIf="footerOptions.length > (index + 1)" class="mx-1 separator-ball"></div>
+			<div *ngIf="footerOptions.length > (index + 1)" class="mx-1 separator-ball d-none d-sm-block"></div>
 		</span>
 	</div>
 </div>

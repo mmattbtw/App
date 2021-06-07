@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { delay, map, take, tap } from 'rxjs/operators';
 import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatterino-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -67,6 +67,10 @@ export class HomeComponent implements OnInit {
 			path: 'https://github.com/SevenTV'
 		},
 		{
+			name: 'Twitter',
+			path: 'https://twitter.com/Official_7TV'
+		},
+		{
 			name: 'Privacy Policy',
 			click: () => this.router.navigate(['/legal', 'privacy'])
 		},
@@ -91,6 +95,14 @@ export class HomeComponent implements OnInit {
 		this.dialog.open(ChatterinoDialogComponent, {
 
 		});
+	}
+
+	openDiscordInvite(): void {
+		this.discordWidget.pipe(
+			take(1),
+			delay(500),
+			map(w => window.open(w?.instant_invite, '_blank'))
+		).subscribe();
 	}
 
 	ngOnInit(): void {

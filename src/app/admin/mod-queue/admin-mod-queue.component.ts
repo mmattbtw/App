@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -22,6 +23,11 @@ export class AdminModQueueComponent implements OnInit {
 
 	actions = [
 		{
+			label: 'Go to Emote',
+			icon: 'link',
+			click: emote => this.linkToEmotePage(emote)
+		},
+		{
 			label: 'Confirm Emote',
 			icon: 'done',
 			click: emote => emote.edit({
@@ -38,6 +44,7 @@ export class AdminModQueueComponent implements OnInit {
 
 	constructor(
 		public themingService: ThemingService,
+		private router: Router,
 		private restService: RestService,
 		private dataService: DataService,
 		private dialog: MatDialog
@@ -47,6 +54,12 @@ export class AdminModQueueComponent implements OnInit {
 		const dialogRef = this.dialog.open(EmoteComponent, {});
 		dialogRef.componentInstance.emote = emote;
 		dialogRef.componentInstance.disableNotices = true;
+	}
+
+	linkToEmotePage(emote: EmoteStructure): void {
+		const url = this.router.createUrlTree(['/emotes', emote.getID()]);
+
+		window.open(url.toString(), '_blank');
 	}
 
 	useAction(action: AdminModQueueComponent.EmoteQuickAction, emote: EmoteStructure): void {

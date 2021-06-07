@@ -8,6 +8,7 @@ import { UtilModule } from 'src/app/util/util.module';
 import { MaterialModule } from 'src/app/material.module';
 import { AdminComponent } from 'src/app/admin/admin.component';
 import { AdminModQueueComponent } from 'src/app/admin/mod-queue/admin-mod-queue.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { AdminModQueueComponent } from 'src/app/admin/mod-queue/admin-mod-queue.
 	imports: [
 		CommonModule,
 		UtilModule,
+		ReactiveFormsModule,
 		MaterialModule,
 		AdminRoutingModule
 	]

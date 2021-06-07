@@ -9,7 +9,8 @@
 			.emote-display {
 				display: flex;
 				align-items: center;
-				min-height: 64px;
+				height: 64px;
+				height: 64px;
 				margin-bottom: .33em;
 				margin-top: .33em;
 				width: 100%;
@@ -26,10 +27,16 @@
 					margin-top: 4px;
 				}
 			}
+			.user-column-divider {
+				height: 5px;
+			}
 
 			.emote-actions {
 				justify-self: flex-end;
 				justify-content: end;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
 			}
 		}
 	}

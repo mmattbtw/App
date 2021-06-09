@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { filter, map, switchMap, take } from 'rxjs/operators';
+import { BehaviorSubject, throwError } from 'rxjs';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -46,7 +46,16 @@ export class HomeFeaturedStreamComponent implements OnInit {
 		AppComponent.isBrowser.pipe(
 			take(1),
 			filter(b => b === true),
-			switchMap(() => this.restService.v2.GetUser('vadikus007')),
+
+			switchMap(() => this.restService.v2.gql.query<{ featured_broadcast: string; }>({
+				query: `
+					query GetFeaturedBroadcast() {
+						featured_broadcast()
+					}
+				`
+			})),
+			map(res => res?.body?.data.featured_broadcast),
+			switchMap(login => !!login ? this.restService.v2.GetUser(login) : throwError('No Featured Broadcast')),
 			map(res => this.dataService.add('user', res.user)[0])
 		).subscribe({
 			next: usr => {

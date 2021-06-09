@@ -7,13 +7,15 @@ import { MaterialModule } from 'src/app/material.module';
 import { UtilModule } from 'src/app/util/util.module';
 import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatterino-dialog.component';
 import { LegalTOSComponent } from 'src/app/home/legal/tos.component';
+import { HomeFeaturedStreamComponent } from 'src/app/home/featured-stream/featured-stream.component';
 
 
 @NgModule({
 	declarations: [
 		HomeComponent,
 		ChatterinoDialogComponent,
-		LegalTOSComponent
+		LegalTOSComponent,
+		HomeFeaturedStreamComponent
 	],
 	imports: [
 		CommonModule,

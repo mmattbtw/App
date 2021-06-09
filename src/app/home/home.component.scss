@@ -1,9 +1,19 @@
 .logo-container {
-	display: flex;
+	display: block;
 
 	object {
-		height: 33vh;
-		max-height: 256px;
+		height: 45vw;
+		max-height: 350px;
+	}
+}
+
+.slogan-container {
+	max-width: 220px;
+
+	.slogan-text {
+		font-size: 3em;
+		text-align: center;
+		line-height: 1.25em;
 	}
 }
 
@@ -74,6 +84,12 @@
 			}
 		}
 	}
+}
+
+.feature-container {
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 
 .browser-downloads {

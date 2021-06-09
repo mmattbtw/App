@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map, switchMap, take } from 'rxjs/operators';
+import { AppComponent } from 'src/app/app.component';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { UserStructure } from 'src/app/util/user.structure';
-import { TwitchPlayer } from 'twitch-player';
 
 @Component({
 	selector: 'app-home-featured-stream',
@@ -22,17 +22,17 @@ export class HomeFeaturedStreamComponent implements OnInit {
 		public themingService: ThemingService
 	) { }
 
-	createTwitchPlayer(user: UserStructure): TwitchPlayer {
-		const player = TwitchPlayer.FromOptions('twitch-player', {
-			width: 474,
-			height: 354,
-			channel: user.getSnapshot()?.login,
-			autoplay: true,
-			muted: true,
-			parent: ['localhost']
+	createTwitchPlayer(user: UserStructure): void {
+		import('twitch-player').then(M => {
+			M.TwitchPlayer.FromOptions('twitch-player', {
+				width: 474,
+				height: 354,
+				channel: user.getSnapshot()?.login,
+				autoplay: true,
+				muted: true,
+				parent: ['localhost']
+			});
 		});
-
-		return player;
 	}
 
 	openStream(): void {
@@ -42,7 +42,10 @@ export class HomeFeaturedStreamComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.restService.v2.GetUser('vadikus007').pipe(
+		AppComponent.isBrowser.pipe(
+			take(1),
+			filter(b => b === true),
+			switchMap(() => this.restService.v2.GetUser('vadikus007')),
 			map(res => this.dataService.add('user', res.user)[0])
 		).subscribe({
 			next: usr => {

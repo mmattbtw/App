@@ -8,10 +8,11 @@
 }
 
 .slogan-container {
-	max-width: 220px;
+	width: 230px;
+	margin-right: 2em;
 
 	.slogan-text {
-		font-size: 3em;
+		font-size: 3.33367em;
 		text-align: center;
 		line-height: 1.25em;
 	}
@@ -86,10 +87,11 @@
 	}
 }
 
-.feature-container {
-	position: absolute;
-	top: 0;
-	right: 0;
+.feature-wrapper {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .browser-downloads {

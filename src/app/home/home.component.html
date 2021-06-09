@@ -1,7 +1,7 @@
-<div class="h-100 d-flex flex-row w-100">
-	<div class="d-flex flex-grow-1 flex-column justify-content-around align-items-center h-100">
+<div class="h-100 d-flex flex-column w-100">
+	<div class="d-flex flex-grow-1 flex-row justify-content-around align-items-md-start h-100">
 		<!-- Intro & Download Button -->
-		<div class="d-flex flex-column intro align-items-center justify-content-start">
+		<div class="d-flex flex-column intro align-items-center justify-content-start align-self-center">
 			<div class="d-flex flex-row align-items-center pl-3">
 				<div class="logo-container">
 					<div class="logo-spacer d-none d-md-block w-100 py-3"></div>
@@ -20,8 +20,12 @@
 			<span class="my-1"></span>
 
 			<!-- Display Brwowser Downloads -->
+			<p class="d-flex align-items-center">
+				<mat-icon>download</mat-icon>
+				<span class="mx-1"></span>
+				<span>Downloads</span>
+			</p>
 			<span class="d-flex flex-row browser-downloads">
-				
 				<div *ngFor="let icon of browserIcons">
 					<div class="browser-icon">	
 						<div class="tag" [class.new]="icon.tag?.new" [appColor]="icon.tag?.color" [isBackground]="icon.tag?.new || true">
@@ -38,43 +42,43 @@
 			</span>
 		</div>
 
-		<!-- Discord Call To Action -->
-		<span [appColor]="themingService.colors.discord_blurple"
-			class="discord-cta"
-			matRipple
-			[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
-			(click)="openDiscordInvite()"
-			[class.d-none]="(discordWidget | async) === (null)"
-			[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
-		>
-			<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
-				<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
-			</a>
-
-			<div class="my-1"></div>
-			<p>{{discordWidget.getValue()?.name}} on Discord</p>
-			<p class="font-italic">
-				<span>{{discordWidget.getValue()?.presence_count}}</span>
-				members online now
-			</p>
-		</span>
-
-		<span></span>
-		<span></span>
-		<!-- Footer Links -->
-		<div class="d-flex flex-sm-row flex-column footer-options mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
-			<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
-				<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
-				<a *ngIf="!!btn.click" (click)="btn.click()"> {{btn.name}} </a>
-
-				<div *ngIf="footerOptions.length > (index + 1)" class="mx-1 separator-ball d-none d-sm-block"></div>
-			</span>
+		<div class="d-none d-lg-flex feature-wrapper">
+			<div class="featured">
+				<app-home-featured-stream></app-home-featured-stream>
+			</div>
 		</div>
 	</div>
-</div>
 
-<div class="d-none d-lg-flex feature-wrapper">
-	<div class="featured">
-		<app-home-featured-stream></app-home-featured-stream>
+	<!-- Discord Call To Action -->
+	<span [appColor]="themingService.colors.discord_blurple"
+		class="discord-cta"
+		matRipple
+		[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
+		(click)="openDiscordInvite()"
+		[class.d-none]="(discordWidget | async) === (null)"
+		[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
+	>
+		<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
+			<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
+		</a>
+
+		<div class="my-1"></div>
+		<p>Join {{discordWidget.getValue()?.name}} on Discord!</p>
+		<p class="font-italic">
+			<span>{{discordWidget.getValue()?.presence_count}}</span>
+			members online now
+		</p>
+	</span>
+
+	<span></span>
+	<span></span>
+	<!-- Footer Links -->
+	<div class="d-flex flex-row footer-options justify-content-center mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+		<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
+			<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
+			<a *ngIf="!!btn.click" (click)="btn.click()"> {{btn.name}} </a>
+
+			<div *ngIf="footerOptions.length > (index + 1)" class="mx-2 separator-ball d-block"></div>
+		</span>
 	</div>
 </div>

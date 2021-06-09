@@ -8,6 +8,7 @@ import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatte
 import { AppService } from 'src/app/service/app.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
+import { ViewportService } from 'src/app/service/viewport.service';
 
 @Component({
 	selector: 'app-home',
@@ -34,7 +35,7 @@ export class HomeComponent implements OnInit {
 			tag: {
 				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
 				label: '1.5.2',
-				new: true
+				new: false
 			}
 		},
 		{
@@ -50,7 +51,7 @@ export class HomeComponent implements OnInit {
 			icon: 'chatterino',
 			click: () => this.openChatterinoDownloadsMenu(),
 			tag: {
-				color: this.themingService.primary.hex(),
+				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
 				label: '7.3.2',
 				new: false
 			}
@@ -88,6 +89,7 @@ export class HomeComponent implements OnInit {
 		private dialog: MatDialog,
 		private router: Router,
 		public themingService: ThemingService,
+		public vp: ViewportService,
 		public appService: AppService
 	) { }
 

@@ -1,20 +1,21 @@
-<div class="h-100 d-flex flex-row justify-content-between">
-	<div></div>
-	<div class="d-flex flex-column justify-content-around align-items-center">
-		<div class="logo-container">
-			<div class="logo-spacer d-none d-md-block w-100 py-3"></div>
-			<div class="logo-wrapper">
-				<object data="assets/brand/7tv-light.svg" height="{{logoSize}}" type="image/svg+xml"></object>
-			</div>
-
-		</div>
-
+<div class="h-100 d-flex flex-row w-100">
+	<div class="d-flex flex-grow-1 flex-column justify-content-around align-items-center h-100">
 		<!-- Intro & Download Button -->
-		<div class="d-flex flex-column intro align-items-center justify-content-center">
-			
-			<h1 class="slogan-text">
-				{{appService.description}}
-			</h1>
+		<div class="d-flex flex-column intro align-items-center justify-content-start">
+			<div class="d-flex flex-row align-items-center pl-3">
+				<div class="logo-container">
+					<div class="logo-spacer d-none d-md-block w-100 py-3"></div>
+					<div class="logo-wrapper">
+						<object data="assets/brand/7tv-light.svg" height="{{logoSize}}" type="image/svg+xml"></object>
+					</div>
+				</div>	
+
+				<div class="slogan-container">
+					<h1 class="slogan-text">
+						{{appService.description}}
+					</h1>
+				</div>
+			</div>
 
 			<span class="my-1"></span>
 
@@ -70,5 +71,10 @@
 			</span>
 		</div>
 	</div>
-	<div></div>
+</div>
+
+<div class="d-none d-lg-flex feature-wrapper">
+	<div class="featured">
+		<app-home-featured-stream></app-home-featured-stream>
+	</div>
 </div>

@@ -133,6 +133,13 @@ export class EmoteStructure extends Structure<'emote'> {
 	}
 
 	/**
+	 * Whether or not the emote is unlisted
+	 */
+	isUnlisted(): Observable<boolean> {
+		return this.hasVisibility('HIDDEN');
+	}
+
+	/**
 	 * Whether or not the emote is global
 	 */
 	isGlobal(): Observable<boolean> {

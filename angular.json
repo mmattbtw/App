@@ -37,6 +37,7 @@
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
+            "aot": true,
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,

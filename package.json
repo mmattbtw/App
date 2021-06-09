@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "ng build --configuration=production",
     "watch": "ng build --watch --configuration=dev-sw",
     "dockerize": "ng build --prod && docker build . -t registry.digitalocean.com/xiantis/7tv-app",
     "test": "ng test",
@@ -44,7 +44,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1102.0",
+    "@angular-devkit/build-angular": "^12.0.3",
     "@angular/cli": "~12.0.3",
     "@angular/compiler-cli": "~12.0.3",
     "@nguniversal/builders": "^12.0.1",

@@ -1,10 +1,10 @@
 <div class="featured-stream">
-	<div class="player-container" [style.border-bottom-color]="(featuredUser | async)?.getColor() | async">
+	<div class="player-container" [style.border-bottom-color]="featuredUser?.getColor() | async">
 		<div id="twitch-player"></div>
 
 		<div class="who-is-this mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
 			<div class="broadcaster">
-				<app-user-name [user]="featuredUser | async"></app-user-name>
+				<app-user-name [user]="featuredUser"></app-user-name>
 				<div class="featured-icon" matTooltip="Featured Broadcast">
 					<mat-icon color="primary">star</mat-icon>
 				</div>

@@ -1,11 +1,12 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
 import * as Color from 'color';
-import { asapScheduler, BehaviorSubject, EMPTY, Observable, of, scheduled } from 'rxjs';
-import { defaultIfEmpty, delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { asapScheduler, BehaviorSubject, EMPTY, Observable, of, scheduled, Subject, timer } from 'rxjs';
+import { defaultIfEmpty, delay, filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
@@ -27,7 +28,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmoteCardComponent implements OnInit, OnDestroy {
+export class EmoteCardComponent implements OnInit, AfterViewChecked, OnDestroy {
 	@Input() size = 10;
 	@Input() emote: EmoteStructure | null = null;
 	@Input() contextMenu: MatMenu | null = null;
@@ -35,6 +36,7 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() blur = false;
 	@ViewChild(MatMenuTrigger) contextMenuTrigger: MatMenuTrigger | undefined;
 
+	blurChange = new BehaviorSubject<boolean>(false);
 	borderColor = this.themingService.bg.lighten(.2);
 	globalBorderColor = this.themingService.accent;
 	channelBorderColor = this.themingService.colors.twitch_purple;
@@ -43,10 +45,29 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 
 	// Listen for hover states
 	@HostListener('mouseenter')
-	onMouseEnter(): void { this.hover.next(true); }
+	onMouseEnter(): void {
+		this.hover.next(true);
+
+		if (this.blur) {
+			timer(400).pipe(
+				takeUntil(this.hover.pipe(filter(h => h === false), take(1))),
+				take(1),
+				tap(() => {
+					this.blurChange.next(false);
+					this.cdr.markForCheck();
+				})
+			).subscribe();
+		}
+	}
 
 	@HostListener('mouseleave')
-	onMouseLeave(): void { this.hover.next(false); }
+	onMouseLeave(): void {
+		this.hover.next(false);
+
+		if (this.blur) {
+			this.blur = true;
+		}
+	}
 
 	/**
 	 * Middle Mouse Click: open in new tab
@@ -129,6 +150,10 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.updateBorderColor();
 		this.clientService.impersonating.subscribe({ next: () => this.cdr.markForCheck() });
+	}
+
+	ngAfterViewChecked(): void {
+		this.blurChange.next(this.blur);
 	}
 
 	ngOnDestroy(): void {

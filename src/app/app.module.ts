@@ -17,13 +17,15 @@ import { NavigationComponent } from 'src/app/navigation/navigation.component';
 import { setAppInjector } from 'src/app/service/app.injector';
 import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { UpdateDialogComponent } from 'src/app/update-dialog.component.';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		NavigationComponent,
 		EditorDialogComponent,
-		TwitchButtonComponent
+		TwitchButtonComponent,
+		UpdateDialogComponent
 	],
 	imports: [
 		BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -38,7 +40,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 			enabled: environment.serviceWorker,
 			// Register the ServiceWorker as soon as the app is stable
 			// or after 30 seconds (whichever comes first).
-			registrationStrategy: 'registerImmediately'
+			registrationStrategy: 'registerImmediately',
 		})
 	],
 	providers: [

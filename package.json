@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration=production",
+    "dev:build": "ng build --configuration=dev-sw",
     "watch": "ng build --watch --configuration=dev-sw",
     "dockerize": "ng build --prod && docker build . -t registry.digitalocean.com/xiantis/7tv-app",
     "test": "ng test",

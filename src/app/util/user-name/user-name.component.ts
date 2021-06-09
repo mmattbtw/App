@@ -44,9 +44,9 @@ export class UserNameComponent implements OnInit, OnDestroy {
 		if (!this.clickable) return undefined;
 		if (!this.target) return undefined;
 
-		this.target.getUsername().pipe(
+		this.target.getID().pipe(
 			takeUntil(this.destroyed),
-			tap(username => this.router.navigate(['/user', username]))
+			tap(id => this.router.navigate(['/user', id]))
 		).subscribe();
 	}
 

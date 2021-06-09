@@ -42,9 +42,9 @@
 			</span>
 		</div>
 
-		<div class="d-none d-lg-flex feature-wrapper">
+		<div class="d-none d-lg-flex feature-wrapper" *ngIf="!!(featuredUser | async)">
 			<div class="featured">
-				<app-home-featured-stream></app-home-featured-stream>
+				<app-home-featured-stream [featuredUser]="featuredUser | async"></app-home-featured-stream>
 			</div>
 		</div>
 	</div>

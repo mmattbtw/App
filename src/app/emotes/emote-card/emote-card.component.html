@@ -16,7 +16,7 @@
 	</div>
 
 	<!-- Card Image wrapper (below title) -->
-	<div class="img-wrapper" [ngSwitch]="isProcessing() | async">
+	<div class="img-wrapper" [class.blur]="blur" [ngSwitch]="isProcessing() | async">
 		<img *ngSwitchCase="false" [class.d-none]="!(emote?.getID())" [src]="getEmoteURL()">
 		<div class="is-processing" *ngSwitchCase="true">
 			<mat-spinner [diameter]="32"></mat-spinner>

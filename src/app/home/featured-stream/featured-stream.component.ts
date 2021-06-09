@@ -1,9 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, throwError } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AppComponent } from 'src/app/app.component';
-import { DataService } from 'src/app/service/data.service';
-import { RestService } from 'src/app/service/rest.service';
+import { Component, Input, OnInit } from '@angular/core';
 import { ThemingService } from 'src/app/service/theming.service';
 import { UserStructure } from 'src/app/util/user.structure';
 
@@ -14,11 +9,9 @@ import { UserStructure } from 'src/app/util/user.structure';
 })
 
 export class HomeFeaturedStreamComponent implements OnInit {
-	featuredUser = new BehaviorSubject<UserStructure | null>(null);
+	@Input() featuredUser: UserStructure | null = null;
 
 	constructor(
-		private restService: RestService,
-		private dataService: DataService,
 		public themingService: ThemingService
 	) { }
 
@@ -37,31 +30,12 @@ export class HomeFeaturedStreamComponent implements OnInit {
 	}
 
 	openStream(): void {
-		this.featuredUser.pipe(
-			map(usr => window.open(usr?.getTwitchURL(), '_blank'))
-		).subscribe();
+		window.open(this.featuredUser?.getTwitchURL(), '_blank');
 	}
 
 	ngOnInit(): void {
-		AppComponent.isBrowser.pipe(
-			take(1),
-			filter(b => b === true),
-
-			switchMap(() => this.restService.v2.gql.query<{ featured_broadcast: string; }>({
-				query: `
-					query GetFeaturedBroadcast() {
-						featured_broadcast()
-					}
-				`
-			})),
-			map(res => res?.body?.data.featured_broadcast),
-			switchMap(login => !!login ? this.restService.v2.GetUser(login) : throwError('No Featured Broadcast')),
-			map(res => this.dataService.add('user', res.user)[0])
-		).subscribe({
-			next: usr => {
-				this.featuredUser.next(usr);
-				this.createTwitchPlayer(usr);
-			}
-		});
+		if (this.featuredUser != null) {
+			this.createTwitchPlayer(this.featuredUser);
+		}
 	}
 }

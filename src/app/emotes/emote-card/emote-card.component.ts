@@ -32,6 +32,7 @@ export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() emote: EmoteStructure | null = null;
 	@Input() contextMenu: MatMenu | null = null;
 	@Output() openContext = new EventEmitter<EmoteStructure>();
+	@Input() blur = false;
 	@ViewChild(MatMenuTrigger) contextMenuTrigger: MatMenuTrigger | undefined;
 
 	borderColor = this.themingService.bg.lighten(.2);

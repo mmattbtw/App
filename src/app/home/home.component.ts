@@ -2,13 +2,17 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { delay, map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, throwError } from 'rxjs';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { AppComponent } from 'src/app/app.component';
 import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatterino-dialog.component';
 import { AppService } from 'src/app/service/app.service';
+import { DataService } from 'src/app/service/data.service';
+import { LoggerService } from 'src/app/service/logger.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
+import { UserStructure } from 'src/app/util/user.structure';
 
 @Component({
 	selector: 'app-home',
@@ -84,10 +88,14 @@ export class HomeComponent implements OnInit {
 	logoSize = 64 * 3;
 	discordWidget = new BehaviorSubject<RestService.Result.GetDiscordWidget | null>(null);
 
+	featuredUser = new BehaviorSubject<UserStructure | null>(null);
+
 	constructor(
 		private restService: RestService,
+		private dataService: DataService,
 		private dialog: MatDialog,
 		private router: Router,
+		private logger: LoggerService,
 		public themingService: ThemingService,
 		public vp: ViewportService,
 		public appService: AppService
@@ -113,6 +121,30 @@ export class HomeComponent implements OnInit {
 			tap(res => this.discordWidget.next(res.body))
 		).subscribe({
 			error(): void {}
+		});
+
+		// Get featured channel
+		AppComponent.isBrowser.pipe(
+			take(1),
+			filter(b => b === true),
+
+			switchMap(() => this.restService.v2.gql.query<{ featured_broadcast: string; }>({
+				query: `
+					query GetFeaturedBroadcast() {
+						featured_broadcast()
+					}
+				`
+			})),
+			map(res => res?.body?.data.featured_broadcast),
+			switchMap(login => !!login ? this.restService.v2.GetUser(login) : throwError('No Featured Broadcast')),
+			map(res => this.dataService.add('user', res.user)[0])
+		).subscribe({
+			next: usr => {
+				this.featuredUser.next(usr);
+			},
+			error: err => {
+				this.logger.warn('No featured broadcast active: ', err);
+			}
 		});
 	}
 

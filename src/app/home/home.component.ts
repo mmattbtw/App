@@ -72,10 +72,6 @@ export class HomeComponent implements OnInit {
 			path: 'https://github.com/SevenTV'
 		},
 		{
-			name: 'Twitter',
-			path: 'https://twitter.com/Official_7TV'
-		},
-		{
 			name: 'Privacy Policy',
 			click: () => this.router.navigate(['/legal', 'privacy'])
 		},
@@ -112,6 +108,14 @@ export class HomeComponent implements OnInit {
 			take(1),
 			map(w => window.open(w?.instant_invite, 'Discord', 'width=630,height=530'))
 		).subscribe();
+	}
+
+	openTwitterLink(): void {
+		setTimeout(() => {
+			const handle = window.open('https://twitter.com/Official_7TV');
+			handle?.blur();
+			window.focus();
+		}, 200);
 	}
 
 	ngOnInit(): void {

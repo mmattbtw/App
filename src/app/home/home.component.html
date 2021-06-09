@@ -50,25 +50,38 @@
 	</div>
 
 	<!-- Discord Call To Action -->
-	<span [appColor]="themingService.colors.discord_blurple"
-		class="discord-cta"
-		matRipple
-		[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
-		(click)="openDiscordInvite()"
-		[class.d-none]="(discordWidget | async) === (null)"
-		[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
-	>
-		<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
-			<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
-		</a>
+	<div class="d-flex flex-row flex-fill flex-grow-1">
+		<span class="social-media-cta"
+			matRipple
+			[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
+			(click)="openDiscordInvite()"
+			[class.d-none]="(discordWidget | async) === (null)"
+			[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
+		>
+			<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
+				<mat-icon [svgIcon]="(themingService.getSvgIcon('discord') | async) || ''"></mat-icon>
+			</a>
 
-		<div class="my-1"></div>
-		<p>Join {{discordWidget.getValue()?.name}} on Discord!</p>
-		<p class="font-italic">
-			<span>{{discordWidget.getValue()?.presence_count}}</span>
-			members online now
-		</p>
-	</span>
+			<div class="my-1"></div>
+			<p>Join {{discordWidget.getValue()?.name}} on Discord!</p>
+			<p class="font-italic">
+				<span>{{discordWidget.getValue()?.presence_count}}</span>
+				members online now
+			</p>
+		</span>
+
+		<span	class="social-media-cta"
+			matRipple
+			[matRippleColor]="themingService.colors.twitter_blue.opaquer(-.25).rgb().toString()"
+			(click)="openTwitterLink()"
+			[appColor]="themingService.colors.twitter_blue.opaquer(-.88)" [isBackground]="true"
+		>
+			<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
+				<mat-icon [svgIcon]="(themingService.getSvgIcon('twitter') | async) || ''"></mat-icon>
+			</a>
+			Follow us on Twitter!
+		</span>
+	</div>
 
 	<span></span>
 	<span></span>

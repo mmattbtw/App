@@ -1,5 +1,20 @@
 <div class="featured-stream">
-	<div class="player-container">
+	<div class="player-container" [style.border-bottom-color]="(featuredUser | async)?.getColor() | async">
 		<div id="twitch-player"></div>
+
+		<div class="who-is-this mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+			<div class="broadcaster">
+				<app-user-name [user]="featuredUser | async"></app-user-name>
+				<div class="featured-icon" matTooltip="Featured Broadcast">
+					<mat-icon color="primary">star</mat-icon>
+				</div>
+			</div>
+
+			<div class="why-is-this text-muted" (click)="openStream()">
+				<mat-icon>link</mat-icon>
+				<span class="mx-1"></span>
+				<span>Check out this 7TV-enabled livestream!</span>
+			</div>
+		</div>
 	</div>
 </div>

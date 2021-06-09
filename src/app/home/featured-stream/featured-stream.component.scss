@@ -1,12 +1,37 @@
 .featured-stream {
-	width: 360px;
-	height: 240px;
+	background-color: black;
+	width: 480px;
+	height: 360px;
 
 	.player-container {
 		width: 100%;
 		height: 100%;
 
 		border-color: currentColor;
-		border-style: dashed;
+		border-top-style: dashed;
+		border-right-style: dashed;
+		border-left-style: dashed;
+		border-bottom-style: solid;
+	}
+
+	.who-is-this {
+		padding: 1em;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+
+		.broadcaster {
+			display: flex;
+			justify-content: space-between;
+		}
+		.why-is-this {
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			margin-top: 6px;
+		}
+
+		border-bottom-left-radius: 6px;
+		border-bottom-right-radius: 6px;
 	}
 }

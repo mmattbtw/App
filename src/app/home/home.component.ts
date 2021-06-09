@@ -102,8 +102,7 @@ export class HomeComponent implements OnInit {
 	openDiscordInvite(): void {
 		this.discordWidget.pipe(
 			take(1),
-			delay(500),
-			map(w => window.open(w?.instant_invite, '_blank'))
+			map(w => window.open(w?.instant_invite, 'Discord', 'width=630,height=530'))
 		).subscribe();
 	}
 

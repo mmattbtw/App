@@ -193,6 +193,10 @@ export class UserStructure extends Structure<'user'> {
 		return this.getRestService().v2.BanUser(this.id, expireAt, reason);
 	}
 
+	getTwitchURL(): string {
+		return `https://twitch.tv/${this?.getSnapshot()?.login}`;
+	}
+
 	getRestService(): RestService {
 		if (!this.restService) {
 			try {

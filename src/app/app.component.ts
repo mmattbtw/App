@@ -1,15 +1,17 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { isPlatformBrowser, Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ActivationStart, Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { SwUpdate } from '@angular/service-worker';
+import { BehaviorSubject, defer, iif } from 'rxjs';
+import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
 import { iconList } from 'src/app/icons-register';
 import { AppService } from 'src/app/service/app.service';
-import { DataService } from 'src/app/service/data.service';
 import { ViewportService } from 'src/app/service/viewport.service';
+import { UpdateDialogComponent } from 'src/app/update-dialog.component.';
 
 @Component({
 	selector: 'app-root',
@@ -29,7 +31,8 @@ export class AppComponent implements OnInit {
 		sanitizer: DomSanitizer,
 		appService: AppService,
 		titleService: Title,
-		dataService: DataService,
+		private sw: SwUpdate,
+		private dialog: MatDialog,
 		private location: Location,
 		private router: Router,
 		private overlayRef: OverlayContainer,
@@ -65,9 +68,34 @@ export class AppComponent implements OnInit {
 		this.setTheme();
 	}
 
-	ngOnInit(): void {
+	async ngOnInit(): Promise<void> {
 		// Navigate to current URL in order to trigger a routing event and update the page title
 		this.router.navigateByUrl(this.location.path(true));
+
+		// Handle SW Update
+		this.sw.available.pipe(
+			switchMap(() => this.sw.activateUpdate()),
+			map(_ => this.dialog.open(UpdateDialogComponent)),
+			switchMap(dialogRef => dialogRef.afterClosed()),
+			switchMap(accepted => iif(() => accepted === true,
+				defer(() => this.updateSW()).pipe(
+					delay(5000),
+					tap(() => window.location.reload()),
+					tap(() => console.log('Updating app...'))
+				),
+				defer(() => console.log('Client did not accept the update.'))
+			))
+		).subscribe();
+	}
+
+	updateSW(): void {
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.getRegistrations().then((registrations) => {
+				for (const registration of registrations) {
+					registration.update().then(() => document.location.reload());
+				}
+			});
+		}
 	}
 
 	setTheme(): void {

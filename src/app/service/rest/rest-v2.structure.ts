@@ -152,7 +152,10 @@ export class RestV2 {
 	CreateEmote(data: FormData): Observable<HttpProgressEvent | HttpResponse<DataStructure.Emote>> {
 		return this.restService.createRequest('post', '/emotes', {
 			body: data,
-			auth: true
+			auth: true,
+			headers: {
+				'ngsw-bypass': ''
+			}
 		}, 'v2');
 	}
 

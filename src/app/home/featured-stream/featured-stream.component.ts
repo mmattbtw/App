@@ -24,14 +24,15 @@ export class HomeFeaturedStreamComponent implements OnInit {
 
 	createTwitchPlayer(user: UserStructure): void {
 		import('twitch-player').then(M => {
-			M.TwitchPlayer.FromOptions('twitch-player', {
+			const player = M.TwitchPlayer.FromOptions('twitch-player', {
 				width: 474,
 				height: 354,
 				channel: user.getSnapshot()?.login,
 				autoplay: true,
-				muted: true,
-				parent: ['localhost']
+				muted: false,
+				parent: ['localhost', '7tv.app']
 			});
+			player.setVolume(0.1);
 		});
 	}
 

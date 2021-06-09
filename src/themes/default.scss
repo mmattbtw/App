@@ -1,10 +1,11 @@
+@use '~@angular/material' as mat;
 @mixin global-theming($theme) {
 	& {
 		$background: map-get($theme, background);
 		$foreground: map-get($theme, foreground);
-		$text-color: mat-color($foreground, text);
+		$text-color: mat.get-color-from-palette($foreground, text);
   
-		background-color: mat-color($background, background) !important;
-		color: mat-color($foreground, text);
+		background-color: mat.get-color-from-palette($background, background) !important;
+		color: mat.get-color-from-palette($foreground, text);
 	}
 }

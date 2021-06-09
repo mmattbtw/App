@@ -43,7 +43,7 @@ export class EmoteOverridesDialogComponent implements OnInit, OnDestroy {
 		override_ffz: new FormControl(false),
 		override_twitch_global: new FormControl(false),
 		override_twitch_subscriber: new FormControl(false),
-		override_hidden: new FormControl(false),
+		override_unlisted: new FormControl(false),
 		reason: new FormControl('')
 	});
 	originalValue = '';
@@ -66,8 +66,8 @@ export class EmoteOverridesDialogComponent implements OnInit, OnDestroy {
 			id: 'twitch_subscriber'
 		},
 		{
-			label: 'Unsuitable For Streaming',
-			id: 'hidden',
+			label: 'Unlisted',
+			id: 'unlisted',
 			privileged: true
 		}
 	] as EmoteOverridesDialogComponent.Checkbox[];
@@ -100,7 +100,7 @@ export class EmoteOverridesDialogComponent implements OnInit, OnDestroy {
 				case 'twitch_subscriber':
 					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.OVERRIDE_TWITCH_SUBSCRIBER);
 					break;
-				case 'hidden':
+				case 'unlisted':
 					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.HIDDEN);
 					break;
 				default:
@@ -134,7 +134,7 @@ export class EmoteOverridesDialogComponent implements OnInit, OnDestroy {
 			getControl('twitch_subscriber')?.setValue(true);
 		}
 		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.HIDDEN)) {
-			getControl('hidden')?.setValue(true);
+			getControl('unlisted')?.setValue(true);
 		}
 	}
 

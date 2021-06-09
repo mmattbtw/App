@@ -28,6 +28,11 @@
 	<div class="is-private" *ngIf="emote?.isPrivate() | async" matTooltip="Private Emote">
 		<mat-icon color="warn">lock</mat-icon>
 	</div>
+
+	<!-- Display l ock icon if private -->
+	<div class="is-unlisted" *ngIf="emote?.isUnlisted() | async" matTooltip="Unlisted Emote">
+		<mat-icon color="warn">visibility_off</mat-icon>
+	</div>
 </div>
 
 <!-- Global / Channel Emote Indicator -->

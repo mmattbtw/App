@@ -56,6 +56,15 @@
 		z-index: 1;
 		right: 0;
 		bottom: 0;
+		margin-right: 4px;
+	}
+
+	.is-unlisted {
+		position: absolute;
+		z-index: 1;
+		left: 0;
+		bottom: 0;
+		margin-left: 4px;
 	}
 
 	&.down-border {

@@ -16,10 +16,15 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 
 		<div mat-dialog-content class="d-flex flex-column py-3">
 			<span>
-				This emote has not been confirmed by a moderator.
-				As a result, we cannot guarantee its safety and compliance with guidelines.
-				<span class="text-italic">If you are livestreaming, it is recommended to check this emote off-screen before showing it to viewers!</span>
+				This emote is unlisted. Either it hasn't yet been confirmed by a moderator, or the moderation team
+				chose not to confirm this emote.
+				As a result, we cannot guarantee it is safe to show on a livestream.
+				<p class="mt-2 font-italic">If you are livestreaming, it is recommended to check this emote off-screen before showing it to viewers!</p>
 			</span>
+
+			<mat-checkbox>
+				<mat-label> Don't show again </mat-label>
+			</mat-checkbox>
 		</div>
 
 		<div mat-dialog-actions>

@@ -23,8 +23,13 @@
 				<mat-icon>extension</mat-icon>
 			</button>
 
+			<!-- Set Alias Button -->
+			<button mat-icon-button matTooltip="Set Alias (Coming soon)" [disabled]="true">
+				<mat-icon>label</mat-icon>
+			</button>
+
 			<!-- Report Button -->
-			<button mat-icon-button *ngIf="clientService.hasPermission('CREATE_REPORTS') | async" matTooltip="Report">
+			<button mat-icon-button matTooltip="Report (Coming soon)" [disabled]="true" color="warn">
 				<mat-icon>flag</mat-icon>
 			</button>
 		</div>

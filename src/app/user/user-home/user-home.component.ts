@@ -1,7 +1,7 @@
 
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { asapScheduler, asyncScheduler, BehaviorSubject, from, iif, noop, Observable, of, scheduled } from 'rxjs';
-import { concatAll, filter, map, mapTo, mergeMap, switchMap, take, toArray } from 'rxjs/operators';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { asapScheduler, asyncScheduler, BehaviorSubject, from, iif, noop, Observable, of, scheduled, Subject } from 'rxjs';
+import { concatAll, filter, map, mapTo, mergeMap, switchMap, take, takeUntil, toArray } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { UserComponent } from 'src/app/user/user.component';
@@ -14,7 +14,8 @@ import { UserStructure } from 'src/app/util/user.structure';
 	styleUrls: ['user-home.component.scss']
 })
 
-export class UserHomeComponent implements OnInit {
+export class UserHomeComponent implements OnInit, OnDestroy {
+	private destroyed = new Subject<void>();
 	channelEmotes = new BehaviorSubject<EmoteStructure[]>([]);
 	ownedEmotes = new BehaviorSubject<EmoteStructure[]>([]);
 
@@ -62,7 +63,7 @@ export class UserHomeComponent implements OnInit {
 	ngOnInit(): void {
 		this.user.pipe(
 			filter(user => !!user),
-			take(1),
+			takeUntil(this.destroyed),
 			switchMap(user => scheduled([
 				user.getEmotes().pipe(map(emotes => ({ type: 'channel', emotes }))),
 				user.getOwnedEmotes().pipe(map(emotes => ({ type: 'owned', emotes })))
@@ -77,7 +78,6 @@ export class UserHomeComponent implements OnInit {
 			))
 		).subscribe({
 			next: set => {
-				console.log(set);
 				switch (set.type) {
 					case 'channel':
 						this.channelEmotes.next(set.emotes);
@@ -90,5 +90,10 @@ export class UserHomeComponent implements OnInit {
 			},
 			complete: () => this.cdr.markForCheck()
 		});
+	}
+
+	ngOnDestroy(): void {
+		this.destroyed.next(undefined);
+		this.destroyed.complete();
 	}
 }

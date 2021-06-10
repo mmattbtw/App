@@ -65,6 +65,11 @@ export class NavigationComponent implements OnInit {
 		return environment.production === true;
 	}
 
+	openInNewTab(btn: NavigationComponent.NavButton): void {
+		console.log(btn);
+		window.open(btn.path, '_blank');
+	}
+
 	stopImpersonate(): void {
 		this.clientService.impersonating.next(null);
 		this.clientService.openSnackBar(`You are no longer acting as an editor`, 'OK', {

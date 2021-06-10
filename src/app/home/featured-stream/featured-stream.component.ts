@@ -17,13 +17,18 @@ export class HomeFeaturedStreamComponent implements OnInit {
 
 	createTwitchPlayer(user: UserStructure): void {
 		import('twitch-player').then(M => {
-			M.TwitchPlayer.FromOptions('twitch-player', {
+			const player = M.TwitchPlayer.FromOptions('twitch-player', {
 				width: 474,
 				height: 354,
 				channel: user.getSnapshot()?.login,
 				autoplay: true,
-				muted: true,
+				muted: false,
 				parent: ['localhost']
+			});
+
+			player.addEventListener(M.TwitchPlayerEvent.READY, () => {
+				player.setQuality('360p');
+				player.setVolume(0.001);
 			});
 		});
 	}

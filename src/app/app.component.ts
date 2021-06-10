@@ -75,7 +75,9 @@ export class AppComponent implements OnInit {
 		// Handle SW Update
 		this.sw.available.pipe(
 			switchMap(() => this.sw.activateUpdate()),
-			map(_ => this.dialog.open(UpdateDialogComponent)),
+			map(_ => this.dialog.open(UpdateDialogComponent, {
+				disableClose: true
+			})),
 			switchMap(dialogRef => dialogRef.afterClosed()),
 			switchMap(accepted => iif(() => accepted === true,
 				defer(() => this.updateSW()).pipe(

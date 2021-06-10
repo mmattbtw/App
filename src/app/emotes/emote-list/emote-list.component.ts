@@ -1,8 +1,8 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, Observable, of, noop } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, noop } from 'rxjs';
 import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { AppService } from 'src/app/service/app.service';
@@ -11,7 +11,6 @@ import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { ThemingService } from 'src/app/service/theming.service';
-import { WindowRef } from 'src/app/service/window.service';
 import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 

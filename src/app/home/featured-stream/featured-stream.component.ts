@@ -25,7 +25,11 @@ export class HomeFeaturedStreamComponent implements OnInit {
 				muted: false,
 				parent: ['localhost', '7tv.app']
 			});
-			player.setVolume(0.1);
+
+			player.addEventListener(M.TwitchPlayerEvent.READY, () => {
+				player.setQuality('360p');
+				player.setVolume(0.001);
+			});
 		});
 	}
 

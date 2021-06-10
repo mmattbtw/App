@@ -1,8 +1,8 @@
 import { BitField } from '@typings/src/BitField';
 import { Constants } from '@typings/src/Constants';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { EMPTY, iif, Observable, of, throwError } from 'rxjs';
-import { filter, map, mapTo, mergeAll, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import { EMPTY, from, iif, Observable, of, throwError } from 'rxjs';
+import { defaultIfEmpty, filter, map, mapTo, mergeAll, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -113,6 +113,29 @@ export class EmoteStructure extends Structure<'emote'> {
 		return this.getStatus().pipe(
 			take(1),
 			map(status => !!status ? Constants.Emotes.Status[status] as (keyof typeof Constants.Emotes.Status) : undefined)
+		);
+	}
+
+	/**
+	 * Get the emote's alias, per the client user or the user they are editing
+	 */
+	getAlias(): Observable<string> {
+		if (!this.restService) {
+			return throwError(Error('RestService Not Loaded'));
+		}
+
+		const client = this.restService.clientService;
+		return of(client.isImpersonating).pipe(
+			switchMap(isEditor => iif(() => isEditor === true,
+				client.impersonating.pipe(take(1)),
+				of(client)
+			)),
+			map(usr => usr as UserStructure),
+			switchMap(usr => from(usr.getEmoteAliases())),
+			mergeAll(),
+			filter(alias => alias.emoteID === this.id),
+			map(alias => alias.name),
+			defaultIfEmpty('')
 		);
 	}
 

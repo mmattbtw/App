@@ -46,6 +46,7 @@ export namespace GQLFragments {
 				allowed,
 				denied
 			},
+			emote_aliases,
 			${includeFullEmotes
 				? 'emotes { id, name, status, visibility, width, height },'
 				: ''

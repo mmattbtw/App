@@ -129,6 +129,21 @@ export class EmoteComponent implements OnInit {
 		).subscribe();
 	}
 
+	setAlias(): void {
+		const dialogRef = this.dialog.open(EmoteRenameDialogComponent, {
+			data: {
+				emote: this.emote,
+				happening: `Set Alias In ${this.clientService.impersonating.getValue()?.getSnapshot()?.login ?? this.clientService.getSnapshot()?.login} For`
+			}
+		});
+
+		dialogRef.afterClosed().pipe(
+			filter(data => !!data && data.name !== null),
+			switchMap(data => this.clientService.getActorUser().pipe(map(usr => ({ usr, data })))),
+			switchMap(({ usr, data }) => usr.editChannelEmote(this.emote as EmoteStructure, { alias: data.name }, data.reason))
+		).subscribe();
+	}
+
 	/**
 	 * Bring up a dialog to define overrides for the current emote
 	 */
@@ -186,6 +201,12 @@ export class EmoteComponent implements OnInit {
 		return this.emote?.getStatus().pipe(
 			map(status => status === Constants.Emotes.Status.PENDING || status === Constants.Emotes.Status.DISABLED)
 		) ?? of(false);
+	}
+
+	getAliasName(): Observable<string> {
+		return this.emote?.getAlias().pipe(
+			map(a => a.length > 0 ? `(${a})` : '')
+		) ?? of('');
 	}
 
 	ngOnInit(): void {

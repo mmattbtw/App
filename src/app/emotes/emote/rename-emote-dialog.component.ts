@@ -11,7 +11,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 @Component({
 	selector: 'app-emote-rename-dialog',
 	template: `
-		<h3 mat-dialog-title> Rename {{data.emote.getName() | async}} </h3>
+		<h3 mat-dialog-title> {{data.happening}} {{data.emote.getName() | async}} </h3>
 
 		<form [formGroup]="form" mat-dialog-content class="d-flex flex-column py-3">
 			<mat-form-field appearance="outline">
@@ -59,5 +59,6 @@ export class EmoteRenameDialogComponent implements OnInit, OnDestroy {
 export namespace EmoteRenameDialogComponent {
 	export interface Data {
 		emote: EmoteStructure;
+		happening: string;
 	}
 }

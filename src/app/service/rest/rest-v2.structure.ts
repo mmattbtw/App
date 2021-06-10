@@ -198,6 +198,37 @@ export class RestV2 {
 		);
 	}
 
+	EditChannelEmote(
+		emoteID: string,
+		channelID: string,
+		data: {
+			alias: string;
+		},
+		reason: string
+	): Observable<{ user: DataStructure.TwitchUser }> {
+		return this.gql.query<{ editChannelEmote: DataStructure.TwitchUser; }>({
+			query: `
+				mutation EditChannelEmote($ch: String!, $em: String!, $data: ChannelEmoteInput!, $re: String) {
+					editChannelEmote(channel_id: $ch, emote_id: $em, data: $data, reason: $re) {
+						id,
+						emote_aliases
+					}
+				}
+			`,
+			variables: {
+				ch: channelID,
+				em: emoteID,
+				data,
+				re: reason
+			},
+			auth: true
+		}).pipe(
+			map(res => ({
+				user: res?.body?.data.editChannelEmote as DataStructure.TwitchUser
+			}))
+		);
+	}
+
 	RemoveChannelEmote(emoteID: string, channelID: string, reason = ''): Observable<{ user: DataStructure.TwitchUser }> {
 		return this.gql.query<{ removeChannelEmote: DataStructure.TwitchUser }>({
 			query: `

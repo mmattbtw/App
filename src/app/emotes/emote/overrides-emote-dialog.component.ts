@@ -30,7 +30,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 		</form>
 
 		<div mat-dialog-actions>
-			<button [disabled]="!form.valid" mat-button color="primary" [mat-dialog-close]="computeValue()">CONFIRM</button>
+			<button [disabled]="!form.valid" mat-button color="primary" [mat-dialog-close]="{ value: computeValue(), reason: form.get('reason')?.value }">CONFIRM</button>
 			<button mat-button [mat-dialog-close]="null" >CANCEL</button>
 		</div>
 	`

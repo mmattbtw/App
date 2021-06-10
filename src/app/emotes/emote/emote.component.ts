@@ -129,22 +129,6 @@ export class EmoteComponent implements OnInit {
 		).subscribe();
 	}
 
-	setAlias(): void {
-		const dialogRef = this.dialog.open(EmoteRenameDialogComponent, {
-			data: {
-				emote: this.emote,
-				happening: `Set Alias In ${this.clientService.impersonating.getValue()?.getSnapshot()?.login ?? this.clientService.getSnapshot()?.login} For`,
-				allowEmpty: true
-			}
-		});
-
-		dialogRef.afterClosed().pipe(
-			filter(data => !!data && data.name !== null),
-			switchMap(data => this.clientService.getActorUser().pipe(map(usr => ({ usr, data })))),
-			switchMap(({ usr, data }) => usr.editChannelEmote(this.emote as EmoteStructure, { alias: data.name }, data.reason))
-		).subscribe();
-	}
-
 	/**
 	 * Bring up a dialog to define overrides for the current emote
 	 */
@@ -154,8 +138,8 @@ export class EmoteComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().pipe(
-			filter(data => typeof data === 'number'),
-			switchMap(data => this.emote?.edit({ visibility: data }, data.reason) ?? EMPTY),
+			filter(data => typeof data?.value === 'number'),
+			switchMap(data => this.emote?.edit({ visibility: data.value }, data.reason) ?? EMPTY),
 		).subscribe();
 	}
 

@@ -113,11 +113,11 @@ export class EmoteListService {
 					}
 				});
 
-				dialogRef.afterClosed().pipe(
-					filter(data => !!data && data.name !== null),
+				return dialogRef.afterClosed().pipe(
+					filter(data => typeof data !== 'undefined' && data.name !== null),
 					switchMap(data => this.clientService.getActorUser().pipe(map(usr => ({ usr, data })))),
 					switchMap(({ usr, data }) => usr.editChannelEmote(emote as EmoteStructure, { alias: data.name }, data.reason))
-				).subscribe();
+				);
 			}
 		},
 		{

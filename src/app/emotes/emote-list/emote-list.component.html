@@ -7,8 +7,13 @@
 
 	<!-- Emote List -->
 	<div class="col-12 col-lg-9">
-
 		<div class="col p-2 emotes-list">
+
+			<span class="protip d-flex justify-content-end">
+				<span class="text-success">PRO TIP: </span>
+				<span>Right click cards for quick actions!</span>
+			</span>
+
 			<!-- List Emote Cards -->
 			<div #emotesContainer class="d-flex flex-fill align-items-center" [@emotes]="emotes | async" [appColor]="themingService.bg.lighten(.18)" [isBackground]="true">
 				<div class="d-flex flex-wrap justify-content-center">

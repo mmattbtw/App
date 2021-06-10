@@ -27,7 +27,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 		</form>
 
 		<div mat-dialog-actions>
-			<button [disabled]="!form.valid || form.get('name')?.value === originalValue" mat-button color="primary" [mat-dialog-close]="form.value">RENAME</button>
+			<button [disabled]="(!formEmpty && !form.valid) || form.get('name')?.value === originalValue" mat-button color="primary" [mat-dialog-close]="form.value">RENAME</button>
 			<button mat-button [mat-dialog-close]="null" >CANCEL</button>
 		</div>
 	`
@@ -46,6 +46,10 @@ export class EmoteRenameDialogComponent implements OnInit, OnDestroy {
 		@Inject(MAT_DIALOG_DATA) public data: EmoteRenameDialogComponent.Data
 	) { }
 
+	get formEmpty(): boolean {
+		return this.form.get('name')?.value.length === 0;
+	}
+
 	ngOnInit(): void {
 		this.data.emote.getName().pipe( // Patch input with current emote name
 			take(1),
@@ -59,6 +63,7 @@ export class EmoteRenameDialogComponent implements OnInit, OnDestroy {
 export namespace EmoteRenameDialogComponent {
 	export interface Data {
 		emote: EmoteStructure;
+		allowEmpty: boolean;
 		happening: string;
 	}
 }

@@ -133,7 +133,8 @@ export class EmoteComponent implements OnInit {
 		const dialogRef = this.dialog.open(EmoteRenameDialogComponent, {
 			data: {
 				emote: this.emote,
-				happening: `Set Alias In ${this.clientService.impersonating.getValue()?.getSnapshot()?.login ?? this.clientService.getSnapshot()?.login} For`
+				happening: `Set Alias In ${this.clientService.impersonating.getValue()?.getSnapshot()?.login ?? this.clientService.getSnapshot()?.login} For`,
+				allowEmpty: true
 			}
 		});
 

@@ -30,9 +30,9 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 		trigger('emotes', [
 			transition('* => *', [
 				query('.is-emote-card:enter', [
-					style({ opacity: 0, transform: 'translateX(5em) translateY(-20em)' }),
-					stagger(9, [
-						animate('475ms ease-in-out', keyframes([
+					style({ opacity: 0, transform: 'translateX(2em) translateY(-2em)' }),
+					stagger(-9, [
+						animate('275ms ease-in-out', keyframes([
 							style({ opacity: 0, offset: 0.475 }),
 							style({ opacity: 1, transform: 'none', offset: 1 })
 						]))
@@ -43,7 +43,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 					query('.is-emote-card:not(.selected-emote-card):leave', [
 						style({ opacity: 1 }),
 						stagger(-6, [
-							animate('200ms', style({ transform: 'scale(0)' }))
+							animate('100ms', style({ transform: 'scale(0)' }))
 						])
 					], { optional: true }),
 

@@ -191,6 +191,7 @@ export class EmoteComponent implements OnInit {
 	ngOnInit(): void {
 		const emoteGetter = this.route.snapshot.paramMap.has('emote')
 			? this.restService.v2.GetEmote(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
+				catchError(err => throwError(this.restService.formatError(err))),
 				filter(res => res.emote !== null), // Initiate a new emote structure instance
 
 				tap(res => this.appService.pageTitleAttr.next([ // Update page title

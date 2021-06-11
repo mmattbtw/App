@@ -1,4 +1,4 @@
-<mat-toolbar class="d-flex flex-row justify-content-between" [appColor]="themingService.bg.darken(.4)" [isBackground]="true">
+<mat-toolbar class="d-flex flex-row justify-content-between is-toolbar" [appColor]="themingService.bg.darken(.4)" [isBackground]="true">
 	<!-- App Title -->
 	<div class="d-flex align-items-center" [routerLink]="['/']">		
 		<div class="no-select app-title" [class.is-loading]="appService.loading">
@@ -7,15 +7,16 @@
 				<object data="assets/brand/7tv-light.svg" height="32" type="image/svg+xml"></object>
 			</div>
 		 	
+			<div class="d-none d-sm-flex">
+				<span class="_text">{{appService.title}}</span>
 
-			<span class="_text">{{appService.title}}</span>
-
-			<!-- Environment Indicator -->
-			<span *ngIf="!isEnvironmentProd" class="_dev-stage-text env-offset" [appColor]="themingService.colors.primary._env[envName]">
-				{{envName | uppercase}}.
-			</span>
-			<!-- Dev Stage Indicator -->
-			<span class="text-nowrap _dev-stage-text" [class.d-none]="!appService.devStage">{{appService.devStage}}</span>
+				<!-- Environment Indicator -->
+				<span *ngIf="!isEnvironmentProd" class="_dev-stage-text env-offset" [appColor]="themingService.colors.primary._env[envName]">
+					{{envName | uppercase}}.
+				</span>
+				<!-- Dev Stage Indicator -->
+				<span class="text-nowrap _dev-stage-text" [class.d-none]="!appService.devStage">{{appService.devStage}}</span>
+			</div>
 		</div>
 	</div>
 
@@ -53,7 +54,15 @@
 		</div>
 	</div>
 
-	<div class="align-items-center flex-grow-0 d-none d-md-inline-flex h-100">
+	<!-- Small Buttons -->
+	<div class="align-items-center flex-grow-0 d-inline-flex h-100">
+		<!-- Changelogs -->
+		<div class="d-flex mr-2">
+			<button mat-icon-button color="accent" matTooltip="View Changelog" (click)="openChangelog()">
+				<mat-icon>announcement</mat-icon>
+			</button>
+		</div>
+
 		<div class="d-flex mr-2" *ngIf="clientService.isAnEditor() | async" [ngSwitch]="clientService.isImpersonating">
 			<button mat-icon-button matTooltip="Swap Editor Channel" (click)="impersonate()" *ngSwitchCase="false">
 				<mat-icon>swap_vert</mat-icon>
@@ -64,7 +73,7 @@
 			</button>
 		</div>
 
-		<div class="h-100" [ngSwitch]="clientService.isAuthenticated() | async">
+		<div class="h-100 d-none d-md-block" [ngSwitch]="clientService.isAuthenticated() | async">
 			<!-- Login Button -->
 			<span class="h-100 login-button" *ngSwitchCase="false">
 				<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
@@ -99,20 +108,23 @@
 	</div>
 </mat-toolbar>
 
-<mat-menu #mobileMenu="matMenu" class="d-flex flex-column">
-	<app-user-name></app-user-name>	
-	<mat-divider></mat-divider>
+<mat-menu #mobileMenu="matMenu" class="d-flex px-1 flex-column">
+	<app-user-name *ngIf="clientService.isAuthenticated() | async" [user]="clientService" [matMenuTriggerFor]="personalMenu"></app-user-name>	
+	<mat-divider class="my-2"></mat-divider>
 
-	<div *ngIf="!(clientService.isAuthenticated() | async)">
+	<div *ngIf="!(clientService.isAuthenticated() | async)"> 
 		<app-twitch-button></app-twitch-button>
 	</div>
-	<button mat-menu-item [routerLink]="btn.path" *ngFor="let btn of navButtons" class="d-flex" [style.color]="btn.color">
-		<div [ngSwitch]="btn.svg">
-			<mat-icon [style.color]="btn.color" *ngSwitchCase="true" [svgIcon]="(themingService.getSvgIcon(btn.icon) | async) || ''"></mat-icon>
-			<mat-icon [style.color]="btn.color" *ngSwitchDefault> {{ btn.icon }} </mat-icon>
-		</div>
-		<span>{{ btn.name | uppercase}}</span>
-	</button>
+
+	<div *ngFor="let btn of navButtons">
+		<button mat-menu-item class="d-flex" [style.color]="btn.color" *ngIf="!btn.condition || (btn.condition | async)" [routerLink]="btn.path">
+			<div [ngSwitch]="btn.svg">
+				<mat-icon [style.color]="btn.color" *ngSwitchCase="true" [svgIcon]="(themingService.getSvgIcon(btn.icon) | async) || ''"></mat-icon>
+				<mat-icon [style.color]="btn.color" *ngSwitchDefault> {{ btn.icon }} </mat-icon>
+			</div>
+			<span>{{ btn.name | uppercase}}</span>
+		</button>
+	</div>
 </mat-menu>
 
 <mat-menu #personalMenu="matMenu">

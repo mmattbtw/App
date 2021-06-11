@@ -17,7 +17,9 @@ export const environment = {
 	},
 	platformApiUrl: (platform: 'browser' | 'server', version: 'v1' | 'v2'): string => `http://${environment.api[version].url}`,
 	cdnUrl: 'https://cdn.7tv.app',
-	wsUrl: `ws://localhost:3001`
+	wsUrl: `ws://localhost:3001`,
+
+	disableChangelog: false
 };
 
 /*

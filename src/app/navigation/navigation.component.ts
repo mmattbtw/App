@@ -7,6 +7,7 @@ import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
+import { ChangelogDialogComponent } from 'src/app/util/dialog/changelog/changelog-dialog.component';
 import { UserStructure } from 'src/app/util/user.structure';
 import { environment } from 'src/environments/environment';
 
@@ -52,6 +53,7 @@ export class NavigationComponent implements OnInit {
 	constructor(
 		private dialogRef: MatDialog,
 		private cdr: ChangeDetectorRef,
+		private dialog: MatDialog,
 		public clientService: ClientService,
 		public viewportService: ViewportService,
 		public themingService: ThemingService,
@@ -67,6 +69,12 @@ export class NavigationComponent implements OnInit {
 
 	openInNewTab(btn: NavigationComponent.NavButton): void {
 		window.open(btn.path, '_blank');
+	}
+
+	openChangelog(): void {
+		this.dialog.open(ChangelogDialogComponent, {
+			maxWidth: '64em'
+		});
 	}
 
 	stopImpersonate(): void {

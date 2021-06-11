@@ -12,6 +12,7 @@ import { iconList } from 'src/app/icons-register';
 import { AppService } from 'src/app/service/app.service';
 import { ViewportService } from 'src/app/service/viewport.service';
 import { UpdateDialogComponent } from 'src/app/update-dialog.component.';
+import { ChangelogDialogComponent } from 'src/app/util/dialog/changelog/changelog-dialog.component';
 
 @Component({
 	selector: 'app-root',
@@ -72,9 +73,16 @@ export class AppComponent implements OnInit {
 		// Navigate to current URL in order to trigger a routing event and update the page title
 		this.router.navigateByUrl(this.location.path(true));
 
+		if ('localStorage' in window && !localStorage.getItem('changelog_read')) {
+			this.dialog.open(ChangelogDialogComponent, {
+				disableClose: true
+			});
+		}
+
 		// Handle SW Update
 		this.sw.available.pipe(
 			switchMap(() => this.sw.activateUpdate()),
+			tap(() => localStorage.removeItem('changelog_read')),
 			map(_ => this.dialog.open(UpdateDialogComponent, {
 				disableClose: true
 			})),

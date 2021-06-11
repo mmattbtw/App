@@ -1,0 +1,12 @@
+<div>
+	<h1 mat-dialog-title>Changelog</h1>
+
+	<div mat-dialog-content>
+		<markdown [innerHTML]="(changelogMD | async) || '' | markdown">
+		</markdown>
+	</div>
+
+	<div mat-dialog-actions>
+		<button mat-raised-button color="primary" (click)="dismiss()" class="w-100" mat-dialog-close>OK</button>
+	</div>
+</div>

@@ -1,6 +1,6 @@
 import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { defaultIfEmpty, map, mergeAll, switchMap, take, toArray } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
 import { RestService } from 'src/app/service/rest.service';
@@ -103,6 +103,20 @@ export class UserStructure extends Structure<'user'> {
 		);
 	}
 
+	/**
+	 * Get emote aliases of the user
+	 */
+	getEmoteAliases(): Observable<UserStructure.EmoteAlias[]> {
+		return this.dataOnce().pipe(
+			switchMap(data => from(data?.emote_aliases ?? [])),
+			map(a => ({
+				emoteID: a[0],
+				name: a[1]
+			} as UserStructure.EmoteAlias)),
+			toArray()
+		);
+	}
+
 	getOwnedEmotes(): Observable<EmoteStructure[]> {
 		return this.dataOnce().pipe(
 			map(data => {
@@ -189,6 +203,12 @@ export class UserStructure extends Structure<'user'> {
 		return !this.pushed ? of(value) : withSource;
 	}
 
+	editChannelEmote(emote: EmoteStructure, data: any, reason = ''): Observable<UserStructure> {
+		return this.getRestService().v2.EditChannelEmote(emote.getID(), this.id, data, reason).pipe(
+			map(res => this.pushData(res.user))
+		);
+	}
+
 	ban(expireAt: Date, reason = ''): Observable<void> {
 		return this.getRestService().v2.BanUser(this.id, expireAt, reason);
 	}
@@ -222,4 +242,9 @@ export namespace UserStructure {
 		color: 0,
 		position: 0
 	});
+
+	export interface EmoteAlias {
+		emoteID: string;
+		name: string;
+	}
 }

@@ -11,7 +11,10 @@
 				<mat-spinner [diameter]="16" *ngSwitchCase="true"></mat-spinner>
 			</div>
 			
-			<span class="ml-2"> {{emote?.getName() | async}} </span>
+			<div>
+				<span class="ml-2"> {{emote?.getName() | async}} </span>
+				<span class="text-muted channel-alias" matTooltip="Channel Alias"> {{(getAliasName() | async)}} </span>
+			</div>
 
 			<!-- Rename Button -->
 			<button mat-icon-button (click)="rename()" *ngIf="emote?.canEdit(clientService) | async" matTooltip="Rename">
@@ -21,11 +24,6 @@
 			<!-- Override Rules Button -->
 			<button mat-icon-button (click)="setOverrides()" matTooltip="Override Rules" *ngIf="emote?.canEdit(clientService) | async">
 				<mat-icon>extension</mat-icon>
-			</button>
-
-			<!-- Set Alias Button -->
-			<button mat-icon-button matTooltip="Set Alias (Coming soon)" [disabled]="true">
-				<mat-icon>label</mat-icon>
 			</button>
 
 			<!-- Report Button -->

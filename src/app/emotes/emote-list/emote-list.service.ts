@@ -19,6 +19,7 @@ import { RestService } from 'src/app/service/rest.service';
 import { UserStructure } from 'src/app/util/user.structure';
 import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 import { EmoteStructure } from 'src/app/util/emote.structure';
+import { EmoteRenameDialogComponent } from 'src/app/emotes/emote/rename-emote-dialog.component';
 @Injectable({providedIn: 'root'})
 export class EmoteListService {
 	currentPage = Number(this.localStorage.getItem('el_pagination_page')) ?? 0;
@@ -98,6 +99,26 @@ export class EmoteListService {
 				map(({ isGlobal, hasPermission }) => isGlobal && hasPermission)
 			),
 			click: (emote) => emote.edit({ visibility: BitField.RemoveBits(emote.getVisibility(), DataStructure.Emote.Visibility.GLOBAL) })
+		},
+		{
+			label: 'Set Alias', color: this.themingService.primary.opaquer(-.35).desaturate(.4),
+			icon: 'label',
+			condition: _ => this.clientService.isAuthenticated().pipe(take(1)),
+			click: emote => {
+				const dialogRef = this.dialog.open(EmoteRenameDialogComponent, {
+					data: {
+						emote,
+						happening: `Set Alias In ${this.clientService.impersonating.getValue()?.getSnapshot()?.login ?? this.clientService.getSnapshot()?.login} For`,
+						allowEmpty: true
+					}
+				});
+
+				return dialogRef.afterClosed().pipe(
+					filter(data => typeof data !== 'undefined' && data.name !== null),
+					switchMap(data => this.clientService.getActorUser().pipe(map(usr => ({ usr, data })))),
+					switchMap(({ usr, data }) => usr.editChannelEmote(emote as EmoteStructure, { alias: data.name }, data.reason))
+				);
+			}
 		},
 		{
 			label: 'Transfer Ownership', color: this.themingService.primary.lighten(0.1).negate(),

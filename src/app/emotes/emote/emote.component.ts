@@ -138,8 +138,8 @@ export class EmoteComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().pipe(
-			filter(data => typeof data === 'number'),
-			switchMap(data => this.emote?.edit({ visibility: data }, data.reason) ?? EMPTY),
+			filter(data => typeof data?.value === 'number'),
+			switchMap(data => this.emote?.edit({ visibility: data.value }, data.reason) ?? EMPTY),
 		).subscribe();
 	}
 
@@ -186,6 +186,12 @@ export class EmoteComponent implements OnInit {
 		return this.emote?.getStatus().pipe(
 			map(status => status === Constants.Emotes.Status.PENDING || status === Constants.Emotes.Status.DISABLED)
 		) ?? of(false);
+	}
+
+	getAliasName(): Observable<string> {
+		return this.emote?.getAlias().pipe(
+			map(a => a.length > 0 ? `(${a})` : '')
+		) ?? of('');
 	}
 
 	ngOnInit(): void {

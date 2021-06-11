@@ -27,6 +27,7 @@
 				[routerLinkActive]="['selected']"
 				[routerLinkActiveOptions]="{ exact: true }"
 				[routerLink]="btn.path" *ngIf="!btn.condition || (btn.condition | async)"
+				(auxclick)="$event.button === 1 ? openInNewTab(btn) : null"
 			>
 
 				<!-- Icon -->

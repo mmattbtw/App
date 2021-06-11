@@ -1,9 +1,9 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, Observable, noop } from 'rxjs';
-import { delay, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { Subject, BehaviorSubject, Observable, noop, defer } from 'rxjs';
+import { catchError, defaultIfEmpty, delay, filter, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { AppService } from 'src/app/service/app.service';
 import { DataService } from 'src/app/service/data.service';
@@ -29,7 +29,7 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 		trigger('emotes', [
 			transition('* => *', [
 				query('.is-emote-card:enter', [
-					style({ opacity: 0, transform: 'translateX(2em) translateY(-2em)' }),
+					style({ opacity: 0, transform: 'translateX(2em) translateY(-2em)', position: 'relative' }),
 					stagger(-9, [
 						animate('275ms ease-in-out', keyframes([
 							style({ opacity: 0, offset: 0.475 }),
@@ -63,11 +63,14 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmoteListComponent implements OnInit, AfterViewInit {
+export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 	destroyed = new Subject<any>().pipe(take(1)) as Subject<void>;
 	selecting = new BehaviorSubject(false).pipe(takeUntil(this.destroyed)) as BehaviorSubject<boolean>;
 	emotes = new BehaviorSubject<any>([]).pipe(takeUntil(this.destroyed)) as BehaviorSubject<EmoteStructure[]>;
+	newPage = new Subject();
+	loading = new Subject();
 	totalEmotes = new BehaviorSubject<number>(0);
+	skipNextSearchCheck = false;
 
 	@ViewChild('emotesContainer') emotesContainer: ElementRef<HTMLDivElement> | undefined;
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
@@ -107,24 +110,38 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 
 		this.currentSearchOptions = { ...this.currentSearchOptions, ...change as RestV2.GetEmotesOptions };
 		this.getEmotes(undefined, this.currentSearchOptions).pipe(
-			toArray(),
-			tap(() => this.emotes.next([])),
 			delay(50),
 			tap(emotes => this.emotes.next(emotes))
 		).subscribe({
-			complete: () => this.goToFirstPage()
+			complete: () => {
+				this.skipNextSearchCheck = true;
+				this.goToFirstPage();
+			}
 		});
 	}
 
-	getEmotes(page = 1, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure> {
+	getEmotes(page = 1, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure[]> {
+		this.emotes.next([]);
+		this.newPage.next(page);
+		const timeout = setTimeout(() => this.loading.next(true), 250);
+		const cancelSpinner = () => {
+			this.loading.next(false);
+			clearTimeout(timeout);
+		};
+
 		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, this.pageOptions?.pageSize ?? 16, options ?? this.currentSearchOptions).pipe(
+			takeUntil(this.newPage.pipe(take(1))),
 			tap(res => this.totalEmotes.next(res?.total_estimated_size ?? 0)),
-			tap(() => this.emotes.next([])),
 			delay(200),
 			map(res => res?.emotes ?? []),
 			mergeAll(),
-			map(data => this.dataService.add('emote', data)[0])
-		);
+			map(data => this.dataService.add('emote', data)[0]),
+			toArray(),
+			defaultIfEmpty([] as EmoteStructure[]),
+
+			tap(() => cancelSpinner()),
+			catchError(() => defer(() => cancelSpinner()))
+		) as Observable<EmoteStructure[]>;
 	}
 
 	onOpenCardContextMenu(emote: EmoteStructure): void {
@@ -162,10 +179,19 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 		this.appService.pushTitleAttributes({ name: 'PageIndex', value: `- ${ev.pageIndex + 1}/${Number((ev.length / ev.pageSize).toFixed(0)) + 1}` });
 
 		// Fetch new set of emotes
-		this.getEmotes(ev.pageIndex + 1).pipe(
-			toArray(),
-			tap(emotes => this.emotes.next(emotes))
-		).subscribe();
+		if (!this.skipNextSearchCheck) {
+			this.getEmotes(ev.pageIndex + 1).pipe(
+				tap(emotes => this.emotes.next(emotes))
+			).subscribe();
+		}
+		this.skipNextSearchCheck = false;
+	}
+
+	isEmpty(): Observable<boolean> {
+		return this.totalEmotes.pipe(
+			take(1),
+			map(size => size === 0)
+		);
 	}
 
 	/**
@@ -212,15 +238,15 @@ export class EmoteListComponent implements OnInit, AfterViewInit {
 			this.pageOptions = o;
 		} else {
 			this.getEmotes(1).pipe(
-				toArray(),
 				map(emotes => this.emotes.next(emotes))
 			).subscribe();
 		}
-
-		this.emotes.next(Array(16).fill(new EmoteStructure(this.dataService)));
 	}
 
 	ngOnInit(): void {}
+	ngOnDestroy(): void {
+		this.loading.complete();
+	}
 
 }
 

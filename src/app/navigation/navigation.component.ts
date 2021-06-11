@@ -66,7 +66,6 @@ export class NavigationComponent implements OnInit {
 	}
 
 	openInNewTab(btn: NavigationComponent.NavButton): void {
-		console.log(btn);
 		window.open(btn.path, '_blank');
 	}
 

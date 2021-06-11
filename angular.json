@@ -45,7 +45,11 @@
           },
           "configurations": {
             "dev-sw": {
-              "serviceWorker": true
+              "serviceWorker": true,
+              "aot": true,
+              "verbose": true,
+              "outputHashing": "all",
+              "ngswConfigPath": "ngsw-config.json"
             },
             "production": {
               "fileReplacements": [

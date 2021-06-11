@@ -18,6 +18,8 @@ import { setAppInjector } from 'src/app/service/app.injector';
 import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { UpdateDialogComponent } from 'src/app/update-dialog.component.';
+import { MarkdownModule } from 'ngx-markdown';
+import { ChangelogDialogComponent } from 'src/app/util/dialog/changelog/changelog-dialog.component';
 
 @NgModule({
 	declarations: [
@@ -25,7 +27,8 @@ import { UpdateDialogComponent } from 'src/app/update-dialog.component.';
 		NavigationComponent,
 		EditorDialogComponent,
 		TwitchButtonComponent,
-		UpdateDialogComponent
+		UpdateDialogComponent,
+		ChangelogDialogComponent
 	],
 	imports: [
 		BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -36,6 +39,7 @@ import { UpdateDialogComponent } from 'src/app/update-dialog.component.';
 		UtilModule,
 		NgbModule,
 		MatSnackBarModule,
+		MarkdownModule.forRoot(),
 		ServiceWorkerModule.register('ngsw-worker.js', {
 			enabled: environment.serviceWorker,
 			// Register the ServiceWorker as soon as the app is stable

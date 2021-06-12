@@ -28,7 +28,7 @@
 			<span class="d-flex flex-row browser-downloads">
 				<div *ngFor="let icon of browserIcons">
 					<div class="browser-icon">	
-						<div class="tag" [class.new]="icon.tag?.new" [appColor]="icon.tag?.color" [isBackground]="icon.tag?.new || true">
+						<div *ngIf="!!icon.tag?.label" class="tag" [class.new]="icon.tag?.new" [appColor]="icon.tag?.color" [isBackground]="icon.tag?.new || true">
 							<span>{{icon.tag?.label}}</span>
 						</div>
 		

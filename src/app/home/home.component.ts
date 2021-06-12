@@ -1,9 +1,9 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BehaviorSubject, throwError } from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, mergeAll, switchMap, take, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatterino-dialog.component';
 import { AppService } from 'src/app/service/app.service';
@@ -34,30 +34,27 @@ import { UserStructure } from 'src/app/util/user.structure';
 export class HomeComponent implements OnInit {
 	browserIcons = [
 		{
+			id: 'chrome',
 			icon: 'chrome',
 			click: () => window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank'),
 			tag: {
-				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
-				label: '1.5.2',
-				new: false
+				color: this.themingService.primary.darken(.2).opaquer(1).hex()
 			}
 		},
 		{
+			id: 'firefox',
 			icon: 'firefox',
 			click: () => window.open('https://addons.mozilla.org/en-US/firefox/addon/7tv/', '_blank'),
 			tag: {
-				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
-				label: '1.5.1',
-				new: false
+				color: this.themingService.primary.darken(.2).opaquer(1).hex()
 			}
 		},
 		{
+			id: 'chatterino',
 			icon: 'chatterino',
 			click: () => this.openChatterinoDownloadsMenu(),
 			tag: {
-				color: this.themingService.primary.darken(.2).opaquer(1).hex(),
-				label: '7.3.2',
-				new: false
+				color: this.themingService.primary.darken(.2).opaquer(1).hex()
 			}
 		}
 	] as HomeComponent.BrowserIcon[];
@@ -90,6 +87,7 @@ export class HomeComponent implements OnInit {
 		private restService: RestService,
 		private dataService: DataService,
 		private dialog: MatDialog,
+		private cdr: ChangeDetectorRef,
 		private router: Router,
 		private logger: LoggerService,
 		public themingService: ThemingService,
@@ -127,6 +125,28 @@ export class HomeComponent implements OnInit {
 			error(): void {}
 		});
 
+		// Get extension versions
+		this.restService.createRequest<HomeComponent.WebExtPlatform[]>('get', '/webext').pipe(
+			RestService.onlyResponse(),
+			map(res => res.body as HomeComponent.WebExtPlatform[]),
+			mergeAll(),
+			map(p => ({
+				icon: this.browserIcons.filter(v => v.id === p.id)[0],
+				platform: p
+			})),
+			filter(({ icon }) => !!icon && typeof icon.tag !== 'undefined'),
+			map(({ icon, platform }) => {
+				if (!icon.tag) {
+					icon.tag = { };
+				}
+
+				icon.tag.new = platform.new;
+				icon.tag.label = platform.version_tag;
+			})
+		).subscribe({
+			complete: () => this.cdr.markForCheck()
+		});
+
 		// Get featured channel
 		AppComponent.isBrowser.pipe(
 			take(1),
@@ -156,13 +176,20 @@ export class HomeComponent implements OnInit {
 
 export namespace HomeComponent {
 	export interface BrowserIcon {
+		id: string;
 		icon: string;
 		click: (ev: MouseEvent) => void;
 		tag?: {
-			label: string;
-			color: string;
+			label?: string;
+			color?: string;
 			new?: boolean;
 		};
+	}
+
+	export interface WebExtPlatform {
+		id: string;
+		version_tag: string;
+		new: boolean;
 	}
 
 	export interface FooterOptions {

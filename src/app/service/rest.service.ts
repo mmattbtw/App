@@ -66,7 +66,7 @@ export class RestService {
 		method: RestService.Method,
 		route: string,
 		options?: Partial<RestService.CreateRequestOptions>,
-		apiVersion: RestService.ApiVersion = 'v1'
+		apiVersion: RestService.ApiVersion = 'v2'
 	): Observable<HttpResponse<T> | HttpProgressEvent> {
 		const uri = (route.startsWith('http') ? '' : this.BASE[apiVersion]) + route;
 		const opt = {

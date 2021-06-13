@@ -36,25 +36,55 @@ export class HomeComponent implements OnInit {
 		{
 			id: 'chrome',
 			icon: 'chrome',
+			tooltip: 'Get Extension for Chrome & other browsers',
+			svgIcon: true,
 			click: () => window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank'),
 			tag: {
+				label: '???',
 				color: this.themingService.primary.darken(.2).opaquer(1).hex()
 			}
 		},
 		{
 			id: 'firefox',
 			icon: 'firefox',
+			tooltip: 'Get Add-On for Firefox',
+			svgIcon: true,
 			click: () => window.open('https://addons.mozilla.org/en-US/firefox/addon/7tv/', '_blank'),
 			tag: {
+				label: '???',
 				color: this.themingService.primary.darken(.2).opaquer(1).hex()
 			}
 		},
 		{
 			id: 'chatterino',
 			icon: 'chatterino',
+			tooltip: 'Download Chatterino7 (Desktop Chat App)',
+			svgIcon: true,
 			click: () => this.openChatterinoDownloadsMenu(),
 			tag: {
+				label: '???',
 				color: this.themingService.primary.darken(.2).opaquer(1).hex()
+			}
+		},
+		{
+			id: 'phoneapps',
+			icon: 'smartphone',
+			tooltip: 'Get 7TV-supported mobile apps',
+			disabled: true,
+			svgIcon: false,
+			tag: {
+				label: 'MOBILE',
+				color: this.themingService.accent.darken(.75)
+			}
+		},
+		{
+			id: '3p',
+			icon: 'code',
+			tooltip: 'Stream tools, addons, bots & more by other developers',
+			disabled: true,
+			svgIcon: false,
+			tag: {
+				label: 'MORE'
 			}
 		}
 	] as HomeComponent.BrowserIcon[];
@@ -62,7 +92,7 @@ export class HomeComponent implements OnInit {
 	footerOptions = [
 		{
 			name: 'Contact',
-			path: 'mailto:cupofeggy@gmail.com'
+			path: 'mailto:kathy@7tv.app'
 		},
 		{
 			name: 'GitHub',
@@ -96,9 +126,7 @@ export class HomeComponent implements OnInit {
 	) { }
 
 	openChatterinoDownloadsMenu(): void {
-		this.dialog.open(ChatterinoDialogComponent, {
-
-		});
+		this.dialog.open(ChatterinoDialogComponent);
 	}
 
 	openDiscordInvite(): void {
@@ -178,7 +206,10 @@ export namespace HomeComponent {
 	export interface BrowserIcon {
 		id: string;
 		icon: string;
+		svgIcon: boolean;
+		tooltip?: string;
 		click: (ev: MouseEvent) => void;
+		disabled?: boolean;
 		tag?: {
 			label?: string;
 			color?: string;

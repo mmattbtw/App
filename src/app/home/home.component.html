@@ -25,16 +25,28 @@
 				<span class="mx-1"></span>
 				<span>Downloads</span>
 			</p>
-			<span class="d-flex flex-row browser-downloads">
+			<span class="d-flex flex-row flex-wrap justify-content-center browser-downloads">
 				<div *ngFor="let icon of browserIcons">
-					<div class="browser-icon">	
-						<div *ngIf="!!icon.tag?.label" class="tag" [class.new]="icon.tag?.new" [appColor]="icon.tag?.color" [isBackground]="icon.tag?.new || true">
+					<div class="browser-icon my-2">	
+						<div class="tag" [class.new]="icon.tag?.new" [appColor]="icon.tag?.color" [isBackground]="icon.tag?.new || true">
 							<span>{{icon.tag?.label}}</span>
 						</div>
 		
-						<div [@browserIcon] matRipple [matRippleCentered]="true" [matRippleUnbounded]="true" [matRippleRadius]="8 * 6" class="icon" [matTooltip]="'Install on ' + icon.icon">
-							<mat-icon [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null">
+						<div [@browserIcon]
+							matRipple
+							[matRippleCentered]="true"
+							[matRippleUnbounded]="true"
+							[matRippleRadius]="8 * 6"
+							[class.disabled]="icon.disabled"
+							class="icon d-flex align-items-center"
+							[matTooltip]="icon.tooltip || ''" 
+							[ngSwitch]="icon.svgIcon"
+						>
+							<mat-icon *ngSwitchCase="true" [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null">
 			
+							</mat-icon>
+							<mat-icon *ngSwitchCase="false" [style.transform]="'scale(2)'">
+								{{icon.icon}}
 							</mat-icon>
 						</div>
 					</div>
@@ -86,7 +98,7 @@
 	<span></span>
 	<span></span>
 	<!-- Footer Links -->
-	<div class="d-flex flex-row footer-options justify-content-center mat-elevation-z1" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+	<div class="d-flex flex-row footer-options justify-content-center" [appColor]="themingService.bg.lighten(.05)" [isBackground]="true">
 		<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
 			<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
 			<a *ngIf="!!btn.click" (click)="btn.click()"> {{btn.name}} </a>

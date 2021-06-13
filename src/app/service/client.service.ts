@@ -117,6 +117,7 @@ export class ClientService extends UserStructure {
 	 */
 	logout(): void {
 		this.localStorage.removeItem('access_token');
+		this.token = '';
 		this.cookieService.set('auth', '');
 		this.cookieService.deleteAll('auth');
 		this.data.next(null);

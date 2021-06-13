@@ -16,7 +16,11 @@
 				<div class="menu-trigger" *ngIf="p.menu" [matMenuTriggerFor]="p.menu">
 					<div class="trigger"></div>
 				</div>
-				<mat-icon [style.transform]="'scale(4)'" [svgIcon]="p.icon"></mat-icon>
+
+				<div [ngSwitch]="p.svgIcon">
+					<mat-icon *ngSwitchCase="true" [style.transform]="'scale(4)'" [svgIcon]="p.icon"></mat-icon>
+					<mat-icon *ngSwitchDefault [style.transform]="'scale(4)'"> {{p.icon}} </mat-icon>
+				</div>
 			</div>
 		</div>
 	</div>

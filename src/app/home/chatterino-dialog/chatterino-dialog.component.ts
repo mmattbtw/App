@@ -28,17 +28,25 @@ export class ChatterinoDialogComponent implements OnInit {
 			{
 				label: 'Linux',
 				icon: 'linux',
+				svgIcon: true,
 				url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino-x86_64.AppImage'
 			},
 			{
 				label: 'Windows',
 				icon: 'windows',
+				svgIcon: true,
 				menu: this.installTypeMenu
 			},
 			{
 				label: 'MacOS',
 				icon: 'apple',
+				svgIcon: true,
 				url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.2/Chatterino.dmg'
+			},
+			{
+				label: 'Nightly Build',
+				icon: 'nightlight',
+				url: 'https://github.com/SevenTV/chatterino7/releases/tag/nightly-build'
 			}
 		);
 	}
@@ -48,6 +56,7 @@ export namespace ChatterinoDialogComponent {
 	export interface PlatformIcon {
 		label: string;
 		icon: string;
+		svgIcon?: boolean;
 		url?: string;
 		disabled?: boolean;
 		menu?: MatMenu;

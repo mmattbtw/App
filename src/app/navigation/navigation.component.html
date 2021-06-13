@@ -1,4 +1,4 @@
-<mat-toolbar class="d-flex flex-row justify-content-between is-toolbar" [appColor]="themingService.bg.darken(.4)" [isBackground]="true">
+<mat-toolbar [style.z-index]="100" class="d-flex flex-row justify-content-between is-toolbar" [appColor]="themingService.bg.darken(.4)" [isBackground]="true">
 	<!-- App Title -->
 	<div class="d-flex align-items-center" [routerLink]="['/']">		
 		<div class="no-select app-title" [class.is-loading]="appService.loading">
@@ -42,13 +42,13 @@
 				<div class="mx-1"></div>
 
 				<!-- Name -->
-				<span class="_name d-none d-md-block" [appColor]="btn.color">
+				<span class="_name d-none d-lg-block" [appColor]="btn.color">
 					{{btn.name | uppercase}}
 				</span>
 
 				<!-- Select Indicator -->
 				<div class="_select_indicator" routerLinkActive="selected">
-					<div class="_line"></div>
+					<div [appColor]="btn.color" [isBackground]="true" class="_line"></div>
 				</div>
 			</div>
 		</div>

@@ -22,6 +22,10 @@ const routes: Routes = [
 		loadChildren: () => import('src/app/emotes/emotes.module').then(m => m.EmotesModule)
 	},
 	{
+		path: 'subscribe',
+		loadChildren: () => import('src/app/store/store.module').then(m => m.StoreModule)
+	},
+	{
 		path: 'admin',
 		// canLoad: [AdminGuard],
 		loadChildren: () => import('src/app/admin/admin.module').then(m => m.AdminModule)

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 import { AppService } from 'src/app/service/app.service';
@@ -37,6 +37,16 @@ export class NavigationComponent implements OnInit {
 			path: '/emotes',
 			icon: 'zulul',
 			svg: true
+		},
+		{
+			name: 'subscribe',
+			path: '/subscribe',
+			color: '#D2B031',
+			icon: 'shopping_cart',
+			condition: of(undefined).pipe(
+				delay(0),
+				map(() => window.location.pathname === '/subscribe')
+			)
 		},
 		{
 			name: 'admin',
@@ -102,7 +112,6 @@ export class NavigationComponent implements OnInit {
 	}
 
 	ngOnInit(): void {}
-
 }
 
 export namespace NavigationComponent {

@@ -1,9 +1,9 @@
 import { trigger, transition, query, style, stagger, animate, keyframes, group, state } from '@angular/animations';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, Observable, noop, defer } from 'rxjs';
-import { catchError, defaultIfEmpty, delay, filter, map, mergeAll, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { Subject, BehaviorSubject, Observable, noop, defer, timer } from 'rxjs';
+import { catchError, defaultIfEmpty, delay, filter, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { AppService } from 'src/app/service/app.service';
 import { DataService } from 'src/app/service/data.service';
@@ -70,6 +70,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 	newPage = new Subject();
 	loading = new Subject();
 	totalEmotes = new BehaviorSubject<number>(0);
+	resized = new Subject<[number, number]>();
 	skipNextSearchCheck = false;
 
 	@ViewChild('emotesContainer') emotesContainer: ElementRef<HTMLDivElement> | undefined;
@@ -123,13 +124,14 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 	getEmotes(page = 1, options?: Partial<RestV2.GetEmotesOptions>): Observable<EmoteStructure[]> {
 		this.emotes.next([]);
 		this.newPage.next(page);
-		const timeout = setTimeout(() => this.loading.next(true), 250);
+		const timeout = setTimeout(() => this.loading.next(true), 1000);
 		const cancelSpinner = () => {
 			this.loading.next(false);
 			clearTimeout(timeout);
 		};
 
-		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, this.pageOptions?.pageSize ?? 16, options ?? this.currentSearchOptions).pipe(
+		const size = this.calculateSizedRows();
+		return this.restService.v2.SearchEmotes((this.pageOptions?.page ?? (page - 1)) + 1, size ?? 16, options ?? this.currentSearchOptions).pipe(
 			takeUntil(this.newPage.pipe(take(1))),
 			tap(res => this.totalEmotes.next(res?.total_estimated_size ?? 0)),
 			delay(200),
@@ -207,13 +209,27 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 		const marginBuffer = 28; // The margin _in pixels between each card
 		const cardSize = 137; // The size of the cards in pixels
 		const width = this.emotesContainer.nativeElement.scrollWidth - 32; // The width of emotes container
-		const height = this.emotesContainer.nativeElement.scrollHeight - 16; // The height of the emotes container
+		const height = this.emotesContainer.nativeElement.clientHeight - 16; // The height of the emotes container
 
 		const rows = Math.floor((width / (cardSize + marginBuffer))); // The calculated amount of rows
 		const columns = Math.floor(height / (cardSize + marginBuffer)); // The calculated amount of columns
 
 		// Return the result of rows multiplied by columns
 		return rows * columns;
+	}
+
+	@HostListener('window:resize', ['$event'])
+	onWindowResize(ev: Event): void {
+		const size = this.calculateSizedRows();
+		this.pageSize.next(size ?? 0);
+
+		this.resized.next([0, 0]);
+		timer(1000).pipe(
+			takeUntil(this.resized.pipe(take(1))),
+
+			switchMap(() => this.getEmotes(this.pageOptions?.page, {})),
+			tap(emotes => this.emotes.next(emotes))
+		).subscribe();
 	}
 
 	ngAfterViewInit(): void {

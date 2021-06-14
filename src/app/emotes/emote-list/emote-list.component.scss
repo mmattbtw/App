@@ -2,7 +2,6 @@
 
 .emote-list {
     display: flex;
-	height: 100%;
 	
 	.emotes-list {
 		display: flex;
@@ -24,4 +23,8 @@
 	.protip {
 		font-size: .69em;
 	}
+}
+
+.emotes-container {
+	height: calc(100vh - 240px);
 }

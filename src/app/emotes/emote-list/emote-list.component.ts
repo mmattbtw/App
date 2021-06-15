@@ -110,13 +110,13 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.appService.pushTitleAttributes({ name: 'SearchOptions', value: `- ${queryString}` });
 
 		this.currentSearchOptions = { ...this.currentSearchOptions, ...change as RestV2.GetEmotesOptions };
+		this.goToFirstPage();
 		this.getEmotes(undefined, this.currentSearchOptions).pipe(
 			delay(50),
 			tap(emotes => this.emotes.next(emotes))
 		).subscribe({
 			complete: () => {
 				this.skipNextSearchCheck = true;
-				this.goToFirstPage();
 			}
 		});
 	}

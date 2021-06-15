@@ -42,6 +42,10 @@ $logosize: 18vw;
 			p {
 				line-height: 1em;
 				font-size: 2.5em;
+				text-shadow: 1px 1px rgb(32, 32, 32);
+			}
+			span {
+				text-shadow: 1px 1px rgb(32, 32, 32);
 			}
 		}
 	}
@@ -49,18 +53,16 @@ $logosize: 18vw;
 	.store-heading-gradient {
 		z-index: 1 !important;
 		position: absolute;
-		top: 24px;
+		top: -130px;
 		left: -164px;
-		min-height: 24vw;
-		max-height: 25em;
+		height: 28em;
 		padding-bottom: 18em;
 		width: 200%;
-		transform: rotate(5deg);
+		transform: rotate(-2deg);
 
-		background: linear-gradient(-45deg, #cca411, #d3c07ab4);
+		background: linear-gradient(-22.5deg, #cca411, #f7f7f7b4, #cca411);
 		background-size: 400% 400%;
-		animation: gradient 8s ease infinite;
-
+		animation: gradient 14s ease infinite;
 
 		@keyframes gradient {
 			0% {

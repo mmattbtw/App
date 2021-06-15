@@ -6,7 +6,14 @@ const routes: Routes = [
 	{
 		path: '',
 		component: StoreComponent,
-		data: { title: 'Store' }
+		data: { title: 'Store' },
+
+		children: [
+			{
+				path: '',
+				data: { title: 'Subscribe' }
+			}
+		]
 	}
 ];
 

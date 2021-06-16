@@ -6,6 +6,16 @@
 				<div class="mx-1"></div>
 				<span> {{entry?.getDescription()}} </span>
 			</mat-panel-title>
+
+			<mat-panel-description>
+				{{entry?.getTimestamp() | async}}
+			</mat-panel-description>
 		</mat-expansion-panel-header>
+
+		<div class="audit-changes">
+			<h4>Changes</h4>
+			
+			
+		</div>
 	</mat-expansion-panel>
 </div>

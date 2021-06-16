@@ -126,20 +126,8 @@
 		<div class="section-title">Recent Activity</div>
 		<div class="section-content">
 			<!-- Display entries -->
-			<div class="audit-entry" *ngFor="let entry of audit | async">
-				<div class="d-flex flex-wrap align-items-center my-1" *ngFor="let change of (entry.getChanges() | async)">
-					<app-user-name [user]="entry.actionUser"></app-user-name>
-					<div class="ml-1"></div>
-					<span class="mx-1">set</span>
-					<span class="mr-1">{{change.key.charAt(0).toUpperCase() + change.key.slice(1)}} </span>
-					<span class="text-danger"> {{change.getOldValue()}} </span>
-					<mat-icon class="mx-1" [inline]="true">arrow_forward</mat-icon>
-					<span class="text-success"> {{change.getNewValue()}} </span>
-
-					<span class="ml-2" *ngIf="!!(entry.getReason() | async)">
-						for {{entry.getReason() | async}}
-					</span>
-				</div>
+			<div class="audit-entry my-1" *ngFor="let entry of audit | async">
+				<app-audit-log-entry [entry]="entry"></app-audit-log-entry>
 			</div>
 		</div>
 	</div>

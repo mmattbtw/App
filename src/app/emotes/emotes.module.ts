@@ -19,6 +19,7 @@ import { EmoteChannelCardComponent } from 'src/app/emotes/emote/emote-channel-ca
 import { UtilModule } from 'src/app/util/util.module';
 import { EmoteWarningDialogComponent } from 'src/app/emotes/emote/warning-dialog.component';
 import { TOSDialogComponent } from 'src/app/emotes/emote-create/tos-dialog/tos-dialog.component';
+import { AdminModule } from 'src/app/admin/admin.module';
 
 @NgModule({
 	imports: [
@@ -26,7 +27,8 @@ import { TOSDialogComponent } from 'src/app/emotes/emote-create/tos-dialog/tos-d
 		EmotesRouterModule,
 		MaterialModule,
 		ReactiveFormsModule,
-		UtilModule
+		UtilModule,
+		AdminModule
 	],
 	exports: [
 		EmoteCardComponent

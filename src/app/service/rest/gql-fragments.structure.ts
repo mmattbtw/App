@@ -23,7 +23,7 @@ export namespace GQLFragments {
 			mime,
 			status,
 			tags,
-			${includeActivity ? 'audit_entries' : ''}
+			${includeActivity ? `audit_entries { ${ShorthandAudit()} }` : ''}
 		}
 	`;
 
@@ -37,6 +37,24 @@ export namespace GQLFragments {
 	export const ShortHandRole = () => `
 		role {
 			id, name, color, allowed, denied, position
+		}
+	`;
+
+	export const ShorthandAudit = () => `
+		id,
+		type,
+		timestamp,
+		action_user_id,
+		action_user {
+			${ShorthandPartialUser()}
+		},
+		changes {
+			key, values
+		},
+		target {
+			type,
+			data,
+			id
 		}
 	`;
 
@@ -81,27 +99,7 @@ export namespace GQLFragments {
 			broadcaster_type,
 			profile_image_url,
 			created_at,
-			${includeAuditEntries ?
-			`
-				audit_entries {
-					id,
-					type,
-					timestamp,
-					action_user_id,
-					action_user {
-						${ShorthandPartialUser()}
-					},
-					changes {
-						key, values
-					},
-					target {
-						type,
-						data,
-						id
-					}
-				}
-			` : ''
-			}
+			${includeAuditEntries ? `audit_entries { ${ShorthandAudit()} }`  : ''}
 		}
 	`;
 }

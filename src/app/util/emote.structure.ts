@@ -172,23 +172,8 @@ export class EmoteStructure extends Structure<'emote'> {
 	getAuditActivity(): Observable<AuditLogEntry> {
 		return this.dataOnce().pipe(
 			take(1),
-			switchMap(emote => (emote?.audit_entries as unknown as string[] ?? []) as string[]),
-			map(x => JSON.parse(x) as DataStructure.AuditLog.Entry),
-			mergeMap(entry => of(this.dataService.get('user', { id: String(entry.action_user) })).pipe(
-				switchMap(users => iif(() => users.length > 0,
-					of(users[0]),
-					this.getRestService().v2.GetUser(String(entry.action_user), {}).pipe(
-						map(res => this.dataService.add('user', res.user)[0])
-					)
-				)),
-				map(usr => {
-					const e = this.dataService.add('audit', entry)[0];
-					e.setActionUser(usr);
-
-					return e;
-				})
-			)),
-			filter(entry => typeof entry !== 'string')
+			switchMap(emote => emote?.audit_entries ?? []),
+			map(e => this.dataService.add('audit', e)[0])
 		);
 	}
 

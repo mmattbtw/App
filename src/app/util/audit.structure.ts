@@ -1,4 +1,5 @@
 import { DataStructure } from '@typings/typings/DataStructure';
+import { format } from 'date-fns';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
@@ -51,7 +52,6 @@ export class AuditLogEntry extends Structure<'audit'> {
 			} catch (e) { console.error('Could not parse audit target:', e); }
 
 			if (!!tgt) {
-				console.log('hi', tgt, data.target.type);
 				switch (data.target.type) {
 					case 'users':
 						this.targetUser = this.dataService.add('user', tgt)[0];
@@ -63,6 +63,11 @@ export class AuditLogEntry extends Structure<'audit'> {
 			}
 		}
 
+		this.pushed = true;
+		this.snapshot = data;
+		if (!!data.id) {
+			this.data.next(data);
+		}
 		return this;
 	}
 
@@ -70,6 +75,9 @@ export class AuditLogEntry extends Structure<'audit'> {
 		let value = 'Error: Unknown Action Type';
 
 		switch (this.type) {
+			case DataStructure.AuditLog.Entry.Type.EMOTE_EDIT:
+				value = 'edited this emote';
+				break;
 			case DataStructure.AuditLog.Entry.Type.USER_CHANNEL_EMOTE_ADD:
 				value = `added an emote`;
 				break;
@@ -110,6 +118,12 @@ export class AuditLogEntry extends Structure<'audit'> {
 		return this.actionUser;
 	}
 
+	getTimestamp(): Observable<string> {
+		return this.data.pipe(
+			map(d => new Date(d?.timestamp ?? Date.now())),
+			map(date => format(date, 'dd/mm/yy hh:mm'))
+		);
+	}
 	getReason(): Observable<string> {
 		return this.data.pipe(
 			map(d => d?.reason ?? '')

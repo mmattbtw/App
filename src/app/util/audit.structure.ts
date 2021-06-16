@@ -1,14 +1,171 @@
 import { DataStructure } from '@typings/typings/DataStructure';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AppInjector } from 'src/app/service/app.injector';
+import { DataService } from 'src/app/service/data.service';
+import { RestService } from 'src/app/service/rest.service';
+import { Structure } from 'src/app/util/abstract.structure';
+import { EmoteStructure } from 'src/app/util/emote.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
-export class AuditLogEntry {
-	actionUser: UserStructure | null = null;
+export class AuditLogEntry extends Structure<'audit'> {
+	restService: RestService | null = null;
 
-	constructor(public data: DataStructure.AuditLog.Entry) {}
+	id = '';
+	type = -1;
+	actionUser: UserStructure | null = null;
+	targetUser: UserStructure | null = null;
+	targetEmote: EmoteStructure | null = null;
+
+	actionUserID = '';
+	targetType = '';
+	targetID = '';
+
+	changes = [] as AuditLogEntry.Change[];
+
+	constructor(dataService: DataService) {
+		super(dataService);
+	}
+
+	pushData(data: DataStructure.AuditLog.Entry): this {
+		this.id = String(data._id);
+		this.type = data.type;
+		this.actionUserID = data.action_user_id;
+		this.targetType = data.target?.type ?? '';
+		this.targetID = typeof data.target?.id === 'string' ? data.target.id : '';
+		if (Array.isArray(data.changes)) {
+			this.changes = [];
+			for (const c of data.changes) {
+				this.changes.push(new AuditLogEntry.Change(c));
+			}
+
+		}
+		if (!!data.action_user) {
+			this.actionUser = this.dataService.add('user', data.action_user)[0];
+		}
+
+		if (!!data.target) {
+			let tgt: any;
+			try {
+				tgt = JSON.parse(data.target.data);
+			} catch (e) { console.error('Could not parse audit target:', e); }
+
+			if (!!tgt) {
+				console.log('hi', tgt, data.target.type);
+				switch (data.target.type) {
+					case 'users':
+						this.targetUser = this.dataService.add('user', tgt)[0];
+						break;
+					case 'emotes':
+						this.targetEmote = this.dataService.add('emote', tgt)[0];
+						break;
+				}
+			}
+		}
+
+		return this;
+	}
+
+	getDescription(): string {
+		let value = 'Error: Unknown Action Type';
+
+		switch (this.type) {
+			case DataStructure.AuditLog.Entry.Type.USER_CHANNEL_EMOTE_ADD:
+				value = `added an emote`;
+				break;
+
+			case DataStructure.AuditLog.Entry.Type.USER_CHANNEL_EMOTE_REMOVE:
+				value = `removed an emote`;
+				break;
+			case DataStructure.AuditLog.Entry.Type.USER_CHANNEL_EDITOR_ADD:
+				value = 'added a user as an editor';
+				break;
+			case DataStructure.AuditLog.Entry.Type.USER_CHANNEL_EDITOR_REMOVE:
+				value = 'revoked a user\'s editor privileges';
+				break;
+			default:
+				break;
+		}
+
+		return value;
+	}
+
+	resolveUser(id: string): Observable<UserStructure> {
+		return this.getRestService().v2.GetUser(id).pipe(
+			map(usr => this.dataService.add('user', usr.user)[0])
+		);
+	}
+
+	private createMention(objectID: string, tag: string): string {
+		return `${objectID}=${tag.toUpperCase()}%%`;
+	}
 
 	setActionUser(user: UserStructure): this {
 		this.actionUser = user;
 
 		return this;
 	}
+
+	getActionUser(): UserStructure | null {
+		return this.actionUser;
+	}
+
+	getReason(): Observable<string> {
+		return this.data.pipe(
+			map(d => d?.reason ?? '')
+		);
+	}
+
+	getChanges(): Observable<AuditLogEntry.Change[]> {
+		return of(this.changes);
+	}
+
+	getSnapshot(): DataStructure.AuditLog.Entry {
+		return {} as any;
+	}
+
+	getRestService(): RestService {
+		if (!this.restService) {
+			try {
+				this.restService = AppInjector.get(RestService);
+			} catch (_) {}
+		}
+
+		return this.restService as any;
+	}
+}
+
+export namespace AuditLogEntry {
+	export interface Mention {
+		type: string;
+		id: string;
+	}
+
+	export class Change {
+		key = '';
+		values: any[] = [];
+
+		constructor(readonly change: DataStructure.AuditLog.Entry.Change) {
+			this.key = change.key;
+
+			this.values = [
+				JSON.parse(change.values?.[0] || '{}'),
+				JSON.parse(change.values?.[1] || '{}')
+			];
+		}
+
+		getOldValue(): string {
+			return this.values[0];
+		}
+
+		getNewValue(): string {
+			return this.values[1];
+		}
+	}
+
+	export const USER_PLACEHODLER = '%%USR';
+	export const USER_MENTION = /([0-9a-z]{24})(?==USER%%)/g;
+
+	export const EMOTE_PLACEHOLDER = '%%EMOTE';
+	export const EMOTE_MENTION = /([0-9a-z]{24})(?==EMOTE%%)/g;
 }

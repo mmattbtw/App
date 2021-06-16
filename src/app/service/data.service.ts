@@ -3,6 +3,7 @@
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Structure as AbstractStructure } from 'src/app/util/abstract.structure';
+import { AuditLogEntry } from 'src/app/util/audit.structure';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import { RoleStructure } from 'src/app/util/role.structure';
 import { UserStructure } from 'src/app/util/user.structure';
@@ -12,8 +13,9 @@ export class DataService {
 	private store = {
 		user: new Map<string, UserStructure>(),
 		emote: new Map<string, EmoteStructure>(),
-		role: new Map<string, RoleStructure>()
-	} as { [key in DataService.StructureType]: Map<string, UserStructure | EmoteStructure | RoleStructure> };
+		role: new Map<string, RoleStructure>(),
+		audit: new Map<string, AuditLogEntry>()
+	} as { [key in DataService.StructureType]: Map<string, UserStructure | EmoteStructure | RoleStructure | AuditLogEntry> };
 
 	constructor() { }
 
@@ -86,23 +88,26 @@ export class DataService {
 }
 
 export namespace DataService {
-	export type StructureType = 'user' | 'emote' | 'role';
+	export type StructureType = 'user' | 'emote' | 'role' | 'audit';
 
 	export type Structure<T extends StructureType> = {
 		user: UserStructure;
 		emote: EmoteStructure;
 		role: RoleStructure;
+		audit: AuditLogEntry;
 	}[T];
 
 	export type StructureData<T extends StructureType> = {
 		user: DataStructure.TwitchUser;
 		emote: DataStructure.Emote;
 		role: DataStructure.Role;
+		audit: DataStructure.AuditLog.Entry;
 	}[T];
 
 	export const StructureClass = {
 		user: UserStructure,
 		emote: EmoteStructure,
-		role: RoleStructure
+		role: RoleStructure,
+		audit: AuditLogEntry
 	};
 }

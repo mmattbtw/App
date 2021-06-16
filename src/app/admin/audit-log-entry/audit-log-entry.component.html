@@ -1,0 +1,11 @@
+<div class="audit-log-entry">
+	<mat-expansion-panel>
+		<mat-expansion-panel-header>
+			<mat-panel-title class="d-flex align-items-center" *ngIf="clientService.isAuthenticated() | async">
+				<app-user-name [user]="entry?.getActionUser()"></app-user-name>
+				<div class="mx-1"></div>
+				<span> {{entry?.getDescription()}} </span>
+			</mat-panel-title>
+		</mat-expansion-panel-header>
+	</mat-expansion-panel>
+</div>

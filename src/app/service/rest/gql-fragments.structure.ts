@@ -34,7 +34,19 @@ export namespace GQLFragments {
 		emote_ids
 	`;
 
-	export const FullUser = (includeFullEmotes = false, includeOwnedEmotes = false, includeEditors = false, includeEditorIn = false) => `
+	export const ShortHandRole = () => `
+		role {
+			id, name, color, allowed, denied, position
+		}
+	`;
+
+	export const FullUser = (
+		includeFullEmotes = false,
+		includeOwnedEmotes = false,
+		includeEditors = false,
+		includeEditorIn = false,
+		includeAuditEntries = false
+	) => `
 		fragment FullUser on User {
 			id,  email, display_name, login,
 			description,
@@ -68,7 +80,28 @@ export namespace GQLFragments {
 			twitch_id,
 			broadcaster_type,
 			profile_image_url,
-			created_at
+			created_at,
+			${includeAuditEntries ?
+			`
+				audit_entries {
+					id,
+					type,
+					timestamp,
+					action_user_id,
+					action_user {
+						${ShorthandPartialUser()}
+					},
+					changes {
+						key, values
+					},
+					target {
+						type,
+						data,
+						id
+					}
+				}
+			` : ''
+			}
 		}
 	`;
 }

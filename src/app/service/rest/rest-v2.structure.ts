@@ -16,15 +16,17 @@ export class RestV2 {
 	GetUser(id: string, opt?: Partial<RestV2.GetUserOptions>): Observable<{ user: DataStructure.TwitchUser }> {
 		return this.gql.query<{ user: DataStructure.TwitchUser }>({
 			query: `
-				{
-					user(id: "${id}") {
+				query GetUser($id: String!) {
+					user(id: $id) {
 						...FullUser
 					}
 				}
 
-				${GQLFragments.FullUser(opt?.includeFullEmotes, opt?.includeOwnedEmotes, opt?.includeEditors, opt?.includeEditorIn)}
+				${GQLFragments.FullUser(opt?.includeFullEmotes, opt?.includeOwnedEmotes, opt?.includeEditors, opt?.includeEditorIn, opt?.includeAuditLogs)}
 			`,
-			variables: {},
+			variables: {
+				id
+			},
 			auth: true
 		}).pipe(
 			map(res => ({
@@ -357,6 +359,7 @@ export namespace RestV2 {
 		includeEditorIn: boolean;
 		includeFullEmotes: boolean;
 		includeOwnedEmotes: boolean;
+		includeAuditLogs: boolean;
 	}
 
 	export interface GetEmotesOptions {

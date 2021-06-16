@@ -9,6 +9,7 @@ import { MaterialModule } from 'src/app/material.module';
 import { AdminComponent } from 'src/app/admin/admin.component';
 import { AdminModQueueComponent } from 'src/app/admin/mod-queue/admin-mod-queue.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AuditLogEntryComponent } from 'src/app/admin/audit-log-entry/audit-log-entry.component';
 
 
 @NgModule({
@@ -16,7 +17,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 		AdminComponent,
 		AdminUsersComponent,
 		AdminAuditLogsComponent,
-		AdminModQueueComponent
+		AdminModQueueComponent,
+
+		AuditLogEntryComponent
 	],
 	imports: [
 		CommonModule,
@@ -24,6 +27,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 		ReactiveFormsModule,
 		MaterialModule,
 		AdminRoutingModule
+	],
+	exports: [
+		AuditLogEntryComponent
 	]
 })
 export class AdminModule { }

@@ -182,7 +182,7 @@ export class EmoteStructure extends Structure<'emote'> {
 					)
 				)),
 				map(usr => {
-					const e = new AuditLogEntry(entry);
+					const e = this.dataService.add('audit', entry)[0];
 					e.setActionUser(usr);
 
 					return e;

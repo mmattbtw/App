@@ -1,23 +1,27 @@
 
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { asapScheduler, asyncScheduler, BehaviorSubject, from, iif, noop, Observable, of, scheduled, Subject } from 'rxjs';
-import { concatAll, filter, map, mapTo, mergeMap, switchMap, take, takeUntil, toArray } from 'rxjs/operators';
+import { concatAll, filter, map, mapTo, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { UserComponent } from 'src/app/user/user.component';
+import { AuditLogEntry } from 'src/app/util/audit.structure';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
 @Component({
 	selector: 'app-user-home',
 	templateUrl: 'user-home.component.html',
-	styleUrls: ['user-home.component.scss']
+	styleUrls: ['user-home.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class UserHomeComponent implements OnInit, OnDestroy {
 	private destroyed = new Subject<void>();
 	channelEmotes = new BehaviorSubject<EmoteStructure[]>([]);
 	ownedEmotes = new BehaviorSubject<EmoteStructure[]>([]);
+
+	auditEntries = [] as AuditLogEntry[];
 
 	blurred = new Set<string>();
 
@@ -64,6 +68,11 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 		this.user.pipe(
 			filter(user => !!user),
 			takeUntil(this.destroyed),
+
+			switchMap(user => user.getAuditEntries().pipe(
+				tap(entries => this.auditEntries = entries),
+				mapTo(user)
+			)),
 			switchMap(user => scheduled([
 				user.getEmotes().pipe(map(emotes => ({ type: 'channel', emotes }))),
 				user.getOwnedEmotes().pipe(map(emotes => ({ type: 'owned', emotes })))

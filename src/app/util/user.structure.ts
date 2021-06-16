@@ -1,10 +1,11 @@
 import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { from, Observable, of } from 'rxjs';
-import { defaultIfEmpty, map, mergeAll, switchMap, take, toArray } from 'rxjs/operators';
+import { defaultIfEmpty, filter, map, mergeAll, pluck, switchMap, take, toArray } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
 import { RestService } from 'src/app/service/rest.service';
 import { Structure } from 'src/app/util/abstract.structure';
+import { AuditLogEntry } from 'src/app/util/audit.structure';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import { RoleStructure } from 'src/app/util/role.structure';
 
@@ -12,6 +13,8 @@ export class UserStructure extends Structure<'user'> {
 	debugID = Math.random().toString(36).substring(7);
 	id = '';
 	restService: RestService | null = null;
+
+	private auditEntries = [] as AuditLogEntry[];
 
 	/**
 	 * Push data onto this user.
@@ -34,6 +37,9 @@ export class UserStructure extends Structure<'user'> {
 		}
 		if (Array.isArray(data.editors)) {
 			this.dataService.add('user', ...data.editors);
+		}
+		if (Array.isArray(data.audit_entries)) {
+			this.dataService.add('audit', ...data.audit_entries);
 		}
 		const newData = { ...this.data.getValue() } as DataStructure.TwitchUser;
 		for (const k of Object.keys(data)) {
@@ -171,6 +177,17 @@ export class UserStructure extends Structure<'user'> {
 		return this.getEditorIn().pipe(
 			take(1),
 			map(a => a.length > 0)
+		);
+	}
+
+	getAuditEntries(): Observable<AuditLogEntry[]> {
+		return this.dataOnce().pipe(
+			switchMap(data => data?.audit_entries ?? []),
+			pluck('id'),
+			map(entryID => this.dataService.get('audit', { id: entryID } )),
+			map(a => a[0]),
+			filter(e => !!e),
+			toArray()
 		);
 	}
 

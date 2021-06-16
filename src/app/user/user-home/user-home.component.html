@@ -1,5 +1,4 @@
 <div class="user-home">
-
 	<!-- User's Channel Emotes -->
 	<div class="heading" [appColor]="themingService.primary.darken(.075)" [isBackground]="true">
 		Emotes Enabled ({{(channelEmotes | async)?.length || 0}}/200)
@@ -21,10 +20,21 @@
 			<app-emote-card [blur]="isBlurred(emote)" [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
 		</div>
 	</div>
+
+	<mat-divider class="my-3"></mat-divider>
+
+	<div class="heading" [appColor]="themingService.bg.lighten(.3)" [isBackground]="true">
+		Recent Activity
+	</div>
+	<div>
+		<div class="my-1" *ngFor="let entry of auditEntries">
+			<app-audit-log-entry [entry]="entry"></app-audit-log-entry>
+		</div>
+	</div>
 </div>
 
 <ng-template #contextblock let-headerName="headerName">
-    <div class="ctx-heading mat-elevation-z2" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+    <div class="ctx-heading mat-elevation-z2" [appColor]="themingService.accent" [isBackground]="true">
         {{ headerName }}
     </div>
 </ng-template>

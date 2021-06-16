@@ -16,7 +16,15 @@ export class AdminGuard extends AuthGuard implements CanLoad {
 		super(clientService);
 	}
 
+	canActivate(): Observable<boolean> {
+		return this.runGuard();
+	}
+
 	canLoad(): Observable<boolean> {
+		return this.runGuard();
+	}
+
+	private runGuard(): Observable<boolean> {
 		return scheduled([
 			super.canLoad(), // Client is authenticated?
 

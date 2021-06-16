@@ -8,6 +8,7 @@ import { UtilModule } from 'src/app/util/util.module';
 import { UserHomeComponent } from 'src/app/user/user-home/user-home.component';
 import { EmotesModule } from 'src/app/emotes/emotes.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AdminModule } from 'src/app/admin/admin.module';
 
 @NgModule({
 	declarations: [
@@ -20,7 +21,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 		ReactiveFormsModule,
 		EmotesModule,
 		MaterialModule,
-		UtilModule
+		UtilModule,
+		AdminModule
 	]
 })
 export class UserModule { }

@@ -18,6 +18,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { ColorDirective } from 'src/app/directive/color.directive';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatExpansionModule } from '@angular/material/expansion';
+
 const modules = [
 	MatToolbarModule,
 	MatRippleModule,
@@ -35,7 +37,8 @@ const modules = [
 	MatMenuModule,
 	MatRadioModule,
 	MatDatepickerModule,
-	MatNativeDateModule
+	MatNativeDateModule,
+	MatExpansionModule
 ];
 
 @NgModule({

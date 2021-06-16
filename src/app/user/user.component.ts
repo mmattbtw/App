@@ -68,17 +68,13 @@ export class UserComponent implements OnInit, OnDestroy {
 		if (!channelID) return;
 
 		this.addingEditor = false;
-		this.restService.v2.GetUser(this.editorControl.value).pipe(
-			filter(u => !!u.user),
-			switchMap(u => this.restService.v2.AddChannelEditor(channelID, u.user.id, '')),
-			switchMap(u => this.dataService.add('user', u.user))
-		).subscribe({
+		this.user.getValue()?.addChannelEditor(this.editorControl.value).subscribe({
 			complete: () => {
 				this.updateEditors();
 				this.cdr.markForCheck();
 				this.editorControl.reset();
 			},
-			error: (err: RestV2.ErrorGQL) => this.clientService.openSnackBar(err.error.errors[0].message ?? err.error, '', {
+			error: (err: RestV2.ErrorGQL) => this.clientService.openSnackBar(this.restService.formatError(err), '', {
 				verticalPosition: 'top', horizontalPosition: 'left'
 			})
 		});
@@ -88,9 +84,7 @@ export class UserComponent implements OnInit, OnDestroy {
 		const channelID = this.user.getValue()?.id;
 		if (!channelID) return;
 
-		this.restService.v2.RemoveChannelEditor(channelID, user.id, '').pipe(
-			tap(u => this.dataService.add('user', u.user))
-		).subscribe({
+		this.user.getValue()?.removeChannelEditor(user.id).subscribe({
 			complete: () => {
 				this.updateEditors();
 				this.cdr.markForCheck();

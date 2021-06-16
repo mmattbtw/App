@@ -92,7 +92,7 @@ export class RestService {
 	}
 
 	formatError(err: HttpErrorResponse): string {
-		return err.error?.errors?.map((er: any) => er.message) ?? err.error?.error ?? JSON.stringify(err.error);
+		return err.error?.errors?.map((er: any) => er.message) ?? err.error?.error ?? JSON.stringify(err.error) ?? String(err);
 	}
 }
 

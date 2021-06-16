@@ -1,6 +1,6 @@
 import { BitField } from '@typings/src/BitField';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, throwError } from 'rxjs';
 import { defaultIfEmpty, filter, map, mergeAll, pluck, switchMap, take, toArray } from 'rxjs/operators';
 import { AppInjector } from 'src/app/service/app.injector';
 import { RestService } from 'src/app/service/rest.service';
@@ -222,6 +222,20 @@ export class UserStructure extends Structure<'user'> {
 
 	editChannelEmote(emote: EmoteStructure, data: any, reason = ''): Observable<UserStructure> {
 		return this.getRestService().v2.EditChannelEmote(emote.getID(), this.id, data, reason).pipe(
+			map(res => this.pushData(res.user))
+		);
+	}
+
+	addChannelEditor(login: string): Observable<UserStructure> {
+		return this.getRestService().v2.GetUser(login).pipe(
+			switchMap(r => !!r.user ? of(r) : throwError('Unknown User')),
+			switchMap(res => this.getRestService().v2.AddChannelEditor(this.id, res.user?.id)),
+			map(res => this.pushData(res.user))
+		);
+	}
+
+	removeChannelEditor(id: string): Observable<UserStructure> {
+		return this.getRestService().v2.RemoveChannelEditor(this.id, id).pipe(
 			map(res => this.pushData(res.user))
 		);
 	}

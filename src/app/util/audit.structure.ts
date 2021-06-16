@@ -121,7 +121,7 @@ export class AuditLogEntry extends Structure<'audit'> {
 	getTimestamp(): Observable<string> {
 		return this.data.pipe(
 			map(d => new Date(d?.timestamp ?? Date.now())),
-			map(date => format(date, 'dd/mm/yy hh:mm'))
+			map(date => format(date, 'dd/MM/yy hh:mm'))
 		);
 	}
 	getReason(): Observable<string> {

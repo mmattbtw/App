@@ -37,7 +37,7 @@ export class AuditLogEntry extends Structure<'audit'> {
 		if (Array.isArray(data.changes)) {
 			this.changes = [];
 			for (const c of data.changes) {
-				this.changes.push(new AuditLogEntry.Change(c));
+				this.changes.push(new AuditLogEntry.Change(this, c));
 			}
 
 		}
@@ -159,12 +159,12 @@ export namespace AuditLogEntry {
 		key = '';
 		values: any[] = [];
 
-		constructor(readonly change: DataStructure.AuditLog.Entry.Change) {
+		constructor(private log: AuditLogEntry, readonly change: DataStructure.AuditLog.Entry.Change) {
 			this.key = change.key;
 
 			this.values = [
-				JSON.parse(change.values?.[0] || '{}'),
-				JSON.parse(change.values?.[1] || '{}')
+				JSON.parse(change.values?.[0] || '""'),
+				JSON.parse(change.values?.[1] || '""')
 			];
 		}
 

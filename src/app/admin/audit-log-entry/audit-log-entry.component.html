@@ -15,7 +15,12 @@
 		<div class="audit-changes">
 			<h4>Changes</h4>
 			
-			
+			<div class="audit-change" *ngFor="let change of entry?.getChanges() | async">
+				<span>{{ change.key }}</span>
+				<span> {{change.getOldValue()}} </span>
+				->
+				<span> {{change.getNewValue()}} </span>
+			</div>
 		</div>
 	</mat-expansion-panel>
 </div>

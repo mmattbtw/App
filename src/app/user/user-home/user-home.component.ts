@@ -18,8 +18,8 @@ import { UserStructure } from 'src/app/util/user.structure';
 
 export class UserHomeComponent implements OnInit, OnDestroy {
 	private destroyed = new Subject<void>();
-	channelEmotes = new BehaviorSubject<EmoteStructure[]>([]);
-	ownedEmotes = new BehaviorSubject<EmoteStructure[]>([]);
+	channelEmotes = [] as EmoteStructure[];
+	ownedEmotes = [] as EmoteStructure[];
 
 	auditEntries = [] as AuditLogEntry[];
 
@@ -64,6 +64,10 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 		return this.blurred.has(emote.getID());
 	}
 
+	trackBy(_: number, e: EmoteStructure): any {
+		return e.getID();
+	}
+
 	ngOnInit(): void {
 		this.user.pipe(
 			filter(user => !!user),
@@ -78,21 +82,21 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 				user.getOwnedEmotes().pipe(map(emotes => ({ type: 'owned', emotes })))
 			], asapScheduler).pipe(
 				concatAll(),
-				take(2),
 				mergeMap(s => from(s.emotes).pipe(
 					mergeMap(em => this.shouldBlurEmote(em).pipe(map(blur => ({ blur, emote: em })))),
 					map(x => x.blur ? this.blurred.add(x.emote.getID()) : noop()),
 					mapTo(s)
-				))
+				)),
+				take(2),
 			))
 		).subscribe({
 			next: set => {
 				switch (set.type) {
 					case 'channel':
-						this.channelEmotes.next(set.emotes);
+						this.channelEmotes = set.emotes;
 						break;
 					case 'owned':
-						this.ownedEmotes.next(set.emotes);
+						this.ownedEmotes = set.emotes;
 						break;
 
 				}

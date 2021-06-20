@@ -123,6 +123,12 @@ export class UserStructure extends Structure<'user'> {
 		);
 	}
 
+	getEmoteSlots(): Observable<number> {
+		return this.dataOnce().pipe(
+			map(data => data?.emote_slots ?? 0)
+		);
+	}
+
 	getOwnedEmotes(): Observable<EmoteStructure[]> {
 		return this.dataOnce().pipe(
 			map(data => {

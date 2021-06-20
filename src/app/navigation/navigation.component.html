@@ -107,6 +107,13 @@
 		
 	</div>
 </mat-toolbar>
+<mat-toolbar color="warn" class="announcement-bar" *ngIf="appService.announcement | async">
+	<mat-icon>
+		announcement
+	</mat-icon>
+	<div class="mx-2"></div>
+	<span>{{appService.announcement | async}}</span>
+</mat-toolbar>
 
 <mat-menu #mobileMenu="matMenu" class="d-flex px-1 flex-column">
 	<app-user-name *ngIf="clientService.isAuthenticated() | async" [user]="clientService" [matMenuTriggerFor]="personalMenu"></app-user-name>	

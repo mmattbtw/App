@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { map, mergeAll, tap } from 'rxjs/operators';
+import { RestService } from 'src/app/service/rest.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -20,8 +21,12 @@ export class AppService {
 
 	contactEmail = 'kathy@7tv.app';
 
+	featuredBroadcast = new BehaviorSubject<string>('');
+	announcement = new BehaviorSubject<string>('');
+
 	constructor(
-		titleService: Title
+		titleService: Title,
+		restService: RestService
 	) {
 		const attrMap = new Map<string, AppService.PageTitleAttribute>();
 		this.pageTitleAttr.pipe(
@@ -37,6 +42,25 @@ export class AppService {
 				titleService.setTitle(title.replace(AppService.PAGE_ATTR_REGEX, ''));
 			})
 		).subscribe();
+
+		restService.v2.gql.query<{ meta: { featured_broadcast: string; announcement: string;  }; }>({
+			query: `
+				query GetMeta() {
+					meta() {
+						announcement,
+						featured_broadcast
+					}
+				}
+			`
+		}).pipe(
+			map(res => res?.body?.data.meta)
+		).subscribe({
+			next: (res) => {
+				console.log(res);
+				this.featuredBroadcast.next(res?.featured_broadcast ?? '');
+				this.announcement.next(res?.announcement ?? '');
+			}
+		});
 	}
 
 	/**
@@ -45,7 +69,6 @@ export class AppService {
 	pushTitleAttributes(...attr: AppService.PageTitleAttribute[]): void {
 		this.pageTitleAttr.next(attr);
 	}
-
 }
 
 export namespace AppService {

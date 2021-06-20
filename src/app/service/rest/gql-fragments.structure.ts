@@ -99,6 +99,7 @@ export namespace GQLFragments {
 			broadcaster_type,
 			profile_image_url,
 			created_at,
+			emote_slots,
 			${includeAuditEntries ? `audit_entries { ${ShorthandAudit()} }`  : ''}
 		}
 	`;

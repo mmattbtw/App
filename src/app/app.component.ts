@@ -81,6 +81,7 @@ export class AppComponent implements OnInit {
 		}
 
 		// Handle SW Update
+		this.sw.checkForUpdate();
 		this.sw.available.pipe(
 			switchMap(() => this.sw.activateUpdate()),
 			tap(() => localStorage.removeItem('changelog_read')),

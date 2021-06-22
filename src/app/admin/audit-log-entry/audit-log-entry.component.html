@@ -1,7 +1,7 @@
 <div class="audit-log-entry">
 	<mat-expansion-panel>
 		<mat-expansion-panel-header>
-			<mat-panel-title class="d-flex align-items-center" *ngIf="clientService.isAuthenticated() | async">
+			<mat-panel-title class="d-flex align-items-center">
 				<app-user-name [user]="entry?.getActionUser()"></app-user-name>
 				<div class="mx-1"></div>
 				<span> {{entry?.getDescription()}} </span>
@@ -20,6 +20,11 @@
 				<span> {{change.getOldValue()}} </span>
 				->
 				<span> {{change.getNewValue()}} </span>
+			</div>
+
+			<div class="audit-reason mt-2" *ngIf="hasReason() | async">
+				<span>Reason: </span>
+				<span>{{entry?.getReason() | async}}</span>
 			</div>
 		</div>
 	</mat-expansion-panel>

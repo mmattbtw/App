@@ -18,8 +18,12 @@ import { UserStructure } from 'src/app/util/user.structure';
 
 export class UserHomeComponent implements OnInit, OnDestroy {
 	private destroyed = new Subject<void>();
-	channelEmotes = [] as EmoteStructure[];
-	ownedEmotes = [] as EmoteStructure[];
+	channelEmotes = new BehaviorSubject<EmoteStructure[]>([]);
+	channelCount = new BehaviorSubject(0);
+	channelShown = 50;
+	ownedEmotes = new BehaviorSubject<EmoteStructure[]>([]);
+	ownedShown = 50;
+	ownedCount = new BehaviorSubject(0);
 
 	auditEntries = [] as AuditLogEntry[];
 
@@ -27,8 +31,8 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 
 	constructor(
 		@Inject(UserComponent) private parent: UserComponent,
-		private clientService: ClientService,
 		private cdr: ChangeDetectorRef,
+		private clientService: ClientService,
 		public themingService: ThemingService
 	) { }
 
@@ -60,6 +64,23 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 		);
 	}
 
+	showMoreOf(setName: 'channel' | 'owned'): void {
+		switch (setName) {
+			case 'channel':
+				this.channelShown += 50;
+				break;
+
+			case 'owned':
+				this.ownedShown += 50;
+				break;
+
+			default:
+				break;
+		}
+		this.cdr.markForCheck();
+		console.log(this.channelShown, this.ownedShown, setName);
+	}
+
 	isBlurred(emote: EmoteStructure): boolean {
 		return this.blurred.has(emote.getID());
 	}
@@ -85,6 +106,7 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 				mergeMap(s => from(s.emotes).pipe(
 					mergeMap(em => this.shouldBlurEmote(em).pipe(map(blur => ({ blur, emote: em })))),
 					map(x => x.blur ? this.blurred.add(x.emote.getID()) : noop()),
+					toArray(),
 					mapTo(s)
 				)),
 				take(2),
@@ -93,15 +115,15 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 			next: set => {
 				switch (set.type) {
 					case 'channel':
-						this.channelEmotes = set.emotes;
+						this.channelEmotes.next(set.emotes);
+						this.channelCount.next(set.emotes.length);
 						break;
 					case 'owned':
-						this.ownedEmotes = set.emotes;
+						this.ownedEmotes.next(set.emotes);
+						this.ownedCount.next(set.emotes.length);
 						break;
-
 				}
-			},
-			complete: () => this.cdr.markForCheck()
+			}
 		});
 	}
 

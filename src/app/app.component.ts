@@ -22,7 +22,7 @@ import { environment } from 'src/environments/environment';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
-	static isBrowser = new BehaviorSubject<boolean>(false);
+	static isBrowser = new BehaviorSubject<boolean>(true);
 
 	title = 'seventv-app';
 	layoutDisabled = false;

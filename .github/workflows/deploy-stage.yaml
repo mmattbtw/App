@@ -37,13 +37,13 @@ jobs:
           restore-keys: npm-
 
       - name: Build Image with Server-Side Rendering & Push to Packages
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2.5.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          file: Stage.Dockerfile
           password: ${{ secrets.GITHUB_TOKEN }}
-          push: true
+          context: .
+          file: Stage.Dockerfile
           tags: stage-${{ github.sha }}
 
   deploy:

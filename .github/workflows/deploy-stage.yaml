@@ -11,10 +11,11 @@ on:
         required: false
 env:
   REGISTRY_REPO: seventv/app
-  REGISTRTY_IMAGE_NAME: seventv/app:${{ github.sha }}
+  REGISTRTY_IMAGE_NAME: seventv/app:stage-${{ github.sha }}
 
 jobs:
   build:
+    name: Build App (Stage)
     runs-on: ubuntu-latest
 
     steps:
@@ -43,12 +44,13 @@ jobs:
           file: Stage.Dockerfile
           password: ${{ secrets.GITHUB_TOKEN }}
           push: true
-          tags: ${{ github.sha }}
+          tags: stage-${{ github.sha }}
 
   deploy:
+    name: Deploy (Staging Environment)
     runs-on: ubuntu-latest
     needs: # Run this after build
-      - build
+      - build-stage
 
     steps:
         # Checkout repository

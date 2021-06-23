@@ -40,6 +40,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
+          file: Stage.Dockerfile
           password: ${{ secrets.GITHUB_TOKEN }}
           push: true
           tags: ${{ github.sha }}

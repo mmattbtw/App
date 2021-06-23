@@ -11,7 +11,7 @@ on:
         required: false
 env:
   REGISTRY_REPO: seventv/app
-  REGISTRTY_IMAGE_NAME: seventv/app:stage-${{ github.sha }}
+  REGISTRTY_IMAGE_NAME: seventv/app/stage:${{ github.sha }}
 
 jobs:
   build:
@@ -49,7 +49,9 @@ jobs:
           context: .
           file: Stage.Dockerfile
           push: true
-          tags: stage-${{ github.sha }}
+          tags: |
+            ghcr.io/seventv/app/stage:${{ github.sha }}
+            ghcr.io/seventv/app/stage:latest
 
   deploy:
     name: Deploy (Staging Environment)

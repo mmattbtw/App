@@ -12,7 +12,7 @@ export const environment = {
 		}
 	},
 	platformApiUrl: (platform: 'browser' | 'server', version: 'v1' | 'v2'): string => `${platform === 'server' ? 'http' : 'https'}://${environment.api[version].url}`,
-	cdnUrl: 'https://cdn.7tv.app/stage',
+	cdnUrl: 'https://7tv.ams3.digitaloceanspaces.com/stage',
 	wsUrl: 'wss://api-stage.7tv.app',
 
 	// Set to true if the changelog should be disabled for this deployment

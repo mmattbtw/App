@@ -126,6 +126,9 @@
 					"configurations": {
 						"production": {
 							"browserTarget": "seventv-app:build:production"
+						},
+						"stage": {
+							"browserTarget": "seventv-app:build:stage"
 						}
 					}
 				},
@@ -176,6 +179,9 @@
 					"configurations": {
 						"production": {
 							"devServerTarget": "seventv-app:serve:production"
+						},
+						"stage": {
+							"devServerTarget": "seventv-app:serve:stage"
 						}
 					}
 				},
@@ -199,6 +205,17 @@
 							],
 							"sourceMap": false,
 							"optimization": true
+						},
+						"stage": {
+							"outputHashing": "media",
+							"fileReplacements": [
+								{
+									"replace": "src/environments/environment.ts",
+									"with": "src/environments/environment.stage.ts"
+								}
+							],
+							"sourceMap": false,
+							"optimization": true
 						}
 					},
 					"defaultConfiguration": ""
@@ -213,6 +230,10 @@
 						"production": {
 							"browserTarget": "seventv-app:build:production",
 							"serverTarget": "seventv-app:server:production"
+						},
+						"stage": {
+							"browserTarget": "seventv-app:build:stage",
+							"serverTarget": "seventv-app:server:stage"
 						}
 					}
 				},

@@ -14,7 +14,7 @@
     "dev:ssr": "ng run seventv-app:serve-ssr",
     "serve:ssr": "node dist/seventv-app/server/main.js",
     "build:ssr": "ng build --configuration=production ---aot --vendor-chunk --common-chunk --delete-output-path --build-optimizer --optimization --aot && ng run seventv-app:server:production",
-    "build-stage:ssr": "ng build --configuration=stage ---aot --vendor-chunk --common-chunk --delete-output-path --build-optimizer --optimization --aot && ng run seventv-app:server:production",
+    "build-stage:ssr": "ng build --configuration=stage ---aot --vendor-chunk --common-chunk --delete-output-path --build-optimizer --optimization --aot && ng run seventv-app:server:stage",
     "prerender": "ng run seventv-app:prerender"
   },
   "private": true,

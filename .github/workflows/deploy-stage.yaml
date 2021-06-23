@@ -62,7 +62,7 @@ jobs:
           env:
             KUBE_CONFIG_DATA: ${{ secrets.K8S_CONFIG }}
             KUBE_RESOURCE: deployments
-            KUBE_META_NAME: 7tv-webapp
+            KUBE_META_NAME: 7tv-webapp-stage
             KUBE_IMAGE_PATCH: >-
               [
                 { "op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "ghcr.io/${{ env.REGISTRTY_IMAGE_NAME }}" }

@@ -49,7 +49,9 @@ jobs:
           context: .
           file: Stage.Dockerfile
           push: true
-          tags: stage-${{ github.sha }}
+          tags: |
+            ghcr.io/seventv/app/stage:${{ github.sha }}
+            ghcr.io/seventv/app/stage:latest
 
   deploy:
     name: Deploy (Staging Environment)

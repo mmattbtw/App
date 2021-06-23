@@ -44,6 +44,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           context: .
           file: Stage.Dockerfile
+          push: true
           tags: stage-${{ github.sha }}
 
   deploy:

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 7tv-webapp-stage
+  namespace: 7tv
+spec:
+  selector:
+    matchLabels:
+      app: 7tv-webapp-stage
+  template:
+    metadata:
+      labels:
+        app: 7tv-webapp-stage
+    spec:
+      containers:
+      - name: 7tv-webapp-stage
+        image: ghcr.io/seventv/app:latest
+        command: ["npm", "run", "serve:ssr"]
+        resources:
+          requests:
+            memory: "100M"
+            cpu: "100m"
+          limits:
+            memory: "400M"
+            cpu: "750m"
+        ports:
+        - containerPort: 4000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: seventv-webapp-stage-svc
+  namespace: 7tv
+spec:
+  selector:
+    app: 7tv-webapp-stage
+  ports:
+  - port: 80
+    targetPort: 4000

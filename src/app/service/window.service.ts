@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { AppComponent } from 'src/app/app.component';
+import { getWindow } from 'ssr-window';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class WindowRef {
 	) { }
 
 	getNativeWindow(): Window | null {
-		return (AppComponent.isBrowser.getValue() !== true && AppComponent.isBrowser.getValue() !== null) ? null : window;
+		return _window();
 	}
 
 	getNativeDocument(): Document {
@@ -37,4 +37,8 @@ export class WindowRef {
 
 		return undefined;
 	}
+}
+
+function _window(): Window {
+	return getWindow();
 }

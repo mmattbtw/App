@@ -2,11 +2,13 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, of } from 'rxjs';
 import { delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { AppComponent } from 'src/app/app.component';
 import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
+import { WindowRef } from 'src/app/service/window.service';
 import { ChangelogDialogComponent } from 'src/app/util/dialog/changelog/changelog-dialog.component';
 import { UserStructure } from 'src/app/util/user.structure';
 import { environment } from 'src/environments/environment';
@@ -45,7 +47,7 @@ export class NavigationComponent implements OnInit {
 			icon: 'shopping_cart',
 			condition: of(undefined).pipe(
 				delay(0),
-				map(() => window.location.pathname === '/subscribe')
+				map(() => AppComponent.isBrowser.getValue() ? this.windowRef.getNativeWindow()?.location.pathname === '/subscribe' : false)
 			)
 		},
 		{
@@ -64,6 +66,7 @@ export class NavigationComponent implements OnInit {
 		private dialogRef: MatDialog,
 		private cdr: ChangeDetectorRef,
 		private dialog: MatDialog,
+		private windowRef: WindowRef,
 		public clientService: ClientService,
 		public viewportService: ViewportService,
 		public themingService: ThemingService,

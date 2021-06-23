@@ -10,7 +10,9 @@ import { BehaviorSubject, defer, iif } from 'rxjs';
 import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
 import { iconList } from 'src/app/icons-register';
 import { AppService } from 'src/app/service/app.service';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { ViewportService } from 'src/app/service/viewport.service';
+import { WindowRef } from 'src/app/service/window.service';
 import { UpdateDialogComponent } from 'src/app/update-dialog.component.';
 import { ChangelogDialogComponent } from 'src/app/util/dialog/changelog/changelog-dialog.component';
 import { environment } from 'src/environments/environment';
@@ -33,6 +35,8 @@ export class AppComponent implements OnInit {
 		sanitizer: DomSanitizer,
 		appService: AppService,
 		titleService: Title,
+		localStorageSvc: LocalStorageService,
+		private windowRef: WindowRef,
 		private sw: SwUpdate,
 		private dialog: MatDialog,
 		private location: Location,
@@ -68,36 +72,43 @@ export class AppComponent implements OnInit {
 		}
 
 		this.setTheme();
+
+		if (isPlatformBrowser(platformId)) {
+			localStorageSvc.storage = localStorage;
+		}
 	}
 
 	async ngOnInit(): Promise<void> {
 		// Navigate to current URL in order to trigger a routing event and update the page title
 		this.router.navigateByUrl(this.location.path(true));
 
-		if (!environment.disableChangelog && 'localStorage' in window && !localStorage.getItem('changelog_read')) {
+		if (!environment.disableChangelog && 'localStorage' in (this.windowRef.getNativeWindow() ?? {}) && !localStorage.getItem('changelog_read')) {
 			this.dialog.open(ChangelogDialogComponent, {
 				disableClose: true
 			});
 		}
 
 		// Handle SW Update
-		this.sw.checkForUpdate();
-		this.sw.available.pipe(
-			switchMap(() => this.sw.activateUpdate()),
-			tap(() => localStorage.removeItem('changelog_read')),
-			map(_ => this.dialog.open(UpdateDialogComponent, {
-				disableClose: true
-			})),
-			switchMap(dialogRef => dialogRef.afterClosed()),
-			switchMap(accepted => iif(() => accepted === true,
-				defer(() => this.updateSW()).pipe(
-					delay(5000),
-					tap(() => window.location.reload()),
-					tap(() => console.log('Updating app...'))
-				),
-				defer(() => console.log('Client did not accept the update.'))
-			))
-		).subscribe();
+		if (AppComponent.isBrowser.getValue()) {
+			this.sw.checkForUpdate();
+			this.sw.available.pipe(
+				switchMap(() => this.sw.activateUpdate()),
+				tap(() => localStorage.removeItem('changelog_read')),
+				map(_ => this.dialog.open(UpdateDialogComponent, {
+					disableClose: true
+				})),
+				switchMap(dialogRef => dialogRef.afterClosed()),
+				switchMap(accepted => iif(() => accepted === true,
+					defer(() => this.updateSW()).pipe(
+						delay(5000),
+						tap(() => window.location.reload()),
+						tap(() => console.log('Updating app...'))
+					),
+					defer(() => console.log('Client did not accept the update.'))
+				))
+			).subscribe();
+		}
+
 	}
 
 	updateSW(): void {

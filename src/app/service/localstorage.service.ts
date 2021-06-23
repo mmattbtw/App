@@ -1,8 +1,4 @@
 import { Injectable } from '@angular/core';
-import { defer, EMPTY, iif, of } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
-import { AppComponent } from 'src/app/app.component';
-
 
 class LocalStorage implements Storage {
 	[x: string]: any;
@@ -16,14 +12,10 @@ class LocalStorage implements Storage {
 
 @Injectable({providedIn: 'root'})
 export class LocalStorageService implements Storage {
-	private storage: Storage;
+	public storage: Storage;
 
 	constructor() {
 		this.storage = new LocalStorage();
-
-		if (AppComponent.isBrowser.getValue() === true) {
-			this.storage = localStorage;
-		}
 	}
 
 	[x: string]: any;

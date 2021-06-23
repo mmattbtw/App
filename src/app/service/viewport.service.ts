@@ -4,6 +4,7 @@ import { BehaviorSubject, noop, Observable } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { AppComponent } from 'src/app/app.component';
+import { WindowRef } from 'src/app/service/window.service';
 
 export type ViewportBreakpointName = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -44,6 +45,7 @@ export class ViewportService {
 
 	constructor(
 		@Inject(DOCUMENT) private document: Document,
+		private windowRef: WindowRef,
 		private ngZone: NgZone, media: MediaMatcher,
 		renderFactory2: RendererFactory2
 	) {
@@ -63,7 +65,10 @@ export class ViewportService {
 		AppComponent.isBrowser.pipe(
 			filter(isBrowser => isBrowser === true),
 			tap(() => {
-				window.onresize = (ev: UIEvent) => {
+				const win = this.windowRef.getNativeWindow();
+				if (!win) return;
+
+				win.onresize = (ev: UIEvent) => {
 					this.ngZone.run(() => {
 						this.height = document.body.offsetHeight;
 						this.width = document.body.offsetWidth;

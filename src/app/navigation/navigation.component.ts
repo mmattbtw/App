@@ -19,7 +19,7 @@ import { environment } from 'src/environments/environment';
 	styleUrls: ['navigation.component.scss']
 })
 export class NavigationComponent implements OnInit {
-	envName: ('dev' | 'stage') = 'dev';
+	envName = environment.name as 'dev' | 'stage';
 
 	// List of navigation buttons which appear
 	// on the right side of the toolbar
@@ -77,7 +77,7 @@ export class NavigationComponent implements OnInit {
 	 * Whether the current environment is production
 	 */
 	get isEnvironmentProd(): boolean {
-		return environment.production === true;
+		return environment.name === 'production';
 	}
 
 	openInNewTab(btn: NavigationComponent.NavButton): void {

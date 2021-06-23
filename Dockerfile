@@ -12,4 +12,4 @@ RUN git clone https://github.com/SevenTV/Typings.git
 RUN npm install
 RUN npm run build:ssr
 
-RUN echo PagMan!
+RUN echo Production build complete

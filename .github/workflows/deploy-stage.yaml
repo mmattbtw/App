@@ -2,7 +2,7 @@ name: Build App
 
 on:
   push:
-    branches: [master]
+    branches: [dev]
 
   workflow_dispatch:
     inputs:
@@ -40,6 +40,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
+          file: Stage.Dockerfile
           password: ${{ secrets.GITHUB_TOKEN }}
           push: true
           tags: ${{ github.sha }}
@@ -71,7 +72,7 @@ jobs:
             (echo $KUBE_CONFIG_DATA | base64 -d) >> ~/.kube/config
             kubectl config use-context 7tv-as-deployer
 
-            kubectl apply -f k8s/production.yaml
+            kubectl apply -f k8s/stage.yaml
             kubectl patch $KUBE_RESOURCE $KUBE_META_NAME --type="json" -p="$KUBE_IMAGE_PATCH"
 
             kubectl rollout restart -n 7tv $KUBE_RESOURCE/$KUBE_META_NAME

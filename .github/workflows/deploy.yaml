@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v2.5.0
         with:
           context: .
-          file: Stage.Dockerfile
+          file: Dockerfile
           push: true
           tags: |
             ghcr.io/seventv/app:${{ github.sha }}

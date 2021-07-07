@@ -7,14 +7,13 @@ import { RestService } from 'src/app/service/rest.service';
 import { Structure } from 'src/app/util/abstract.structure';
 import { AuditLogEntry } from 'src/app/util/audit.structure';
 import { EmoteStructure } from 'src/app/util/emote.structure';
+import { NotificationStructure } from 'src/app/util/notification.structure';
 import { RoleStructure } from 'src/app/util/role.structure';
 
 export class UserStructure extends Structure<'user'> {
 	debugID = Math.random().toString(36).substring(7);
 	id = '';
 	restService: RestService | null = null;
-
-	private auditEntries = [] as AuditLogEntry[];
 
 	/**
 	 * Push data onto this user.
@@ -212,8 +211,8 @@ export class UserStructure extends Structure<'user'> {
 		);
 	}
 
-	getSnapshot(): Partial<DataStructure.TwitchUser> | null {
-		return this.snapshot;
+	getSnapshot(): DataStructure.TwitchUser | null {
+		return this.snapshot as DataStructure.TwitchUser;
 	}
 
 	// tslint:disable-next-line:typedef
@@ -267,6 +266,37 @@ export class UserStructure extends Structure<'user'> {
 
 	ban(expireAt: Date, reason = ''): Observable<void> {
 		return this.getRestService().v2.BanUser(this.id, expireAt, reason);
+	}
+
+	getNotifications(): Observable<NotificationStructure[]> {
+		return this.dataOnce().pipe(
+			map(d => d?.notifications ?? []),
+			map(a => this.dataService.add('notification', ...a))
+		);
+	}
+
+	getNotificationCount(): Observable<number> {
+		return this.dataOnce().pipe(
+			map(d => d?.notification_count ?? 0)
+		);
+	}
+
+	fetchNotificationCount(): Observable<number> {
+		return this.getRestService().v2.gql.query<{ user: DataStructure.TwitchUser; }>({
+			query: `
+				query GetUserNotificationCount($id: String!) {
+					user(id: $id) {
+						notification_count
+					}
+				}
+			`,
+			variables: {
+				id: this.id
+			},
+			auth: true
+		}).pipe(
+			map(res => res?.body?.data.user.notification_count ?? 0)
+		);
 	}
 
 	changeRole(roleID: string, reason?: string): Observable<void> {

@@ -1,0 +1,37 @@
+:first-child {
+	color: white;
+	min-width: 24em;
+	max-width: 34em;
+
+	.overlay-content {
+		margin-top: 64px;
+		margin-right: 48px;
+		padding: 1em;
+		border-radius: 8px;
+
+		.menu-heading {
+			display: flex;
+			justify-content: space-between;
+
+			.close-button {
+				cursor: pointer;
+				width: 24px;
+			}
+		}
+
+		.quick-actions {
+			margin-bottom: 1em;
+
+			.quick-action {
+				cursor: pointer;
+				color: rgba(0, 255, 75, 0.75);
+			}
+		}
+
+		.notify-list {
+			margin-top: 1em;
+			max-height: 22.5em;
+			overflow: auto;
+		}
+	}
+}

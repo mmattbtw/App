@@ -1,20 +1,14 @@
 
 
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatMenu } from '@angular/material/menu';
 import { Router } from '@angular/router';
-import { DataStructure } from '@typings/typings/DataStructure';
 import Color from 'color';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { ClientService } from 'src/app/service/client.service';
-import { RestService } from 'src/app/service/rest.service';
-import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
 import { Structure } from 'src/app/util/abstract.structure';
-import { BanDialogComponent } from 'src/app/util/dialog/error-dialog/ban-dialog/ban-dialog.component';
 import { EmoteStructure } from 'src/app/util/emote.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
@@ -26,18 +20,17 @@ import { UserStructure } from 'src/app/util/user.structure';
 
 export class ContextMenuComponent implements OnInit {
 	@ViewChild('emoteContextMenu') emoteMenu: MatMenu | null = null;
-	@ViewChild('userContextMenu') userMenu: MatMenu | null = null;
+	@ViewChild('userContextMenu') userMenu: MatMenu;
 	@Output() interact = new EventEmitter<ContextMenuComponent.InteractButton>();
 
 	constructor(
 		private router: Router,
-		private themingService: ThemingService,
 		private emoteListService: EmoteListService,
 		private windowRef: WindowRef,
-		private dialog: MatDialog,
-		private restService: RestService,
 		public clientService: ClientService,
-	) { }
+	) {
+		this.userMenu = {} as MatMenu;
+	}
 
 	@Input() contextEmote: EmoteStructure | null = null;
 	@Input() contextUser: UserStructure | null = null;
@@ -81,53 +74,7 @@ export class ContextMenuComponent implements OnInit {
 					this.router.serializeUrl(this.router.createUrlTree(['/users', String(user.id)]))
 				)))
 			},
-			{
-				label: 'Change Role',
-				icon: 'flag',
-				click: victim => of(undefined),
-				condition: victim => this.clientService.hasPermission('MANAGE_ROLES').pipe(
-					switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
-					switchMap(({ canBan, victimRole }) => this.clientService.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
-					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition())
-				)
-			},
-			{
-				label: 'Ban',
-				icon: 'gavel',
-				color: this.themingService.warning,
-				click: victim => new Observable<void>(observer => {
-					this.dialog.open(BanDialogComponent, {
-						data: { user: victim }
-					});
-
-					observer.complete();
-				}),
-				condition: victim => this.clientService.hasPermission('BAN_USERS').pipe(
-					switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
-					switchMap(({ canBan, victimRole }) => this.clientService.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
-					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition()),
-					switchMap(canBan => victim.isBanned().pipe(map(isBanned => ({ isBanned, canBan })))),
-					map(({ canBan, isBanned }) => canBan && !isBanned)
-				)
-			},
-			{
-				label: 'Unban',
-				icon: 'undo',
-				color: this.themingService.primary.negate(),
-				click: victim => this.restService.v2.UnbanUser(victim.id, '').pipe(
-					tap(() => {
-						victim.pushData({ banned: false } as DataStructure.TwitchUser);
-						this.clientService.openSnackBar(`${victim.getSnapshot()?.display_name} was unbanned`, '');
-					})
-				),
-				condition: victim => this.clientService.hasPermission('BAN_USERS').pipe(
-					switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
-					switchMap(({ canBan, victimRole }) => this.clientService.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
-					map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition()),
-					switchMap(canBan => victim.isBanned().pipe(map(isBanned => ({ isBanned, canBan })))),
-					map(({ canBan, isBanned }) => canBan && isBanned)
-				)
-			}
+			...this.clientService.userInteractions
 		] as ContextMenuComponent.InteractButton<UserStructure>[]
 	};
 

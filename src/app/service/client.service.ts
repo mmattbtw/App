@@ -2,14 +2,19 @@
 
 import { Injectable } from '@angular/core';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { asapScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
-import { map, take, zipAll } from 'rxjs/operators';
+import { asapScheduler, BehaviorSubject, defer, Observable, of, scheduled } from 'rxjs';
+import { filter, map, switchMap, take, tap, zipAll } from 'rxjs/operators';
 import { DataService } from 'src/app/service/data.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UserStructure } from 'src/app/util/user.structure';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { CookieService } from 'ngx-cookie-service';
+import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
+import { BanDialogComponent } from 'src/app/util/dialog/error-dialog/ban-dialog/ban-dialog.component';
+import { ThemingService } from 'src/app/service/theming.service';
+import { MatDialog } from '@angular/material/dialog';
+import { UserRoleDialogComponent } from 'src/app/user/dialog/user-role-dialog.component';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService extends UserStructure {
@@ -21,6 +26,61 @@ export class ClientService extends UserStructure {
 	get isImpersonating(): boolean {
 		return this.impersonating.getValue() !== null;
 	}
+
+	userInteractions = [
+		{
+			label: 'Change Role',
+			icon: 'flag',
+			click: victim => of(this.dialog.open(UserRoleDialogComponent, { data: { user: victim } })).pipe(
+				switchMap((dialogRef => dialogRef.afterClosed().pipe(
+					filter(value => typeof value === 'string'),
+					switchMap((roleID: string) => victim.changeRole(roleID ?? '', ''))
+				))
+			)),
+			condition: victim => this.hasPermission('MANAGE_ROLES').pipe(
+				switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
+				switchMap(({ canBan, victimRole }) => this.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
+				map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition())
+			)
+		},
+		{
+			label: 'Ban',
+			icon: 'gavel',
+			color: this.themingService.warning,
+			click: victim => new Observable<void>(observer => {
+				this.dialog.open(BanDialogComponent, {
+					data: { user: victim }
+				});
+
+				observer.complete();
+			}),
+			condition: victim => this.hasPermission('BAN_USERS').pipe(
+				switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
+				switchMap(({ canBan, victimRole }) => this.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
+				map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition()),
+				switchMap(canBan => victim.isBanned().pipe(map(isBanned => ({ isBanned, canBan })))),
+				map(({ canBan, isBanned }) => canBan && !isBanned)
+			)
+		},
+		{
+			label: 'Unban',
+			icon: 'undo',
+			color: this.themingService.primary.negate(),
+			click: victim => this.getRestService().v2.UnbanUser(victim.id, '').pipe(
+				tap(() => {
+					victim.pushData({ banned: false } as DataStructure.TwitchUser);
+					this.openSnackBar(`${victim.getSnapshot()?.display_name} was unbanned`, '');
+				})
+			),
+			condition: victim => this.hasPermission('BAN_USERS').pipe(
+				switchMap(canBan => victim.getRole().pipe(map(role => ({ victimRole: role, canBan })))),
+				switchMap(({ canBan, victimRole }) => this.getRole().pipe(map(role => ({ canBan, victimRole, role })))),
+				map(({ canBan, victimRole, role }) => canBan && role.getPosition() > victimRole.getPosition()),
+				switchMap(canBan => victim.isBanned().pipe(map(isBanned => ({ isBanned, canBan })))),
+				map(({ canBan, isBanned }) => canBan && isBanned)
+			)
+		}
+	] as ContextMenuComponent.InteractButton<UserStructure>[];
 
 	/**
 	 * Get the current actor user, which is the client user unless they are impersonating somebody
@@ -35,6 +95,8 @@ export class ClientService extends UserStructure {
 	constructor(
 		public localStorage: LocalStorageService,
 		public dataService: DataService,
+		private dialog: MatDialog,
+		private themingService: ThemingService,
 		private cookieService: CookieService,
 		private logger: LoggerService,
 		private snackBar: MatSnackBar,

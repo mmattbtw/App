@@ -1,24 +1,35 @@
 <div class="user h-100">
     <!-- Heading -->
     <div class="heading">
-        <div class="user-block mat-elevation-z3" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+        <div class="user-block">
             <!-- Who is this? -->
             <div class="user-who">
                 <!-- The user's avatar -->
-                <div class="user-who-avatar" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+                <div class="user-who-avatar elevation" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
                     <app-user-name [size]="[4, 0]" [showUsername]="false" [user]="user | async"></app-user-name>
+                    
                 </div>
 
                 <!-- The user's display name -->
                 <div class="user-who-text">
-                    <div class="user-who-displayname" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
-                        <app-user-name [size]="[0, 1]" [showAvatar]="false" [user]="user | async"></app-user-name>
+                    <div class="user-who-displayname elevation" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+                        <app-user-name [clickable]="false" [size]="[0, 1]" [showAvatar]="false" [user]="user | async"></app-user-name>
                     </div>
 
-                    <!-- User's Role, if any -->
-                    <div class="user-role" [style.color]="(user | async)?.getColor() | async">
-                        <div [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
-                            <span [class.editable]="canChangeRole() | async" (click)="changeRole()">
+                    <div class="user-details" [style.color]="(user | async)?.getColor() | async">
+                        <div class="user-buttons">
+                            <div class="user-button" matTooltip="Twitch Channel" (click)="openTwitchChannel()" [appColor]="themingService.colors.twitch_purple">
+                                <mat-icon [svgIcon]="'twitch'"></mat-icon>
+                            </div>
+
+                            <div class="user-button" appColor="white" matTooltip="More..." [matMenuTriggerFor]="contextMenu.userMenu">
+                                <mat-icon>more_horiz</mat-icon>
+                            </div>
+                        </div>
+
+                         <!-- User's Role, if any -->
+                        <div class="user-role elevation" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+                            <span>
                                 {{ ((user | async)?.getRole() | async)?.getName() | async }}
                             </span>
                         </div>
@@ -29,9 +40,7 @@
             <!-- Social Links -->
             <div class="social-links">
                 <!-- Twitch -->
-                <button mat-icon-button (click)="openTwitchChannel()">
-                    <mat-icon [style.color]="themingService.colors.twitch_purple" [svgIcon]="(themingService.getSvgIcon('twitch') | async) || ''"></mat-icon>
-                </button>
+
             </div>
         </div>
 
@@ -76,3 +85,5 @@
         <router-outlet></router-outlet>
     </div>
 </div>
+
+<app-ctx-menu #contextMenu [contextUser]="user | async"></app-ctx-menu>

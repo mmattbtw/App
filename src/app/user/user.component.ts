@@ -64,14 +64,6 @@ export class UserComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	canChangeRole(): Observable<boolean> {
-		return this.user.pipe(
-			filter(user => !!user),
-			take(1),
-			switchMap(user => this.clientService.hasPermission('MANAGE_ROLES'))
-		);
-	}
-
 	/**
 	 * This method makes the editor addition box appear
 	 */
@@ -112,21 +104,6 @@ export class UserComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	changeRole(): void {
-		this.canChangeRole().pipe(
-			filter(ok => ok === true),
-			switchMap(() => this.user),
-			map(user => ({
-				dialogRef: this.dialog.open(UserRoleDialogComponent, { data: { user } }),
-				user: user as UserStructure
-			})),
-			switchMap(({ dialogRef, user }) => dialogRef.afterClosed().pipe(
-				filter(value => typeof value === 'string'),
-				switchMap((roleID: string) => user.changeRole(roleID ?? '', ''))
-			))
-		).subscribe();
-	}
-
 	ngOnInit(): void {
 		this.route.paramMap.pipe(
 			takeUntil(this.destroyed),
@@ -138,7 +115,7 @@ export class UserComponent implements OnInit, OnDestroy {
 				includeFullEmotes: true,
 				includeAuditLogs: true,
 				includeStreamData: true
-			}).pipe(
+			}, ['banned']).pipe(
 				map(res => this.dataService.add('user', res.user)[0])
 			)),
 			tap(user => this.user.next(user)),

@@ -105,6 +105,12 @@ export class AuditLogEntry extends Structure<'audit'> {
 			case DataStructure.AuditLog.Entry.Type.USER_EDIT:
 				value = 'edited this user';
 				break;
+			case DataStructure.AuditLog.Entry.Type.USER_SUSPEND:
+				value = 'banned this user';
+				break;
+			case DataStructure.AuditLog.Entry.Type.USER_UNBAN:
+				value = 'unbanned this user';
+				break;
 			default:
 				break;
 		}

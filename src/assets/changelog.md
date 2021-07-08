@@ -1,22 +1,16 @@
-## Feature Updates - 6/10/21
+## Feature Updates - July 7th 2021
 
-* **Added Channel Emote Aliases**
-> You can now set an alias on an emote which only applies to your channel. This also works when acting as an editor.
+* **Added Notification System**
+> Moderator actions and other updates regarding your account state will now appear in notifications when visiting 7tv.app, through the bell icon top-right.
 
-* **Upgraded the Home page layout**
-> It should look a bit cleaner and use space more efficiently
+* **Added Emote Merging functionality**
+> Moderators can now merge emotes, such as duplicates, into the original upload. This functionality seamlessly transfers all channels and personal aliases over
 
-* **Increased animation speeds on the emote list**
+* **Stream stats will now appear on user pages if the channel is live**
 
-* **Added Featured Broadcast Slot**
-> Streams which use 7TV may be featured on the home page. At this time, this is hand-selected by our team, but in the future will likely become a random rotation for known streamers or 7TV subscribers
+* **Fixed an issue which caused "Editor Of" on user pages to appear broken**
 
-* **Unlisted and Private emotes will now appear blurred on profile pages**
-> To prevent potentially undesirable content showing up on livestreams, unlisted or privated emotes will be blurred when visiting a profile page. Hovering over the card for a bit will unblur.
+* **Added Mobile & "More" platform icons on the home page featuring apps, tools and more by third-party developers**
 
-* **Added changelogs**
-> too much recursion
+* **Added Drag & Drop file upload on the emote submission page**
 
-* **Made it possible to middle-click the navigation tabs**
-
-* **7tv.app is now a Progressive Web App**

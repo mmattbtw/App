@@ -105,8 +105,8 @@
 
 	<!-- Channels Section -->
 	<div class="section-container" [appColor]="themingService.bg.darken(.075)" [isBackground]="true">
-		<span class="section-title">Channels ({{ (channels | async)?.length || 0 }})</span>
-		<div class="section-content" [ngSwitch]="((channels | async)?.length || 0) > 0">
+		<span class="section-title">Channels ({{ (emote?.getChannelCount() | async) || 0 }})</span>
+		<div class="section-content" [ngSwitch]="((emote?.getChannelCount() | async) || 0) > 0">
 			<div class="channel-card-list" *ngSwitchCase="true">
 				<app-emote-channel-card [user]="user" *ngFor="let user of channels | async">
 
@@ -116,6 +116,18 @@
 			<div class="d-inline-block" *ngSwitchCase="false">
 				<span>Nothing here</span>
 				<mat-icon [svgIcon]="(themingService.getSvgIcon('zulul') | async) || ''"></mat-icon>
+			</div>
+
+			<div class="paginator">
+				<button mat-flat-button (click)="queryChannels(channelPage - 1)" [class.invisible]="channelPage <= 1">
+					<mat-icon>arrow_backward</mat-icon>
+				</button>
+
+				<span> Page {{channelPage}}/{{getTotalChannelPages() | async}} </span>
+
+				<button mat-flat-button (click)="queryChannels(channelPage + 1)" [class.invisible]="channelPage >= ((getTotalChannelPages() | async) || 0)">
+					<mat-icon>arrow_forward</mat-icon>
+				</button>
 			</div>
 		</div>
 	</div>

@@ -41,6 +41,7 @@ export function app(): express.Express {
 			return res.status(400).send(err.message);
 		}
 
+		console.log('Generate OEmbed:', data);
 		return res.contentType('application/json').status(200).send(data);
 	});
 

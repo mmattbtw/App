@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { asapScheduler, asyncScheduler, BehaviorSubject, from, iif, noop, Observable, of, scheduled, Subject } from 'rxjs';
 import { concatAll, filter, map, mapTo, mergeMap, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { AppComponent } from 'src/app/app.component';
 import { ClientService } from 'src/app/service/client.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { UserComponent } from 'src/app/user/user.component';
@@ -109,7 +110,7 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.user.pipe(
-			filter(user => !!user),
+			filter(user => !!user && AppComponent.isBrowser.getValue()),
 			takeUntil(this.destroyed),
 
 			switchMap(user => user.getAuditEntries().pipe(

@@ -109,16 +109,15 @@ export class UserComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit(): void {
-		const isBrowser = AppComponent.isBrowser.getValue();
 		this.route.paramMap.pipe(
 			takeUntil(this.destroyed),
 			map(params => params.get('user') as string),
 			switchMap(id => this.restService.v2.GetUser(id, {
 				includeEditors: true,
 				includeEditorIn: true,
-				includeOwnedEmotes: isBrowser,
-				includeFullEmotes: isBrowser,
-				includeAuditLogs: isBrowser,
+				includeOwnedEmotes: true,
+				includeFullEmotes: true,
+				includeAuditLogs: true,
 				includeStreamData: true
 			}, ['banned']).pipe(
 				map(res => this.dataService.add('user', res.user)[0])

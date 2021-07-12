@@ -289,7 +289,7 @@ export class EmoteComponent implements OnInit {
 							type: 'photo',
 							url
 						})).toString('base64'));
-						link.setAttribute('href', `http://${environment.origin}/services/oembed?` + query.toString());
+						link.setAttribute('href', `https://${environment.origin}/services/oembed?` + query.toString());
 						this.document.head.appendChild(link);
 					}
 					return undefined;

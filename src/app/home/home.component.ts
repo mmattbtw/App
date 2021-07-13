@@ -164,7 +164,7 @@ export class HomeComponent implements OnInit {
 
 	openTwitterLink(): void {
 		setTimeout(() => {
-			const handle = window.open('https://twitter.com/' + this.appService.twitterURL);
+			const handle = window.open(this.appService.twitterURL);
 			handle?.blur();
 			window.focus();
 		}, 200);

@@ -4,6 +4,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { EMPTY, iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestV1 } from 'src/app/service/rest/rest-v1.structure';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { environment } from 'src/environments/environment';
@@ -24,44 +25,42 @@ export class RestService {
 	constructor(
 		@Inject(PLATFORM_ID) private platformId: any,
 		cookieService: CookieService,
+		localStorage: LocalStorageService,
 		public httpService: HttpClient,
 		public clientService: ClientService
 	) {
 		this.BASE.v1 = environment.platformApiUrl(platformId, 'v1');
 		this.BASE.v2 = environment.platformApiUrl(platformId, 'v2');
 
-		if (platformId === 'browser') {
-			// Sign in the user?
-			const token = clientService.localStorage.getItem('access_token')
-				?? cookieService.get('auth');
-			of(token).pipe(
-				filter(x => typeof x === 'string'),
-				tap(tok => clientService.setToken(tok)),
-				switchMap(() => this.v2.GetUser('@me', { includeEditorIn: true }, [
-					'notification_count',
-					`notifications {
-						id, read, title, announcement,
-						users {
-							id, login, display_name,
-							profile_image_url,
-							role { id, color }
-						},
-						emotes {
-							id, name
-						},
-						message_parts {
-							type, data
-						}
-					}`
-				])),
-				switchMap(res => !!res.user?.id ? of(res.user) : throwError('Unknown Account')),
-				tap(user => clientService.pushData(user))
-			).subscribe({
-				error: err => {
-					clientService.localStorage.removeItem('access_token');
-				}
-			});
-		}
+		setTimeout(() => {
+			if (platformId === 'browser') {
+				// Sign in the user?
+				const token = localStorage.getItem('access_token') ?? cookieService.get('auth');
+				of(token).pipe(
+					filter(x => typeof x === 'string'),
+					tap(tok => clientService.setToken(tok)),
+					switchMap(() => this.v2.GetUser('@me', { includeEditorIn: true }, [
+						'notification_count',
+						`notifications {
+							id, read, title, announcement,
+							users {
+								id, login, display_name,
+								profile_image_url,
+								role { id, color }
+							},
+							emotes {
+								id, name
+							},
+							message_parts {
+								type, data
+							}
+						}`
+					])),
+					switchMap(res => !!res.user?.id ? of(res.user) : throwError('Unknown Account')),
+					tap(user => clientService.pushData(user))
+				).subscribe();
+			}
+		}, 0);
 	}
 
 	// tslint:disable:typedef

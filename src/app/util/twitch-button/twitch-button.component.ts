@@ -39,7 +39,7 @@ export class TwitchButtonComponent implements OnInit {
 		scheduled([
 			this.oauthService.openAuthorizeWindow<{ token: string }>().pipe(
 				tap(data => this.clientService.setToken(data.token)),
-				switchMap(() => this.restService.v2.GetUser('@me').pipe(
+				switchMap(() => this.restService.v2.GetUser('@me', { includeEditorIn: true }).pipe(
 					map(res => this.clientService.pushData(res?.user ?? null))
 				))
 			),

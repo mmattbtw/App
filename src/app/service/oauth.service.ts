@@ -42,6 +42,7 @@ export class OAuthService {
 					observer.error(Error(ev.data.data.error));
 				}
 
+				this.localStorage.setItem('access_token', ev.data?.data?.token ?? '');
 				observer.next(ev.data.data);
 				nativeWin.removeEventListener('message', listener);
 				return undefined;

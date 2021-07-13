@@ -93,13 +93,10 @@ export class EmoteStructure extends Structure<'emote'> {
 		);
 	}
 
-	getURL(size = 3, convert = false): Observable<string | undefined> {
+	getURL(size = 3): Observable<string | undefined> {
 		return this.dataOnce().pipe(
 			take(1),
-			map(() => convert
-				? `${environment.platformApiUrl('server', 'v2')}/emotes/${this.id}/convert.gif`
-				: `${environment.cdnUrl}/emote/${this.id}/${size}x`
-			)
+			map(() => `${environment.cdnUrl}/emote/${this.id}/${size}x`)
 		);
 	}
 

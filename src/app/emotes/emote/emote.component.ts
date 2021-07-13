@@ -257,7 +257,7 @@ export class EmoteComponent implements OnInit {
 		emoteGetter.pipe(
 			// Update meta
 			// Show this emote in discord etc!
-			switchMap(emote => emote.getURL(4, true).pipe(
+			switchMap(emote => emote.getURL(4).pipe(
 				tap(url => {
 					const appURL = this.document.location.host + this.router.serializeUrl(this.router.createUrlTree(['/emotes', String(emote.getID())]));
 					const emoteData = emote.getSnapshot();

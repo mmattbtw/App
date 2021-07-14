@@ -13,11 +13,11 @@
 				{{part.getText()}}
 			</span>
 
-			<span class="mentions-user" *ngIf="part.isUserMention()">
+			<span class="is-spaced mentions-user" *ngIf="part.isUserMention()">
 				<app-user-name [clickable]="false" [size]="[1, 1]" [user]="part.getUser()"></app-user-name>
 			</span>
 
-			<span class="mentions-emote" *ngIf="part.isEmoteMention()" (click)="goToEmote(part.getEmote())">
+			<span class="is-spaced mentions-emote" *ngIf="part.isEmoteMention()" (click)="goToEmote(part.getEmote())">
 				{{part.getEmote().getName() | async}}
 			</span>
 		</span>

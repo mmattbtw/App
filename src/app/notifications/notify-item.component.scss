@@ -11,8 +11,16 @@
 	}
 
 	.notify-parts {
-		display: inline-block;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		text-align: center;
 		word-wrap: break-word;
+
+		* {
+			display: inline-flex;
+			height: 1.5em;
+		}
 
 		.mentions-emote {
 			cursor: pointer;
@@ -21,6 +29,11 @@
 			&:hover {
 				text-decoration: underline;
 			}
+		}
+
+		.is-spaced {
+			margin-left: .25em;
+			margin-right: .25em;
 		}
 	}
 

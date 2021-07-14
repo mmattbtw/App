@@ -1,18 +1,17 @@
 .user-name {
 	display: inline-flex;
-	align-items: flex-start;
-	box-sizing: border-box;
+	flex-direction: row;
 	&.clickable { cursor: pointer; }
 
 	.username-container {
 		display: inline-flex;
-		align-self: flex-end;
+		align-self: center;
 	}
 
 	.user-avatar {
 		display: inline-flex;
-		justify-content: flex-start;
-		align-items: flex-end;
+		justify-content: center;
+		align-items: center;
 		border-style: solid;
 		border-width: 1px;
 		border-radius: 50%;
@@ -25,4 +24,8 @@
 
 		margin-right: .33em;
 	}
+}
+
+.menu-trigger {
+	display: none;
 }

@@ -77,14 +77,14 @@
 			</button>
 		</div>
 
-		<div class="h-100 d-none d-md-block" [ngSwitch]="clientService.isAuthenticated() | async">
+		<div class="d-none d-md-block" [ngSwitch]="clientService.isAuthenticated() | async">
 			<!-- Login Button -->
-			<span class="h-100 login-button" *ngSwitchCase="false">
+			<span class="login-button" *ngSwitchCase="false">
 				<app-twitch-button *ngSwitchCase="false"></app-twitch-button>
 			</span>
 
 			<!-- User / As Editor -->
-			<span class="h-100" *ngSwitchCase="true"  [ngSwitch]="clientService.isImpersonating">
+			<span *ngSwitchCase="true"  [ngSwitch]="clientService.isImpersonating">
 				<span class="user-as-editor" *ngSwitchCase="true">
 					<app-user-name [user]="clientService" [size]="[1.65, .585]" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
 
@@ -96,7 +96,7 @@
 					</span>
 				</span>
 
-				<span class="h-100 user-as-self">
+				<span class="user-as-self">
 					<app-user-name [clickable]="false" [matMenuTriggerFor]="personalMenu" [user]="clientService" [size]="[2, .75]" *ngSwitchCase="false" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
 				</span>
 			</span>

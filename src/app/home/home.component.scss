@@ -213,4 +213,11 @@
 	p {
 		line-height: .2em;
 	}
+
+	&.is-github {
+		color: black;
+		padding-right: 3em;
+		padding-left: 3em;
+		width: fit-content;
+	}
 }

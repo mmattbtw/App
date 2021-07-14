@@ -128,7 +128,7 @@
 			</p>
 		</span>
 
-		<span	class="social-media-cta"
+		<span class="social-media-cta"
 			matRipple
 			[matRippleColor]="themingService.colors.twitter_blue.opaquer(-.25).rgb().toString()"
 			(click)="openTwitterLink()"
@@ -138,6 +138,16 @@
 				<mat-icon [svgIcon]="(themingService.getSvgIcon('twitter') | async) || ''"></mat-icon>
 			</a>
 			Follow us on Twitter!
+		</span>
+
+		<span class="social-media-cta is-github d-none d-sm-flex"
+			matRipple
+			[matRippleColor]="'#f5f5f524'"
+			(click)="openGitHubLink()"
+			[appColor]="'#f5f5f5BF'" [isBackground]="true"
+		>
+			<mat-icon [svgIcon]="(themingService.getSvgIcon('github') | async) || ''"></mat-icon>
+			Contribute
 		</span>
 	</div>
 

@@ -170,6 +170,14 @@ export class HomeComponent implements OnInit {
 		}, 200);
 	}
 
+	openGitHubLink(): void {
+		setTimeout(() => {
+			const handle = window.open(this.appService.githubURL);
+			handle?.blur();
+			window.focus();
+		}, 200);
+	}
+
 	openThirdPartyAppLink(platform: HomeComponent.Platform, v: HomeComponent.PlatformVariant): void {
 		window.open(`${this.restService.BASE.v2}/platforms/${platform.id}/${v.id}`, '_blank');
 	}

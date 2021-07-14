@@ -23,6 +23,7 @@ export class AppService {
 
 	contactEmail = 'kathy@7tv.app';
 	twitterURL = 'https://twitter.com/Official_7TV';
+	githubURL = 'https://github.com/SevenTV';
 
 	featuredBroadcast = new BehaviorSubject<string>('');
 	announcement = new BehaviorSubject<string>('');

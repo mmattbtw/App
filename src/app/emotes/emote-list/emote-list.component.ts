@@ -244,11 +244,6 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	ngAfterViewInit(): void {
-		this.currentSearchOptions = {
-			sortBy: this.emoteListService.searchForm.get('sortBy')?.value,
-			sortOrder: this.emoteListService.searchForm.get('sortOrder')?.value,
-		} as RestV2.GetEmotesOptions;
-
 		// Get persisted page options?
 		this.route.queryParamMap.pipe(
 			defaultIfEmpty({} as ParamMap),
@@ -256,7 +251,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 				return {
 					page: params.has('page') ? Number(params.get('page')) : 0,
 					search: {
-						sortBy: params.get('sortBy'),
+						sortBy: params.get('sortBy') ?? 'popularity',
 						sortOrder: params.get('sortOrder'),
 						globalState: params.get('globalState'),
 						query: params.get('query'),

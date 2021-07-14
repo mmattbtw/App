@@ -3,7 +3,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostList
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subject, BehaviorSubject, Observable, noop, defer, timer } from 'rxjs';
-import { catchError, defaultIfEmpty, delay, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
+import { catchError, defaultIfEmpty, delay, filter, map, mergeAll, switchMap, take, takeUntil, tap, toArray } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
 import { AppService } from 'src/app/service/app.service';
 import { DataService } from 'src/app/service/data.service';
@@ -78,6 +78,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 	pageSize = new BehaviorSubject<number>(16);
 	currentSearchOptions: RestV2.GetEmotesOptions | undefined;
 	currentSearchQuery = '';
+	skipNextQueryChange = false;
 
 	constructor(
 		private restService: RestService,
@@ -109,6 +110,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 			...{ page: (this.pageOptions?.pageIndex ?? 0) }
 		};
 
+		this.skipNextQueryChange = true;
 		this.router.navigate(['.'], {
 			relativeTo: this.route,
 			queryParams: Object.keys(merged).map(k => ({ [k]: (merged as any)[k as any] })).reduce((a, b) => ({ ...a, ...b })),
@@ -250,7 +252,6 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 		// Get persisted page options?
 		this.route.queryParamMap.pipe(
 			defaultIfEmpty({} as ParamMap),
-			take(1),
 			map(params => {
 				return {
 					page: params.has('page') ? Number(params.get('page')) : 0,
@@ -263,7 +264,9 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 						channel: params.get('channel')
 					}
 				};
-			})
+			}),
+			tap(() => setTimeout(() => this.skipNextQueryChange = false, 0)),
+			filter(() => !this.skipNextQueryChange)
 		).subscribe({
 			next: opt => {
 				const d = {

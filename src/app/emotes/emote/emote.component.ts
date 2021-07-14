@@ -240,7 +240,8 @@ export class EmoteComponent implements OnInit {
 
 	ngOnInit(): void {
 		const emoteGetter = this.route.snapshot.paramMap.has('emote')
-			? this.restService.v2.GetEmote(this.route.snapshot.paramMap.get('emote') as string, true).pipe(
+			? this.restService.awaitAuth().pipe(
+				switchMap(() => this.restService.v2.GetEmote(this.route.snapshot.paramMap.get('emote') as string, true)),
 				catchError(err => throwError(this.restService.formatError(err))),
 				filter(res => res.emote !== null), // Initiate a new emote structure instance
 

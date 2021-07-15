@@ -64,6 +64,8 @@ export class RestService {
 					error: () => this.authenticating.next(false),
 					complete: () => this.authenticating.next(false)
 				});
+			} else {
+				this.authenticating.next(false);
 			}
 		}, 0);
 	}

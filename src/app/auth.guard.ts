@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, CanLoad } from '@angular/router';
 import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { ClientService } from 'src/app/service/client.service';
+import { RestService } from 'src/app/service/rest.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 	constructor(
-		protected clientService: ClientService
+		private restService: RestService
 	) {}
 
 	canActivate(): Observable<boolean> {
@@ -24,8 +23,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 	}
 
 	private isAuth(): Observable<boolean> {
-		return this.clientService.isAuthenticated().pipe(
-			take(1)
-		);
+		return this.restService.awaitAuth();
 	}
 }

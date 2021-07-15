@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminAuditLogsComponent } from 'src/app/admin/admin-audit-logs/admin-audit-logs.component';
 import { AdminUsersComponent } from 'src/app/admin/admin-users/admin-users.component';
 import { AdminComponent } from 'src/app/admin/admin.component';
+import { AdminGuard } from 'src/app/admin/admin.guard';
 import { AdminModQueueComponent } from 'src/app/admin/mod-queue/admin-mod-queue.component';
 
 const routes: Routes = [
@@ -10,6 +11,8 @@ const routes: Routes = [
 		path: '',
 		data: { title: 'Admin' },
 		component: AdminComponent,
+		canActivate: [AdminGuard],
+		canActivateChild: [AdminGuard],
 		children: [
 			{
 				path: '',

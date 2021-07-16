@@ -207,6 +207,7 @@ export class EmoteComponent implements OnInit {
 			return undefined;
 		}
 
+		this.channelPage = page;
 		this.restService.v2.gql.query<{ emote: DataStructure.Emote }>({
 			query: `
 				query PaginateEmoteChannels($id: String!, $page: Int) {
@@ -230,8 +231,7 @@ export class EmoteComponent implements OnInit {
 			map(res => res?.body?.data.emote.channels ?? []),
 			map(chans => this.dataService.add('user', ...chans as DataStructure.TwitchUser[]))
 		).subscribe({
-			next: channels => this.channels.next(channels),
-			complete: () => this.channelPage = page
+			next: channels => this.channels.next(channels)
 		});
 	}
 

@@ -212,7 +212,11 @@ export class EmoteComponent implements OnInit {
 				query PaginateEmoteChannels($id: String!, $page: Int) {
 					emote(id: $id) {
 						channels(page: $page) {
-							id, login, display_name, profile_image_url
+							id,
+							login,
+							display_name,
+							profile_image_url,
+							role { id, color }
 						}
 					}
 				}

@@ -9,6 +9,8 @@ import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.componen
 import { NotifyMenuComponent } from 'src/app/notifications/notify-menu.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
+import { LocalStorageService } from 'src/app/service/localstorage.service';
+import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
 import { WindowRef } from 'src/app/service/window.service';
@@ -71,6 +73,8 @@ export class NavigationComponent implements OnInit {
 		private dialog: MatDialog,
 		private windowRef: WindowRef,
 		private overlay: Overlay,
+		private localStorage: LocalStorageService,
+		private restService: RestService,
 		public clientService: ClientService,
 		public viewportService: ViewportService,
 		public themingService: ThemingService,
@@ -119,6 +123,7 @@ export class NavigationComponent implements OnInit {
 			verticalPosition: 'top',
 			horizontalPosition: 'left'
 		});
+		this.localStorage.removeItem('impersonated_user');
 	}
 
 	impersonate(): void {
@@ -130,6 +135,7 @@ export class NavigationComponent implements OnInit {
 				verticalPosition: 'top',
 				horizontalPosition: 'left'
 			})),
+			tap(e => this.localStorage.setItem('impersonated_user', e.id)),
 			map((editor: UserStructure) => this.clientService.impersonating.next(editor)),
 			take(1)
 		).subscribe({
@@ -137,7 +143,19 @@ export class NavigationComponent implements OnInit {
 		});
 	}
 
-	ngOnInit(): void {}
+	ngOnInit(): void {
+		const impersonatedID = this.localStorage.getItem('impersonated_user');
+		this.restService.awaitAuth().pipe(
+			take(1),
+			filter(ok => impersonatedID?.length === 24 && ok),
+			switchMap(() => this.clientService.getEditorIn()),
+			map(editors => editors.filter(e => e.id === impersonatedID)[0]),
+			filter(u => u instanceof UserStructure),
+			tap(u => {
+				this.clientService.impersonating.next(u);
+			})
+		).subscribe();
+	}
 }
 
 export namespace NavigationComponent {

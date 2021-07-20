@@ -46,7 +46,9 @@ export class HomeComponent implements OnInit {
 			icon: 'chrome',
 			tooltip: 'Get Extension for Chrome & other browsers',
 			svgIcon: true,
-			click: () => {
+			href: 'https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh',
+			click: (ev: MouseEvent) => {
+				if (!this.handleLinkClick(ev)) return;
 				this.viewOtherPlatforms.next(false);
 				window.open('https://chrome.google.com/webstore/detail/7tv/ammjkodgmmoknidbanneddgankgfejfh', '_blank');
 			},
@@ -60,7 +62,9 @@ export class HomeComponent implements OnInit {
 			icon: 'firefox',
 			tooltip: 'Get Add-On for Firefox',
 			svgIcon: true,
-			click: () => {
+			href: 'https://addons.mozilla.org/en-US/firefox/addon/7tv/',
+			click: (ev: MouseEvent) => {
+				if (!this.handleLinkClick(ev)) return;
 				this.viewOtherPlatforms.next(false);
 				window.open('https://addons.mozilla.org/en-US/firefox/addon/7tv/', '_blank');
 			},
@@ -74,7 +78,8 @@ export class HomeComponent implements OnInit {
 			icon: 'chatterino',
 			tooltip: 'Download Chatterino7 (Desktop Chat App)',
 			svgIcon: true,
-			click: () => {
+			click: (ev: MouseEvent) => {
+				if (!this.handleLinkClick(ev)) return;
 				this.viewOtherPlatforms.next(false);
 				this.openChatterinoDownloadsMenu();
 			},
@@ -88,7 +93,8 @@ export class HomeComponent implements OnInit {
 			icon: 'smartphone',
 			tooltip: 'Get 7TV-supported mobile apps',
 			svgIcon: false,
-			click: () => {
+			click: (ev: MouseEvent) => {
+				if (!this.handleLinkClick(ev)) return;
 				this.viewOtherPlatforms.next(true);
 				this.platformVariants.next(this.browserIcons[3].variants ?? []);
 			},
@@ -102,7 +108,8 @@ export class HomeComponent implements OnInit {
 			icon: 'code',
 			tooltip: 'Stream tools, addons, bots & more by other developers',
 			svgIcon: false,
-			click: () => {
+			click: (ev: MouseEvent) => {
+				if (!this.handleLinkClick(ev)) return;
 				this.viewOtherPlatforms.next(true);
 				this.platformVariants.next(this.browserIcons[4].variants ?? []);
 			},
@@ -155,24 +162,18 @@ export class HomeComponent implements OnInit {
 		this.dialog.open(ChatterinoDialogComponent);
 	}
 
-	openDiscordInvite(): void {
+	openDiscordInvite(ev: MouseEvent): void {
+		if (!this.handleLinkClick(ev)) return;
 		this.discordWidget.pipe(
 			take(1),
 			map(w => window.open(w?.instant_invite, 'Discord', 'width=630,height=530'))
 		).subscribe();
 	}
 
-	openTwitterLink(): void {
+	openExternalLink(ev: MouseEvent, url: string): void {
+		if (!this.handleLinkClick(ev)) return;
 		setTimeout(() => {
-			const handle = window.open(this.appService.twitterURL);
-			handle?.blur();
-			window.focus();
-		}, 200);
-	}
-
-	openGitHubLink(): void {
-		setTimeout(() => {
-			const handle = window.open(this.appService.githubURL);
+			const handle = window.open(url);
 			handle?.blur();
 			window.focus();
 		}, 200);
@@ -180,6 +181,11 @@ export class HomeComponent implements OnInit {
 
 	openThirdPartyAppLink(platform: HomeComponent.Platform, v: HomeComponent.PlatformVariant): void {
 		window.open(`${this.restService.BASE.v2}/platforms/${platform.id}/${v.id}`, '_blank');
+	}
+
+	handleLinkClick(ev: MouseEvent): boolean{
+		ev.preventDefault();
+		return ev.button === 0 || ev.button === 1;
 	}
 
 	ngOnInit(): void {
@@ -251,6 +257,7 @@ export namespace HomeComponent {
 		icon: string;
 		svgIcon: boolean;
 		tooltip?: string;
+		href?: string;
 		click: (ev: MouseEvent) => void;
 		disabled?: boolean;
 		tag?: {

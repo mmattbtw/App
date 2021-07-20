@@ -9,8 +9,10 @@
 		</div>
 
 		<div class="platform-icons">
-			<div class="platform-icon" [matTooltip]="'Download for ' + p.label"
-				(click)="download(p.url)"
+			<a class="platform-icon unstyled-link" [matTooltip]="'Download for ' + p.label"
+				(click)="download($event, p.url)"
+				(auxclick)="download($event, p.url)"
+				[href]="p.url ? p.url : ''"
 				*ngFor="let p of platforms">
 
 				<div class="menu-trigger" *ngIf="p.menu" [matMenuTriggerFor]="p.menu">
@@ -21,16 +23,18 @@
 					<mat-icon *ngSwitchCase="true" [style.transform]="'scale(4)'" [svgIcon]="p.icon"></mat-icon>
 					<mat-icon *ngSwitchDefault [style.transform]="'scale(4)'"> {{p.icon}} </mat-icon>
 				</div>
-			</div>
+			</a>
 		</div>
 	</div>
 </div>
 
 <mat-menu #installTypeMenu>
-	<button mat-menu-item (click)="download('https://github.com/SevenTV/chatterino7/releases/download/7.3.3/Chatterino.Installer.exe')">
-		INSTALLER
-	</button>
-	<button mat-menu-item (click)="download('https://github.com/SevenTV/chatterino7/releases/download/7.3.3/Chatterino.Portable.zip')">
-		PORTABLE / STANDALONE EXE
-	</button>
+	<a mat-menu-item
+		class="unstyled-link"
+		[href]="dl.url"
+		(click)="download($event, dl.url)"
+		(auxclick)="download($event, dl.url)"
+		*ngFor="let dl of windowsDownloads">
+		{{dl.label}}
+	</a>
 </mat-menu>

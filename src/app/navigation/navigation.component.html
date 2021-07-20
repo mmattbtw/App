@@ -24,11 +24,10 @@
 	<div class="nav-button-list justify-content-center flex-grow-1 d-none d-md-flex">
 		<div matRipple
 			*ngFor="let btn of navButtons">
-			<div class="d-flex flex-grow-1 align-items-center nav-button"
+			<a class="d-flex flex-grow-1 align-items-center nav-button unstyled-link"
 				[routerLinkActive]="['selected']"
 				[routerLinkActiveOptions]="{ exact: true }"
 				[routerLink]="btn.path" *ngIf="!btn.condition || (btn.condition | async)"
-				(auxclick)="$event.button === 1 ? openInNewTab(btn) : null"
 			>
 
 				<!-- Icon -->
@@ -50,7 +49,7 @@
 				<div class="_select_indicator" routerLinkActive="selected">
 					<div [appColor]="btn.color" [isBackground]="true" class="_line"></div>
 				</div>
-			</div>
+			</a>
 		</div>
 	</div>
 

@@ -88,10 +88,6 @@ export class NavigationComponent implements OnInit {
 		return environment.name === 'production';
 	}
 
-	openInNewTab(btn: NavigationComponent.NavButton): void {
-		window.open(btn.path, '_blank');
-	}
-
 	openChangelog(): void {
 		this.dialog.open(ChangelogDialogComponent, {
 			maxWidth: '64em'

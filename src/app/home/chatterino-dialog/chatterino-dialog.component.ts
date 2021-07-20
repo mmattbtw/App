@@ -12,13 +12,16 @@ import { map } from 'rxjs/operators';
 export class ChatterinoDialogComponent implements OnInit {
 	@ViewChild('installTypeMenu', { static: true }) installTypeMenu: MatMenu | undefined;
 	platforms = [] as ChatterinoDialogComponent.PlatformIcon[];
+	windowsDownloads = [] as ChatterinoDialogComponent.WindowsDownload[];
 
 	constructor(
 		private http: HttpClient
 	) { }
 
-	download(url: string | undefined): void {
+	download(ev: MouseEvent, url: string | undefined): void {
+		ev.preventDefault();
 		if (!url) return undefined;
+		if (ev.button !== 0 && ev.button !== 1) return undefined;
 
 		window.open(url, '_blank');
 	}
@@ -49,6 +52,17 @@ export class ChatterinoDialogComponent implements OnInit {
 				url: 'https://github.com/SevenTV/chatterino7/releases/tag/nightly-build'
 			}
 		);
+
+		this.windowsDownloads.push(
+			{
+				label: 'INSTALLER',
+				url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.3/Chatterino.Installer.exe'
+			},
+			{
+				label: 'PORTABLE / STANDALONE EXE',
+				url: 'https://github.com/SevenTV/chatterino7/releases/download/7.3.3/Chatterino.Portable.zip'
+			}
+		);
 	}
 }
 
@@ -60,5 +74,10 @@ export namespace ChatterinoDialogComponent {
 		url?: string;
 		disabled?: boolean;
 		menu?: MatMenu;
+	}
+
+	export interface WindowsDownload {
+		label: string;
+		url: string;
 	}
 }

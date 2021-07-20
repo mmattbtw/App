@@ -54,6 +54,7 @@
 								*ngFor="let v of platformVariants | async"
 
 								(click)="openThirdPartyAppLink(v.platform, v)"
+								(auxclick)="openThirdPartyAppLink(v.platform, v)"
 							>
 								<div class="platform-title">
 									{{ v.name }}
@@ -78,23 +79,23 @@
 							<span>{{icon.tag?.label}}</span>
 						</div>
 		
-						<div [@browserIcon]
+						<a [@browserIcon]
 							matRipple
 							[matRippleCentered]="true"
 							[matRippleUnbounded]="true"
 							[matRippleRadius]="8 * 6"
 							[class.disabled]="icon.disabled"
-							class="icon d-flex align-items-center"
+							class="icon d-flex align-items-center unstyled-link"
 							[matTooltip]="icon.tooltip || ''" 
+							[href]="icon.href ? icon.href : ''"
 							[ngSwitch]="icon.svgIcon"
 						>
-							<mat-icon *ngSwitchCase="true" [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null">
-			
+							<mat-icon *ngSwitchCase="true" [style.transform]="'scale(2)'" [svgIcon]="(themingService.getSvgIcon(icon.icon) | async) || ''" (click)="icon.click ? icon.click($event) : null" (auxclick)="icon.click ? icon.click($event) : null">
 							</mat-icon>
-							<mat-icon *ngSwitchCase="false" [style.transform]="'scale(2)'" (click)="icon.click ? icon.click($event) : null">
+							<mat-icon *ngSwitchCase="false" [style.transform]="'scale(2)'" (click)="icon.click ? icon.click($event) : null" (auxclick)="icon.click ? icon.click($event) : null">
 								{{icon.icon}}
 							</mat-icon>
-						</div>
+						</a>
 					</div>
 				</div>
 			</span>
@@ -112,7 +113,8 @@
 		<span class="social-media-cta"
 			matRipple
 			[matRippleColor]="themingService.colors.discord_blurple.opaquer(-.25).rgb().toString()"
-			(click)="openDiscordInvite()"
+			(click)="openDiscordInvite($event)"
+			(auxclick)="openDiscordInvite($event)"
 			[class.d-none]="(discordWidget | async) === (null)"
 			[appColor]="themingService.colors.discord_blurple.opaquer(-.88)" [isBackground]="true"
 		>
@@ -128,27 +130,31 @@
 			</p>
 		</span>
 
-		<span class="social-media-cta"
+		<a class="social-media-cta unstyled-link"
 			matRipple
 			[matRippleColor]="themingService.colors.twitter_blue.opaquer(-.25).rgb().toString()"
-			(click)="openTwitterLink()"
+			(click)="openExternalLink($event, appService.twitterURL)"
+			(auxclick)="openExternalLink($event, appService.twitterURL)"
+			[href]="appService.twitterURL"
 			[appColor]="themingService.colors.twitter_blue.opaquer(-.88)" [isBackground]="true"
 		>
 			<a mat-icon-button [disableRipple]="true" target="_blank" class="d-flex flex-column align-items-center">
 				<mat-icon [svgIcon]="(themingService.getSvgIcon('twitter') | async) || ''"></mat-icon>
 			</a>
 			Follow us on Twitter!
-		</span>
+		</a>
 
-		<span class="social-media-cta is-github d-none d-sm-flex"
+		<a class="social-media-cta is-github d-none d-sm-flex unstyled-link"
 			matRipple
 			[matRippleColor]="'#f5f5f524'"
-			(click)="openGitHubLink()"
+			(click)="openExternalLink($event, appService.githubURL)"
+			(auxclick)="openExternalLink($event, appService.githubURL)"
+			[href]="appService.githubURL"
 			[appColor]="'#f5f5f5BF'" [isBackground]="true"
 		>
 			<mat-icon [svgIcon]="(themingService.getSvgIcon('github') | async) || ''"></mat-icon>
 			Contribute
-		</span>
+		</a>
 	</div>
 
 	<span></span>

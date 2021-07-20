@@ -144,7 +144,7 @@ export class UserComponent implements OnInit, OnDestroy {
 					{ name: 'og:description', content: `${displayName} is${!!roleName ? ` ${roleName}` : ''} on 7TV with ${emoteCount}/${maxEmoteCount} emotes enabled`},
 					{ name: 'og:image', content: user.getSnapshot()?.profile_image_url ?? '' },
 					{ name: 'og:image:type', content: 'image/png' },
-					{ name: 'theme-color', content: '#' + (roleColor?.toString(16) ?? 'fff') }
+					{ name: 'theme-color', content: (roleColor ? `#${roleColor.toString(16)}` : '#fff') }
 				]);
 
 				if (!AppComponent.isBrowser.getValue()) {

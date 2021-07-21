@@ -18,6 +18,7 @@ export class AboutComponent implements OnInit, OnDestroy {
 		'Downloadable for Chrome and Chromium-based browsers, Firefox, Chatterino & more',
 		'Seamlessly integrates with your other Twitch extensions',
 		'Uses the newer WebP image format, resulting in much lighter images',
+		'Less opinionated: no content is removed so long as it is safe to show on stream and doesn\'t violate copyright',
 		'Transparency: all moderator actions are recorded and visible publicly. No cheating involved.',
 		'Active Development & Open Source'
 	] as string[];
@@ -25,12 +26,8 @@ export class AboutComponent implements OnInit, OnDestroy {
 	// Work in progress
 	faq = [
 		{
-			question: 'Can you get more emote slots by paying?',
-			answer: 'We believe there is no excuse to paywall slots, as the impact of high slot count is extremely small. As such, we do not charge money to get more, and have no plan to do so.'
-		},
-		{
-			question: 'I\'ve reached my maximum amount of channel emotes, can I get more?',
-			answer: 'Extra channel slots can be earned by participating in community events, contests or completing certain actions.'
+			question: 'Someone re-uploaded an emote I made, can I acquire ownership of it?',
+			answer: 'Yes, currently due to the lack of a built-in reporting system, the fastest way is by contacting a moderator on our discord server'
 		}
 	] as AboutComponent.QuestionAnswer[];
 

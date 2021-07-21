@@ -21,6 +21,16 @@
             </div>
         </div>
 
+        <h2>Frequently Asked Questions</h2>
+        <div>
+            <div class="faq-question" *ngFor="let qa of faq">
+                <p>{{qa.question}}</p>
+                <span>{{qa.answer}}</span>
+            </div>
+        </div>
+        
+        <div class="my-2"></div>
+
         <h2>Have a question?</h2>
         <p>
             You can contact us on our <a [href]="discordInvite | async">Discord</a> server, <a [href]="appService.twitterURL">Twitter</a>

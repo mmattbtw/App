@@ -23,15 +23,19 @@
 	<div class="heading" [appColor]="themingService.primary.darken(.075)" [isBackground]="true">
 		Emotes Enabled ({{(channelCount | async) || 0}}/{{((user | async)?.getEmoteSlots() | async) || 0}})
 	</div>
-	<a href class="channel-emote-list unstyled-link" (auxclick)="$event.preventDefault()" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
-		<div class="is-emote-card" *ngFor="let emote of channelEmotes | async | slice :0:channelShown; trackBy: trackBy; let last = last;">
-			<app-emote-card [blur]="isBlurred(emote)" [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
-		</div>
+	<div class="channel-emote-list" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
+		<a [routerLink]="['/emotes', emote.getID()]"
+			(auxclick)="$event.preventDefault()"
+			class="is-emote-card unstyled-link"
+			*ngFor="let emote of channelEmotes | async | slice :0:channelShown; trackBy: trackBy; let last = last;"
+		>
+			<app-emote-card [blur]="isBlurred(emote)" [size]="8" [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
+		</a>
 
 		<div *ngIf="channelShown < (channelCount.getValue())">
 			<div *ngTemplateOutlet="showMore; context: { setName: 'channel' }"></div>
 		</div>
-	</a>
+	</div>
 
 	<mat-divider class="my-3"></mat-divider>
 
@@ -40,9 +44,13 @@
 		Emotes by {{(user | async)?.getUsername() | async}} ({{(ownedCount | async) || 0}})
 	</div>
 	<a href class="channel-emote-list unstyled-link" (auxclick)="$event.preventDefault()" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
-		<div class="is-emote-card" *ngFor="let emote of ownedEmotes | async | slice :0:ownedShown; trackBy: trackBy">
-			<app-emote-card [blur]="isBlurred(emote)" [routerLink]="['/emotes', emote.getID()]" [size]="8" [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
-		</div>
+		<a [routerLink]="['/emotes', emote.getID()]"
+			(auxclick)="$event.preventDefault()"
+			class="is-emote-card unstyled-link"
+			*ngFor="let emote of ownedEmotes | async | slice :0:ownedShown; trackBy: trackBy; let last = last;"
+		>
+			<app-emote-card [blur]="isBlurred(emote)" [size]="8" [emote]="emote" [contextMenu]="contextMenu.emoteMenu" (openContext)="contextMenu.contextEmote = $event"></app-emote-card>
+		</a>
 
 		<div *ngIf="ownedShown < (ownedCount.getValue())">
 			<div *ngTemplateOutlet="showMore; context: { setName: 'owned' }"></div>

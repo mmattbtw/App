@@ -43,7 +43,7 @@
 	<div class="heading" [appColor]="themingService.primary.darken(.075)" [isBackground]="true">
 		Emotes by {{(user | async)?.getUsername() | async}} ({{(ownedCount | async) || 0}})
 	</div>
-	<a href class="channel-emote-list unstyled-link" (auxclick)="$event.preventDefault()" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
+	<div class="channel-emote-list" (auxclick)="$event.preventDefault()" [appColor]="themingService.bg.lighten(.1)" [isBackground]="true">
 		<a [routerLink]="['/emotes', emote.getID()]"
 			(auxclick)="$event.preventDefault()"
 			class="is-emote-card unstyled-link"
@@ -55,7 +55,7 @@
 		<div *ngIf="ownedShown < (ownedCount.getValue())">
 			<div *ngTemplateOutlet="showMore; context: { setName: 'owned' }"></div>
 		</div>
-	</a>
+	</div>
 
 	<mat-divider class="my-3"></mat-divider>
 

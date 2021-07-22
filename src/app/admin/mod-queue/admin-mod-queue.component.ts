@@ -71,6 +71,7 @@ export class AdminModQueueComponent implements OnInit {
 	ngOnInit(): void {
 		this.restService.v2.SearchEmotes(1, 150, {
 			sortOrder: 1,
+			sortBy: 'age',
 			filter: {
 				visibility: DataStructure.Emote.Visibility.HIDDEN
 			}

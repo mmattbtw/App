@@ -10,6 +10,6 @@ RUN git clone https://github.com/SevenTV/Typings.git
 
 # Build the app
 RUN npm install
-RUN npm run build:ssr
+RUN npm run prerender
 
 RUN echo Production build complete

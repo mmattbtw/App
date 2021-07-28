@@ -33,7 +33,7 @@ export class AdminGuard extends AuthGuard implements CanLoad {
 	private runGuard(): Observable<boolean> {
 		return super.canLoad().pipe(
 			switchMap(() => this.clientService.canAccessAdminArea()),
-			tap(ok => ok ? noop() : this.router.navigate(['/'])),
+			tap(ok => ok ? noop() : this.router.navigate(['/'], {replaceUrl: true})),
 			take(1)
 		);
 	}

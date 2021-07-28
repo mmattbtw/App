@@ -80,7 +80,7 @@ export class AppComponent implements OnInit {
 
 	async ngOnInit(): Promise<void> {
 		// Navigate to current URL in order to trigger a routing event and update the page title
-		this.router.navigateByUrl(this.location.path(true));
+		this.router.navigateByUrl(this.location.path(true), {replaceUrl: true});
 
 		if (!environment.disableChangelog && 'localStorage' in (this.windowRef.getNativeWindow() ?? {}) && !localStorage.getItem('changelog_read')) {
 			this.dialog.open(ChangelogDialogComponent, {

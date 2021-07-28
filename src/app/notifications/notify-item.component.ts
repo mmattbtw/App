@@ -27,7 +27,7 @@ export class NotifyItemComponent implements OnInit {
 	goToEmote(emote: EmoteStructure): void {
 		this.router.navigate(['/']);
 		setTimeout(() => {
-			this.router.navigate(['/emotes', emote.getID()]);
+			this.router.navigate(['/emotes', emote.getID()], {replaceUrl: true});
 		}, 0);
 	}
 

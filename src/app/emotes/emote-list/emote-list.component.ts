@@ -79,6 +79,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 	currentSearchOptions: RestV2.GetEmotesOptions | undefined;
 	currentSearchQuery = '';
 	skipNextQueryChange = false;
+	firstPageEvent = true;
 
 	constructor(
 		private restService: RestService,
@@ -104,7 +105,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 		}, 775);
 	}
 
-	private updateQueryParams(): void {
+	private updateQueryParams(replaceUrl: boolean = false): void {
 		const merged = {
 			...this.currentSearchOptions,
 			...{ page: (this.pageOptions?.pageIndex ?? 0) }
@@ -114,7 +115,8 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.router.navigate(['.'], {
 			relativeTo: this.route,
 			queryParams: Object.keys(merged).map(k => ({ [k]: (merged as any)[k as any] })).reduce((a, b) => ({ ...a, ...b })),
-			queryParamsHandling: 'merge'
+			queryParamsHandling: 'merge',
+			replaceUrl
 		});
 	}
 
@@ -189,7 +191,14 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.pageOptions = {
 			...ev
 		};
-		this.updateQueryParams();
+
+		if (this.firstPageEvent) {
+			this.updateQueryParams(true);
+			this.firstPageEvent = false;
+		}
+		else {
+			this.updateQueryParams();
+		}
 
 		// Save PageIndex title attr
 		this.appService.pushTitleAttributes({ name: 'PageIndex', value: `- ${ev.pageIndex}/${Number((ev.length / ev.pageSize).toFixed(0))}` });
@@ -269,7 +278,7 @@ export class EmoteListComponent implements OnInit, AfterViewInit, OnDestroy {
 					pageSize: Math.max(EmoteListComponent.MINIMUM_EMOTES, this.calculateSizedRows() ?? 0),
 					length: 0,
 				};
-				this.updateQueryParams();
+				this.updateQueryParams(true);
 				this.currentSearchOptions = opt.search as any;
 
 				this.paginator?.page.next(d);

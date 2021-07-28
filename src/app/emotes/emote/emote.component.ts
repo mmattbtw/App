@@ -343,7 +343,7 @@ export class EmoteComponent implements OnInit {
 						errorCode: String(err.status)
 					} as ErrorDialogComponent.Data
 				});
-				this.router.navigate(['/emotes']);
+				this.router.navigate(['/emotes'], {replaceUrl: true});
 			}
 		});
 	}

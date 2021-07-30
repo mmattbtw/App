@@ -1,22 +1,20 @@
-name: Build App
+name: Stage Pull Request
 
 on:
-  push:
-    branches: [stage]
+  pull_request:
+    types: [labeled, synchronize, opened]
+    branches:
+      - dev
 
-  workflow_dispatch:
-    inputs:
-      comment:
-        description: Comment on triggering this workflow
-        required: false
 env:
   REGISTRY_REPO: seventv/app
-  REGISTRTY_IMAGE_NAME: seventv/app/stage:${{ github.sha }}
+  REGISTRTY_IMAGE_NAME: seventv/app/pull-stage:${{ github.sha }}
 
 jobs:
   build:
     name: Build App (Stage)
     runs-on: self-hosted
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'staged') }}
 
     steps:
       - uses: actions/checkout@v2
@@ -51,8 +49,7 @@ jobs:
           file: Stage.Dockerfile
           push: true
           tags: |
-            ghcr.io/seventv/app/stage:${{ github.sha }}
-            ghcr.io/seventv/app/stage:latest
+            ghcr.io/seventv/app/pull-stage:${{ github.sha }}
 
   deploy:
     name: Deploy (Staging Environment)

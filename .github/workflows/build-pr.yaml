@@ -7,6 +7,8 @@ jobs:
   pack:
     name: Compile
     runs-on: ubuntu-latest
+    # Cannot contain staged label
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'staged') }}
 
     steps:
       - name: Checkout

@@ -31,8 +31,8 @@ export class RestService {
 		public httpService: HttpClient,
 		public clientService: ClientService
 	) {
-		this.BASE.v1 = environment.platformApiUrl(platformId, 'v1');
-		this.BASE.v2 = environment.platformApiUrl(platformId, 'v2');
+		this.BASE.v1 = environment.platformApiUrl('v1');
+		this.BASE.v2 = environment.platformApiUrl('v2');
 
 		setTimeout(() => {
 			if (platformId === 'browser') {

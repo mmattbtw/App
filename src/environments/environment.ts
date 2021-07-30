@@ -15,7 +15,7 @@ export const environment = {
 			url: 'localhost:3000/v2'
 		}
 	},
-	platformApiUrl: (platform: 'browser' | 'server', version: 'v1' | 'v2'): string => `http://${environment.api[version].url}`,
+	platformApiUrl: (version: 'v1' | 'v2'): string => `http://${environment.api[version].url}`,
 	cdnUrl: 'https://7tv.ams3.digitaloceanspaces.com',
 	wsUrl: `ws://localhost:3001`,
 

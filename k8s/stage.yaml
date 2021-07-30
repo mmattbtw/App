@@ -18,10 +18,10 @@ spec:
         command: ["npm", "run", "serve:ssr"]
         resources:
           requests:
-            memory: "100M"
+            memory: "300M"
             cpu: "100m"
           limits:
-            memory: "400M"
+            memory: "1Gi"
             cpu: "750m"
         ports:
         - containerPort: 4000

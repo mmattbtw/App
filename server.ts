@@ -7,8 +7,8 @@ import * as compression from 'compression';
 import { join } from 'path';
 
 import { AppServerModule } from './src/main.server';
-import { APP_BASE_HREF } from '@angular/common';
-import { existsSync } from 'fs';
+import { generateMetaTags } from './src/server/meta';
+import { existsSync, readFile } from 'fs';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
@@ -32,25 +32,35 @@ export function app(): express.Express {
 		maxAge: '1y'
 	}));
 
-	server.get('/services/oembed', (req, res) => {
-		let data = req.query.object as string;
-		try {
-			data = JSON.parse(Buffer.from(data as string, 'base64').toString('utf8'));
-		} catch (err) {
-			console.error('oembed object parse error,', err);
-			return res.status(400).send(err.message);
-		}
-
-		console.log('Generate OEmbed:', data);
-		return res.contentType('application/json').status(200).send(data);
-	});
+	generateMetaTags(server);
 
 	// All regular routes use the Universal engine
-	server.get('*', (req, res) => {
-		res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+	server.get('*', async (_, res) => {
+		readFile(`${distFolder}/index.html`, (err, data) => {
+			if (err) {
+				return res.send(err.message);
+			}
+
+			const file = data.toString('utf8');
+			return res.header('Content-Type', 'text/html; charset=utf-8').send(insertMetaTags(file, res.locals.tags ?? defaultTags));
+		});
+
+		return undefined;
 	});
 
+	const defaultTags = `
+		<meta name="theme-color" content="#1976d2">
+		<meta name="description"
+			content="7TV is an emote service and extension for Twitch, providing custom emotes at no fee and supporting new formats such as animated wide emotes">
+	`;
 	return server;
+}
+
+function insertMetaTags(indexFile: string, replaceWith: string): string {
+	const replaceTag = '<metalist></metalist>';
+	indexFile = indexFile.replace(replaceTag, replaceWith);
+
+	return indexFile;
 }
 
 function run(): void {

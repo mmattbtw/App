@@ -1,15 +1,29 @@
-FROM node:12-alpine as BUILDAPP
+FROM node:12-alpine as builder
 
-# Define working directory
+WORKDIR /tmp
+COPY package.json .
+RUN apk update \
+    && apk add git yarn curl bash \
+    && git clone https://github.com/SevenTV/Typings.git \
+    && curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin \
+    && yarn \
+    && yarn cache clean
+
+COPY . .
+
+ARG stage
+
+RUN if [[ -z "$stage" ]] ; then yarn build:ssr ; else yarn build-stage:ssr; fi \
+    && npm prune --production \
+    && /usr/local/bin/node-prune \
+    && rm -rf /var/cache/apk/*
+
+FROM node:12-alpine
+
 WORKDIR /app
-COPY . /app
 
-# Get typings
-RUN apk add git
-RUN git clone https://github.com/SevenTV/Typings.git
+COPY --from=builder /tmp/dist ./dist
 
-# Build the app
-RUN npm install
-RUN npm run build:ssr
+EXPOSE 4000
 
-RUN echo Production build complete
+ENTRYPOINT [ "node", "dist/seventv-app/server/main.js" ]

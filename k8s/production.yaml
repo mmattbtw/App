@@ -15,7 +15,6 @@ spec:
       containers:
       - name: 7tv-webapp
         image: ghcr.io/seventv/app:latest
-        command: ["npm", "run", "serve:ssr"]
         resources:
           requests:
             memory: "300M"

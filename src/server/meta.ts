@@ -101,7 +101,7 @@ function createOEmbedTagEmote(emote: DataStructure.Emote): string {
 		<meta name="og:image" content="${emote.urls?.[3][1]}">
 		<meta name="og:image:type" content="image/webp">
 		<meta name="theme-color" content="#0288D1">
-		<link type="application/json+oembed" href="https:/${environment.origin}/services/oembed?object=${data.toString()}">
+		<link type="application/json+oembed" href="https://${environment.origin}/services/oembed?object=${data.toString()}">
 	`;
 }
 
@@ -120,6 +120,6 @@ function createOEmbedTagUser(user: DataStructure.TwitchUser): string {
 		<meta name="og:image" content="${user.profile_image_url}">
 		<meta name="og:image:type" content="image/png">
 		<meta name="theme-color" content="${roleColor}">
-		<link type="application/json+oembed" href="https:/${environment.origin}/services/oembed?object=${data.toString()}">
+		<link type="application/json+oembed" href="https://${environment.origin}/services/oembed?object=${data.toString()}">
 	`;
 }

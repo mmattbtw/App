@@ -41,7 +41,7 @@
     "express": "^4.15.2",
     "ngx-cookie-service": "^12.0.2",
     "ngx-markdown": "^12.0.1",
-    "rxjs": "~6.6.0",
+    "rxjs": "~6.6.7",
     "ssr-window": "^3.0.0",
     "superagent": "^6.1.0",
     "tslib": "^2.3.0",

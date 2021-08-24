@@ -54,7 +54,6 @@ export class OAuthService {
 			if (!childWin) return observer.error(Error('Please allow pop-up windows for this site to sign in'));
 			this.windowOpened.next(childWin);
 			this.openedWindow = childWin;
-			this.stylizeWindow();
 
 			// LocalStorage key found: accept auth
 			// Window closes: reject.
@@ -78,20 +77,6 @@ export class OAuthService {
 		}).pipe(tap(() => {
 			this.openedWindow = null;
 		}));
-	}
-	// tslint:enable:no-string-literal
-
-	/**
-	 * Set a loading state to the current window
-	 */
-	stylizeWindow(): void {
-		if (!this.openedWindow) return undefined;
-		const doc = this.openedWindow.document;
-		doc.body.style.backgroundColor = 'black';
-		doc.body.style.color = 'white';
-		const mainContainer = doc.createElement('div');
-		mainContainer.innerText = 'You are being redirected...';
-		doc.body.appendChild(mainContainer);
 	}
 
 	/**

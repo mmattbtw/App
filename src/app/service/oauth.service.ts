@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
-import { AppComponent } from 'src/app/app.component';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from './logger.service';
 import { WindowRef } from './window.service';

@@ -1,7 +1,7 @@
 export const environment = {
 	name: 'stage',
 	production: true,
-	serviceWorker: false,
+	serviceWorker: true,
 	origin: 'stage.7tv.app',
 	api: {
 		v1: {

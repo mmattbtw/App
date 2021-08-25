@@ -45,7 +45,7 @@
 					},
 					"configurations": {
 						"dev-sw": {
-							"serviceWorker": false,
+							"serviceWorker": true,
 							"aot": true,
 							"verbose": true,
 							"outputHashing": "all",
@@ -80,7 +80,7 @@
 									"maximumError": "4kb"
 								}
 							],
-							"serviceWorker": false,
+							"serviceWorker": true,
 							"ngswConfigPath": "ngsw-config.json"
 						},
 						"stage": {
@@ -112,7 +112,7 @@
 									"maximumError": "4kb"
 								}
 							],
-							"serviceWorker": false,
+							"serviceWorker": true,
 							"ngswConfigPath": "ngsw-config.json"
 						}
 					},

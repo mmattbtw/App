@@ -81,43 +81,6 @@ export class AppComponent implements OnInit {
 	async ngOnInit(): Promise<void> {
 		// Navigate to current URL in order to trigger a routing event and update the page title
 		this.router.navigateByUrl(this.location.path(true), {replaceUrl: true});
-
-		if (!environment.disableChangelog && 'localStorage' in (this.windowRef.getNativeWindow() ?? {}) && !localStorage.getItem('changelog_read')) {
-			this.dialog.open(ChangelogDialogComponent, {
-				disableClose: true
-			});
-		}
-
-		// Handle SW Update
-		if (AppComponent.isBrowser.getValue()) {
-			this.sw.checkForUpdate();
-			this.sw.available.pipe(
-				switchMap(() => this.sw.activateUpdate()),
-				tap(() => localStorage.removeItem('changelog_read')),
-				map(_ => this.dialog.open(UpdateDialogComponent, {
-					disableClose: true
-				})),
-				switchMap(dialogRef => dialogRef.afterClosed()),
-				switchMap(accepted => iif(() => accepted === true,
-					defer(() => this.updateSW()).pipe(
-						tap(() => window.location.reload()),
-						tap(() => console.log('Updating app...'))
-					),
-					defer(() => console.log('Client did not accept the update.'))
-				))
-			).subscribe();
-		}
-
-	}
-
-	updateSW(): void {
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.getRegistrations().then((registrations) => {
-				for (const registration of registrations) {
-					registration.update().then(() => document.location.reload());
-				}
-			});
-		}
 	}
 
 	setTheme(): void {

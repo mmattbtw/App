@@ -5,7 +5,7 @@
 export const environment = {
 	name: 'dev',
 	production: false,
-	serviceWorker: false,
+	serviceWorker: true,
 	origin: 'localhost:4200',
 	api: {
 		v1: {

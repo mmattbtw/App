@@ -18,22 +18,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Set up NodeJS
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
-          submodules: true
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
@@ -45,8 +29,10 @@ jobs:
       - name: Build Image with Server-Side Rendering & Push to Packages
         uses: docker/build-push-action@v2.6.1
         with:
+          build-args: |
+            stage=1
           context: .
-          file: Stage.Dockerfile
+          file: Dockerfile
           push: true
           tags: |
             ghcr.io/seventv/app/pull-stage:${{ github.sha }}

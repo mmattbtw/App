@@ -2,9 +2,15 @@
 	margin: 2em;
 
 	.hidden-emote-list {
+		margin-top: 2em;
+
 		.hidden-emote { 
 			width: 100%; 
 			display: flex;
+
+			&:hover {
+				background-color: rgb(80, 80, 80) !important;
+			}
 
 			.emote-display {
 				display: flex;
@@ -13,9 +19,9 @@
 				margin-bottom: .33em;
 				margin-top: .33em;
 				width: 100%;
-				cursor: pointer;
 
 				img {
+					cursor: pointer;
 					margin-right: 1em;
 					max-height: 64px;
 					width: 64px;
@@ -32,12 +38,21 @@
 			}
 
 			.emote-actions {
-				justify-self: flex-end;
-				justify-content: end;
+				justify-content: space-between;
+				@media screen and (min-width: 770px) {
+					justify-self: flex-end;
+					justify-content: end;
+				}
 				display: flex;
 				flex-direction: row;
 				align-items: center;
+				margin-right: 1em;
 			}
 		}
 	}
+}
+
+.emote-tags {
+	display: block;
+	padding-bottom: 2em;
 }

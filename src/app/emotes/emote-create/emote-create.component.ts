@@ -2,13 +2,15 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { COMMA, SPACE, ENTER } from '@angular/cdk/keycodes';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { delay, filter, map, take, tap } from 'rxjs/operators';
 import { EmoteFormService } from 'src/app/emotes/emote-create/emote-form.service';
 import { TOSDialogComponent } from 'src/app/emotes/emote-create/tos-dialog/tos-dialog.component';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { ThemingService } from 'src/app/service/theming.service';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
 	selector: 'app-emote-create',
@@ -40,6 +42,8 @@ export class EmoteCreateComponent implements OnInit {
 	get emoteControl(): FormControl { return this.emoteFormService.form.get('emote') as FormControl; }
 
 	draggingFile = new BehaviorSubject<boolean>(false);
+	tags = [] as string[];
+	tagInputSeparationKeys = [ENTER, SPACE, COMMA];
 
 	isUploaded(): Observable<boolean> {
 		return this.emoteFormService.emoteData.asObservable().pipe(
@@ -64,11 +68,27 @@ export class EmoteCreateComponent implements OnInit {
 		}
 	}
 
+	addTag(ev: MatChipInputEvent): void {
+		if (ev.value.length < 3 || this.tags.length > 5) {
+			ev.chipInput?.clear();
+			return undefined;
+		}
+
+		this.tags.push(ev.value.toLowerCase());
+		ev.chipInput?.clear();
+	}
+
+	removeTag(tag: string): void {
+		const i = this.tags.indexOf(tag);
+
+		this.tags.splice(i, 1);
+	}
+
 	onDropFile(ev: DragEvent): void {
 		ev.preventDefault();
 		this.draggingFile.next(false);
 
-		this.uploadEmote(ev.dataTransfer?.files[0] ?? null);
+		this.uploadEmoteFile(ev.dataTransfer?.files[0] ?? null);
 	}
 
 	onDragOver(event: Event): void {
@@ -89,7 +109,7 @@ export class EmoteCreateComponent implements OnInit {
 		return (target as any)?.files[0] ?? null;
 	}
 
-	uploadEmote(file: File | null): void {
+	uploadEmoteFile(file: File | null): void {
 		if (!(file instanceof File)) return this.loggerService.debug(`Canceled emote upload`), undefined;
 		const reader = new FileReader();
 		const control = this.form.get('emote') as FormControl;
@@ -118,6 +138,14 @@ export class EmoteCreateComponent implements OnInit {
 
 		reader.readAsDataURL(file);
 		return undefined;
+	}
+
+	startUpload(): void {
+		if (this.tags.length > 0) {
+			this.emoteFormService.form.patchValue({ tags: this.tags.join(',').toLowerCase() });
+		}
+
+		this.emoteFormService.uploadEmote();
 	}
 
 }

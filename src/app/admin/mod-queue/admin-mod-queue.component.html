@@ -2,11 +2,11 @@
 	<div>There are {{total | async}} emotes hidden currently.</div>
 
 	<div class="hidden-emote-list">
-		<div class="hidden-emote" *ngFor="let emote of emotes | async; let last = last;">
+		<div class="hidden-emote" *ngFor="let emote of emotes | async; let odd = odd;" [style.background-color]="odd ? themingService.bg.lighten(.15) : null">
 			<div class="d-flex flex-grow-1 flex-column">
-				<div class="d-flex flex-row">
-					<div class="emote-display" (click)="openEmote(emote)">
-						<img [src]="emote.getURL(3) | async">
+				<div class="d-flex flex-column flex-md-row">
+					<div class="emote-display">
+						<img (click)="openEmote(emote)" [src]="emote.getURL(3) | async">
 
 						<span>
 							<span class="emote-name">{{emote.getName() | async}}</span>
@@ -14,20 +14,25 @@
 								[{{((emote.getOwner() | async)?.getRole() | async)?.getName() | async | uppercase}}]
 								{{emote.getOwner() | async}}
 							</span>
+
+							<div class="emote-tags" *ngIf="(emote.getTags() | async)?.length || 0 > 0">
+								<mat-chip-list>
+									<mat-chip  *ngFor="let tag of emote.getTags() | async">
+										{{tag}}
+										<mat-icon (click)="removeEmoteTag($event, emote, tag)">close</mat-icon>
+									</mat-chip>
+								</mat-chip-list>
+							</div>
 						</span>
 					</div>
 
 					<div class="emote-actions">
 						<div class="emote-action" *ngFor="let action of actions" (click)="useAction(action, emote)">
-							<button color="primary" mat-icon-button [matTooltip]="action.label">
-								<mat-icon> {{action.icon}} </mat-icon>
+							<button color="primary" mat-icon-button [matTooltip]="action.label" *ngIf="!action.invisible">
+								<mat-icon [style.color]="action.iconColor"> {{action.icon}} </mat-icon>
 							</button>
 						</div>
 					</div>
-				</div>
-
-				<div class="w-100" *ngIf="!last" class="user-column-divider">
-					<mat-divider></mat-divider>
 				</div>
 			</div>
 		</div>

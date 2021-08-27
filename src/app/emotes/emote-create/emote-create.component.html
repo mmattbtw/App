@@ -10,29 +10,74 @@
 
 	<form [formGroup]="form" class="d-flex flex-column justify-content-between emote-form p-3"  [appColor]="themingService.bg.lighten(.12)" [isBackground]="true">
 		<!-- Upload Emote -->
-		<div class="emote-upload-section d-flex flex-column-reverse flex-lg-row">
+		<div class="emote-upload-section d-flex mt-2 flex-column-reverse flex-lg-row">
 			<div class="col-12 col-lg-7 mt-2">
 				<h2>Upload Emote</h2>
 				<span class="text-muted">
-					Resizing is done automatically, the image should be 128x128 or larger for best quality
+					Your emote will be set unlisted until it is reviewed by a moderator, however you may still enable the emote or share it with others.
+					Please avoid submitting pornographic or overly sexual content, or content which may otherwise be unsafe to show on a live broadcast.
 				</span>
 				<div class="my-4"></div>
 
 				<!-- Emote Details Form -->
 				<div class="row emote-details" [style.border-color]="themingService.bg.darken(.2)">
-					<mat-form-field class="col-12 col-md-6" appearance="outline">
+					<mat-form-field class="col-12 col-md-8" appearance="outline">
 						<mat-label> Emote Name </mat-label>
 						<input formControlName="name" matInput>
 					</mat-form-field>
+
+					<mat-form-field class="col-12 col-md-8" appearance="outline">
+						<mat-label>Tags</mat-label>
+						<mat-hint>Add up to 6 tags. Min. 3 characters and max. 30 per tag</mat-hint>
+						<mat-chip-list #tagList>
+							<mat-chip *ngFor="let tag of tags" [selectable]="false" [removable]="true" (removed)="removeTag(tag)">
+								{{tag}}
+								<mat-icon matChipRemove>close</mat-icon>
+							</mat-chip>
+
+							<input matInput
+								[readonly]="tags.length >= 6"
+								[matChipInputFor]="tagList"
+								[matChipInputSeparatorKeyCodes]="tagInputSeparationKeys"
+								[matChipInputAddOnBlur]="true"
+								(matChipInputTokenEnd)="addTag($event)"
+							>
+						</mat-chip-list>
+					</mat-form-field>
+
+					<div class="col-12 my-3 d-flex flex-column">
+						<mat-checkbox formControlName="is_private">
+							<mat-label>Private Emote</mat-label>
+						</mat-checkbox>
+						<mat-checkbox formControlName="is_zerowidth">
+							<mat-label>Zero Width Emote</mat-label>
+						</mat-checkbox>
+						<span *ngIf="form.get('is_zerowidth')?.value">
+							Only <span [style.color]="'orange'">subscribers</span> will be able to enable this emote
+						</span>
+						<span *ngIf="form.get('is_private')?.value">
+							Only <span [style.color]="'red'">you and your editors</span>  will be able to view or enable this emote
+						</span>
+					</div>
 				</div>
 			</div>
 
-			<div class="col-12 col-lg-5 d-flex justify-content-center align-items-center" [class.drag-over]="draggingFile | async" (dragover)="onDragOver($event)" (drop)="onDropFile($event)">
+			<div class="upload-area col-12 col-lg-5 d-flex flex-column justify-content-between align-items-center"
+				[class.drag-over]="draggingFile | async"
+				(dragover)="onDragOver($event)"
+				(drop)="onDropFile($event)"
+				[style.background-color]="themingService.bg"
+			>
+				<p class="mt-2 d-flex flex-column text-center text-muted">
+					<span>Resizing is done automatically</span>
+					<span>Image should be 128x128 or larger for best quality</span>
+					<span>Supported: PNG, JPEG, GIF. (WebP temporarily disabled)</span>
+				</p>
 				<!-- Emote Upload Box -->
 				<div class="col-12 col-md-4 emote-upload-box">
 					<label for="edit-emote">
 						<input hidden formControlName="emote"> 
-						<input type="file" accept="image/png, image/jpeg, image/gif, image/webp" name="edit-emote" id="edit-emote" (change)="uploadEmote(getEventTargetFile($event.target))" [disabled]="(isUploading() | async) || (isUploaded() | async)" />
+						<input type="file" accept="image/png, image/jpeg, image/gif, image/webp" name="edit-emote" id="edit-emote" (change)="uploadEmoteFile(getEventTargetFile($event.target))" [disabled]="(isUploading() | async) || (isUploaded() | async)" />
 						<img #emoteImg [src]="emoteFormService.uploadedEmote | async"
 							[style.border-color]="(emoteControl.dirty && emoteControl.valid) ? 'lime' : (emoteControl.pristine) ? 'inherit' : 'red'"
 							matTooltip="Edit Emote">
@@ -40,7 +85,7 @@
 
 						<!-- Uplaod Button -->
 						<div class="d-flex flex-column mt-2 justify-content-center" *ngIf="(isUploaded() | async) === (false) && (emoteFormService.uploadedEmote | async) !== (undefined) && emoteControl.dirty">
-							<button mat-stroked-button color="primary" (click)="emoteFormService.uploadEmote()" [disabled]="!form.valid || (emoteFormService.uploading | async)">
+							<button mat-stroked-button color="primary" (click)="startUpload()" [disabled]="!form.valid || (emoteFormService.uploading | async)">
 								<div class="d-inline-flex" [ngSwitch]="isUploading() | async">
 									<mat-icon *ngSwitchCase="false">file_upload</mat-icon>
 									<mat-spinner *ngSwitchCase="true" [diameter]="24"></mat-spinner>
@@ -51,6 +96,7 @@
 						</div>
 					</label>
 				</div>
+				<p></p>
 			</div>
 		</div>
 

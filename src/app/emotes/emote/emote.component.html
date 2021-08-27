@@ -22,8 +22,8 @@
 			</button>
 
 			<!-- Override Rules Button -->
-			<button mat-icon-button (click)="setOverrides()" matTooltip="Override Rules" *ngIf="emote?.canEdit(clientService) | async">
-				<mat-icon>extension</mat-icon>
+			<button mat-icon-button (click)="setOverrides()" matTooltip="Emote Settings" *ngIf="emote?.canEdit(clientService) | async">
+				<mat-icon>settings</mat-icon>
 			</button>
 
 			<!-- Report Button -->

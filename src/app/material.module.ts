@@ -21,6 +21,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatChipsModule } from '@angular/material/chips';
 
 const modules = [
 	MatToolbarModule,
@@ -42,7 +43,8 @@ const modules = [
 	MatNativeDateModule,
 	MatExpansionModule,
 	MatSelectModule,
-	MatBadgeModule
+	MatBadgeModule,
+	MatChipsModule
 ];
 
 @NgModule({

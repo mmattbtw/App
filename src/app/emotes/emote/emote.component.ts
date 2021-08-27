@@ -1,5 +1,5 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '@typings/src/Constants';
@@ -52,7 +52,7 @@ export class EmoteComponent implements OnInit {
 	channels = new BehaviorSubject<UserStructure[]>([]);
 	channelPage = 1;
 
-	emote: EmoteStructure | undefined;
+	@Input() emote: EmoteStructure | undefined;
 	disableNotices = false;
 	blurred = new BehaviorSubject<boolean>(true);
 	sizes = new BehaviorSubject<EmoteComponent.SizeResult[]>([]);
@@ -160,8 +160,7 @@ export class EmoteComponent implements OnInit {
 
 	readAuditActivity(): Observable<AuditLogEntry[]> {
 		return this.emote?.getAuditActivity().pipe(
-			toArray(),
-			map(a => a.reverse())
+			toArray()
 		) ?? of([]);
 	}
 

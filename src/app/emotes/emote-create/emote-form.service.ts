@@ -17,6 +17,8 @@ export class EmoteFormService {
 			Validators.pattern(Constants.Emotes.NAME_REGEXP)
 		]),
 		tags: new FormControl([]),
+		is_private: new FormControl(false),
+		is_zerowidth: new FormControl(false),
 		emote: new FormControl('')
 	});
 	uploadedEmote = new BehaviorSubject(EmoteFormService.DefaultUploadImg);

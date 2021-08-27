@@ -1,15 +1,12 @@
 <div class="h-100 d-flex flex-row">
 	<!-- Sidebar -->
 	<div class="admin-sidebar px-3 d-flex flex-column" [appColor]="themingService.bg.darken(.2)" [isBorder]="true">
-		<span class="my-3"> Administration </span>
-		<mat-divider class="mb-2"></mat-divider>
-
 		<!-- Nav Cards -->
 		<div class="sidebar-content d-flex flex-column">
 			<div class="sidebar-item" matRipple *ngFor="let card of sidebarTabs" (click)="switchTab(card)" [class.active]="card.active">
 				<mat-icon> {{card.icon}} </mat-icon>
 				<div class="mx-1"></div>
-				<span>{{ card.title }}</span>
+				<span class="d-none d-md-block">{{ card.title }}</span>
 			</div>
 		</div>
 	</div>

@@ -13,11 +13,11 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 @Component({
 	selector: 'app-emote-overrides-dialog',
 	template: `
-		<h3 mat-dialog-title> Set Third-Party Overrides for {{data.emote.getName() | async}} </h3>
+		<h3 mat-dialog-title> Configure visibility flags for {{data.emote.getName() | async}} </h3>
 
 		<form [formGroup]="form" mat-dialog-content class="d-flex flex-column py-3">
 			<div *ngFor="let checkbox of checkboxes" color="primary">
-				<mat-checkbox [formControlName]="'override_' + checkbox.id" *ngIf="!checkbox.privileged || (clientService.hasPermission('EDIT_EMOTE_ALL') | async)">
+				<mat-checkbox [formControlName]="checkbox.id" *ngIf="!checkbox.privileged || (clientService.hasPermission('EDIT_EMOTE_ALL') | async)">
 					<mat-label> {{ checkbox.label }} </mat-label>
 				</mat-checkbox>
 			</div>
@@ -39,35 +39,27 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 export class EmoteOverridesDialogComponent implements OnInit, OnDestroy {
 	destroyed = new Subject<void>().pipe(take(1)) as Subject<void>;
 	form = new FormGroup({
-		override_bttv: new FormControl(false),
-		override_ffz: new FormControl(false),
-		override_twitch_global: new FormControl(false),
-		override_twitch_subscriber: new FormControl(false),
-		override_unlisted: new FormControl(false),
+		zerowidth: new FormControl(false),
+		unlisted: new FormControl(false),
+		unlisted_forever: new FormControl(false),
 		reason: new FormControl('')
 	});
 	originalValue = '';
 
 	checkboxes = [
 		{
-			label: 'BetterTTV',
-			id: 'bttv'
-		},
-		{
-			label: 'FrankerFaceZ',
-			id: 'ffz'
-		},
-		{
-			label: 'Twitch - Global',
-			id: 'twitch_global'
-		},
-		{
-			label: 'Twitch - Subscriber',
-			id: 'twitch_subscriber'
+			label: 'Zero-Width',
+			id: 'zerowidth',
+			privileged: false
 		},
 		{
 			label: 'Unlisted',
 			id: 'unlisted',
+			privileged: true
+		},
+		{
+			label: 'Permanently Unlisted',
+			id: 'unlisted_forever',
 			privileged: true
 		}
 	] as EmoteOverridesDialogComponent.Checkbox[];
@@ -82,26 +74,21 @@ export class EmoteOverridesDialogComponent implements OnInit, OnDestroy {
 		let sum = 0;
 
 		for (const { id } of this.checkboxes) {
-			const ctrl = this.form.get(`override_${id}`);
+			const ctrl = this.form.get(id);
 			if (!ctrl || !ctrl.value) {
 				continue;
 			}
 
 			switch (id) {
-				case 'bttv':
-					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.OVERRIDE_BTTV);
-					break;
-				case 'ffz':
-					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.OVERRIDE_FFZ);
-					break;
-				case 'twitch_global':
-					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.OVERRIDE_TWITCH_GLOBAL);
-					break;
-				case 'twitch_subscriber':
-					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.OVERRIDE_TWITCH_SUBSCRIBER);
-					break;
 				case 'unlisted':
 					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.HIDDEN);
+					break;
+				case 'zerowidth':
+					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.ZERO_WIDTH);
+					break;
+				case 'unlisted_forever':
+					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.HIDDEN);
+					sum = BitField.AddBits(sum, DataStructure.Emote.Visibility.PERMANENTLY_UNLISTED);
 					break;
 				default:
 					break;
@@ -120,21 +107,15 @@ export class EmoteOverridesDialogComponent implements OnInit, OnDestroy {
 	}
 
 	setDefaults(sum: number): void {
-		const getControl = (id: string) => this.form.get(`override_${id}`);
-		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.OVERRIDE_BTTV)) {
-			getControl('bttv')?.setValue(true);
-		}
-		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.OVERRIDE_FFZ)) {
-			getControl('ffz')?.setValue(true);
-		}
-		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.OVERRIDE_TWITCH_GLOBAL)) {
-			getControl('twitch_global')?.setValue(true);
-		}
-		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.OVERRIDE_TWITCH_SUBSCRIBER)) {
-			getControl('twitch_subscriber')?.setValue(true);
-		}
+		const getControl = (id: string) => this.form.get(`${id}`);
 		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.HIDDEN)) {
 			getControl('unlisted')?.setValue(true);
+		}
+		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.PERMANENTLY_UNLISTED)) {
+			getControl('unlisted_forever')?.setValue(true);
+		}
+		if (BitField.HasBits(sum, DataStructure.Emote.Visibility.ZERO_WIDTH)) {
+			getControl('zerowidth')?.setValue(true);
 		}
 	}
 

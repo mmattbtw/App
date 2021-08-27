@@ -77,7 +77,8 @@ export class RestV2 {
 							},
 							banned
 						}
-						name
+						name,
+						tags
 					}
 				}
 			`,
@@ -440,6 +441,7 @@ export namespace RestV2 {
 		sortOrder: 0 | 1;
 		filter: Partial<{
 			visibility: number;
+			visibility_clear: number;
 			width_range: [number, number];
 		}>;
 	}

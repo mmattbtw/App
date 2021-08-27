@@ -37,6 +37,11 @@
 		<mat-checkbox class="pt-2" formControlName="channel">
 			<mat-label>Channel Emotes Only</mat-label>
 		</mat-checkbox>
+		<!-- Zero-Width Filter -->
+		<mat-checkbox class="pt-2 d-flex flex-row align-items-center" formControlName="zerowidth" [disabled]="current.globalState === 'only'">
+			<mat-label>Zero-Width Only</mat-label>
+			<mat-icon class="ml-1" [inline]="true" matTooltip="Zero-Width emotes overlay on top of the previous emote, enabling some unique combos">help</mat-icon>
+		</mat-checkbox>
 
 		<mat-divider class="px-3 my-2"></mat-divider>
 		<!-- Sorting -->

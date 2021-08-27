@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { DataStructure } from '@typings/typings/DataStructure';
 import { asyncScheduler, BehaviorSubject, EMPTY, scheduled } from 'rxjs';
 import { map, mergeAll, mergeMap, take, tap, throttleTime } from 'rxjs/operators';
 import { EmoteListService } from 'src/app/emotes/emote-list/emote-list.service';
@@ -101,6 +102,11 @@ export class EmoteSearchComponent implements OnInit {
 
 			this.form.get('channel')?.valueChanges.pipe(
 				map((value: boolean) => ({ channel: value ? this.clientService.getSnapshot()?.login : '' }))
+			) ?? EMPTY,
+			this.form.get('zerowidth')?.valueChanges.pipe(
+				map((value: boolean) => ({ filter: {
+					visibility: value ? DataStructure.Emote.Visibility.ZERO_WIDTH : 0
+				}}))
 			) ?? EMPTY,
 
 			this.form.get('sortBy')?.valueChanges.pipe(

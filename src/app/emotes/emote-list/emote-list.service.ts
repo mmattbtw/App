@@ -31,6 +31,7 @@ export class EmoteListService {
 		query: new FormControl('', { updateOn: 'blur' }),
 		globalState: new FormControl('include'),
 		channel: new FormControl(false),
+		zerowidth: new FormControl(false),
 		sortBy: new FormControl('popularity'),
 		sortOrder: new FormControl(0)
 	});

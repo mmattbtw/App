@@ -12,7 +12,7 @@ import { UserStructure } from 'src/app/util/user.structure';
 import { environment } from 'src/environments/environment';
 
 export class EmoteStructure extends Structure<'emote'> {
-	private id = '';
+	id = '';
 	restService: RestService | null = null;
 
 	constructor(dataService: DataService) {

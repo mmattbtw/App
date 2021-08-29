@@ -20,10 +20,13 @@ import { UserStructure } from 'src/app/util/user.structure';
 
 export class UserHomeComponent implements OnInit, OnDestroy {
 	private destroyed = new Subject<void>();
-	channelEmotes = new BehaviorSubject<EmoteStructure[]>([]);
+
+	currentUser: UserStructure | null = null;
+	emoteSlots = new BehaviorSubject(0);
+	channelEmotes = [] as EmoteStructure[];
 	channelCount = new BehaviorSubject(0);
 	channelShown = 50;
-	ownedEmotes = new BehaviorSubject<EmoteStructure[]>([]);
+	ownedEmotes = [] as EmoteStructure[];
 	ownedShown = 50;
 	ownedCount = new BehaviorSubject(0);
 	isLive = new BehaviorSubject(false);
@@ -82,7 +85,6 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 				break;
 		}
 		this.cdr.markForCheck();
-		console.log(this.channelShown, this.ownedShown, setName);
 	}
 
 	isBlurred(emote: EmoteStructure): boolean {
@@ -90,13 +92,15 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 	}
 
 	trackBy(_: number, e: EmoteStructure): any {
-		return e.getID();
+		return e.id;
 	}
 
 	ngOnInit(): void {
 		this.user.pipe(
 			filter(user => !!user && AppComponent.isBrowser.getValue()),
 			takeUntil(this.destroyed),
+			tap(user => this.currentUser = user),
+			tap(user => this.emoteSlots.next(user.getSnapshot()?.emote_slots ?? 0)),
 
 			switchMap(user => user.getAuditEntries().pipe(
 				tap(entries => this.auditEntries = entries),
@@ -125,11 +129,11 @@ export class UserHomeComponent implements OnInit, OnDestroy {
 			next: set => {
 				switch (set.type) {
 					case 'channel':
-						this.channelEmotes.next(set.emotes);
+						this.channelEmotes = set.emotes;
 						this.channelCount.next(set.emotes.length);
 						break;
 					case 'owned':
-						this.ownedEmotes.next(set.emotes);
+						this.ownedEmotes = set.emotes;
 						this.ownedCount.next(set.emotes.length);
 						break;
 				}

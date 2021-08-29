@@ -28,12 +28,11 @@ import { EmoteStructure } from 'src/app/util/emote.structure';
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmoteCardComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class EmoteCardComponent implements OnInit, OnDestroy {
 	@Input() size = 10;
 	@Input() emote: EmoteStructure | null = null;
 	@Input() contextMenu: MatMenu | null = null;
 	@Output() openContext = new EventEmitter<EmoteStructure>();
-	@Input() blur = false;
 	@ViewChild(MatMenuTrigger) contextMenuTrigger: MatMenuTrigger | undefined;
 
 	blurChange = new BehaviorSubject<boolean>(false);
@@ -47,26 +46,11 @@ export class EmoteCardComponent implements OnInit, AfterViewChecked, OnDestroy {
 	@HostListener('mouseenter')
 	onMouseEnter(): void {
 		this.hover.next(true);
-
-		if (this.blur) {
-			timer(400).pipe(
-				takeUntil(this.hover.pipe(filter(h => h === false), take(1))),
-				take(1),
-				tap(() => {
-					this.blurChange.next(false);
-					this.cdr.markForCheck();
-				})
-			).subscribe();
-		}
 	}
 
 	@HostListener('mouseleave')
 	onMouseLeave(): void {
 		this.hover.next(false);
-
-		if (this.blur) {
-			this.blur = true;
-		}
 	}
 
 	/**
@@ -150,10 +134,6 @@ export class EmoteCardComponent implements OnInit, AfterViewChecked, OnDestroy {
 	ngOnInit(): void {
 		this.updateBorderColor();
 		this.clientService.impersonating.subscribe({ next: () => this.cdr.markForCheck() });
-	}
-
-	ngAfterViewChecked(): void {
-		this.blurChange.next(this.blur);
 	}
 
 	ngOnDestroy(): void {

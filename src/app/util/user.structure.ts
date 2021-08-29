@@ -31,6 +31,9 @@ export class UserStructure extends Structure<'user'> {
 		if (!!data.role) {
 			this.dataService.add('role', data.role);
 		}
+		if (Array.isArray(data.emotes)) {
+			this.dataService.add('emote', ...data.emotes);
+		}
 		if (Array.isArray(data.owned_emotes)) {
 			this.dataService.add('emote', ...data.owned_emotes);
 		}
@@ -152,7 +155,7 @@ export class UserStructure extends Structure<'user'> {
 		return this.dataOnce().pipe(
 			map(data => data?.emotes ?? []),
 			mergeAll(),
-			map(e => this.dataService.add('emote', e)[0]),
+			map(e => this.dataService.get('emote', { id: e.id })[0]),
 			toArray()
 		);
 	}
@@ -161,7 +164,7 @@ export class UserStructure extends Structure<'user'> {
 		return this.dataOnce().pipe(
 			map(data => data?.editors ?? []),
 			mergeAll(),
-			map(u => this.dataService.get('user', u)[0]),
+			map(u => this.dataService.get('user', { id: u.id })[0]),
 			toArray()
 		);
 	}
@@ -170,7 +173,7 @@ export class UserStructure extends Structure<'user'> {
 		return this.dataOnce().pipe(
 			map(data => data?.editor_in ?? []),
 			mergeAll(),
-			map(u => this.dataService.get('user', u)),
+			map(u => this.dataService.get('user', { id: u.id })),
 			mergeAll(),
 			toArray()
 		);

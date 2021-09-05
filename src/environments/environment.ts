@@ -13,9 +13,13 @@ export const environment = {
 		},
 		v2: {
 			url: 'localhost:3000/v2'
+		},
+
+		egvault: {
+			url: 'c5be35bd72de.ngrok.io/v1'
 		}
 	},
-	platformApiUrl: (version: 'v1' | 'v2'): string => `http://${environment.api[version].url}`,
+	platformApiUrl: (version: Version): string => `http://${environment.api[version].url}`,
 	cdnUrl: 'https://7tv.ams3.digitaloceanspaces.com',
 	wsUrl: `ws://localhost:3001`,
 
@@ -30,3 +34,5 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
+
+type Version = 'v1' | 'v2' | 'egvault';

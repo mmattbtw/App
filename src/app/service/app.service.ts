@@ -1,10 +1,11 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { DataStructure } from '@typings/typings/DataStructure';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { map, mergeAll, tap } from 'rxjs/operators';
+import { asyncScheduler, BehaviorSubject, defer, scheduled, Subject } from 'rxjs';
+import { catchError, concatAll, filter, map, mapTo, mergeAll, switchMap, tap } from 'rxjs/operators';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
+import { EgVault } from 'src/app/service/rest/egvault.structure';
 
 @Injectable({
 	providedIn: 'root'
@@ -27,10 +28,12 @@ export class AppService {
 
 	featuredBroadcast = new BehaviorSubject<string>('');
 	announcement = new BehaviorSubject<string>('');
+	egvaultOK = new BehaviorSubject<boolean | null>(null);
+	subscription = new BehaviorSubject<EgVault.Subscription | null>(null);
 
 	constructor(
 		titleService: Title,
-		restService: RestService,
+		private restService: RestService,
 		private dataService: DataService
 	) {
 		const attrMap = new Map<string, AppService.PageTitleAttribute>();
@@ -48,6 +51,7 @@ export class AppService {
 			})
 		).subscribe();
 
+		// Query App Meta
 		restService.v2.gql.query<{ meta: { featured_broadcast: string; announcement: string; roles: string[]; }; }>({
 			query: `
 				query GetMeta() {
@@ -80,6 +84,37 @@ export class AppService {
 					}
 				}
 			}
+		});
+
+		this.updateSubscriptionData();
+	}
+
+	updateSubscriptionData(): void {
+		// EgVault - Payment API State
+		scheduled([
+			this.restService.egvault.Root().pipe(
+				RestService.onlyResponse(),
+				tap(() => this.egvaultOK.next(true)),
+				catchError(() => defer(() => this.egvaultOK.next(false)))
+			),
+			this.restService.awaitAuth().pipe(
+				filter(ok => ok === true),
+				switchMap(() => this.restService.egvault.Subscriptions.Get('@me').pipe(RestService.onlyResponse())),
+				tap(res => {
+					if (!res.body?.subscription) {
+						this.subscription.next(null);
+						return undefined;
+					}
+
+					res.body.subscription.renew = res.body.renew;
+					res.body.subscription.ending_at = new Date(res.body.end_at);
+					this.subscription.next(res.body.subscription);
+					return undefined;
+				}),
+				mapTo(undefined)
+			)
+		], asyncScheduler).pipe(mergeAll()).subscribe({
+			error: err => console.error(err)
 		});
 	}
 

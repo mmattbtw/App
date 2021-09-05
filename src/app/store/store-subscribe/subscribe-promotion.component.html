@@ -1,0 +1,94 @@
+<div class="promotion">
+	<div class="promotional-content" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+		<div class="perks-list">
+			<!-- Perk: Badge -->
+			<div class="perk has-divider perk-badge">
+				<span class="perk-title">
+					Subscriber Badge
+					<span class="perk-description">
+						Get a global subscriber chat badge that evolves over time.
+						<p class="mt-1">
+							<span class="font-weight-bold" [style.color]="'red'">Limited time only</span>:
+							Earn an exclusive <span [style.color]="'#5acee0'">Founders Badge</span> by subscribing before October 1st, 2021
+						</p>
+					</span>
+				</span>
+
+				<div class="perk-image" matTooltip="Subscriber (Founder)" matTooltipPosition="above">
+					<img class="badge1" src="/assets/brand/badge-sub-founder.webp">
+				</div>
+			</div>
+
+			<!-- Perk: Zero-Width Emotes -->
+			<div class="perk perk-zerowidth has-divider">
+				<span class="perk-title">
+					Zero-Width Emotes
+					<p class="perk-description">
+						Activate a new type of emote which can be overlayed to combine and modify other emotes
+					</p>
+				</span>
+
+				<div class="perk-image">
+					<div class="zw-emote-display" [@zwRotation]="zwTransition | async">
+						<img [src]="(currentZeroWidth | async)?.emoteUrl">
+						<span class="zw-modifier">
+							<img [src]="(currentZeroWidth | async)?.modifierUrl">
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Perk: Name Tag -->
+			<div class="perk has-divider">
+				<span class="perk-title">
+					Gold Name Tag Color
+					<p class="perk-description">
+						On 7TV.APP and other affiliated services
+					</p>
+				</span>
+			</div>
+
+			<div  class="perk has-divider">
+				<span class="perk-title">
+					Global Emote Raffle Ticket
+					<p class="perk-description">
+						Participate in a raffle for a chance to pick a new emote to become global until the next cycle.
+						More information soon!
+					</p>
+				</span>
+			</div>
+
+			<!-- Perk: Animated Avatars -->
+			<div class="perk has-divider coming-soon">
+				<span class="perk-title">
+					<span>Animated Profile Picture</span>
+					<span *ngTemplateOutlet="comingSoon"></span>
+
+					<p class="perk-description">
+						When this feature is ready, subscribers will have the option to animate their avatar on Twitch and other 7TV-supported platforms
+					</p>
+				</span>
+			</div>
+
+			<!-- Perk: Personal Emotes -->
+			<div class="perk coming-soon">
+				<span class="perk-title">
+					<span>
+						Personal Emotes
+						<span *ngTemplateOutlet="comingSoon"></span>
+					</span>
+
+					<p class="perk-description">
+						In the future, subscribers will have up to 5 slots to enable emotes that can be used across all channels.
+					</p>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<ng-template #comingSoon>
+	<span class="perk-is-coming-soon">
+		COMING SOON
+	</span>
+</ng-template>

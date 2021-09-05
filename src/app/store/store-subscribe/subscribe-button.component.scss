@@ -1,0 +1,51 @@
+.subscribe-button {
+	display: flex;
+	align-items: center;
+	padding-right: .5em;
+	padding-left: .5em;
+	border: none;
+	color: white;
+	padding: .5em;
+	border-radius: 3px;
+
+	.subscribe-tag {
+		display: inline-flex;
+		align-items: center;
+
+		.sub-icon {
+			display: flex;
+			align-items: center;
+		}
+	}
+
+	span { margin-left: .5em; }
+	.price-point {
+		border-left: 1px solid white;
+		margin-left: .3em;
+		padding-left: .3em;
+	}
+
+	.plan-selector-button {
+		display: flex;
+		align-items: center;
+	}
+	.plan-selector {
+		display: flex;
+		align-items: center;
+
+		mat-form-field {
+			margin-bottom: -1.25em;
+			margin-top: -1.25em;
+			width: 0;
+
+		}
+	}
+
+	&[disabled] {
+		background-color: grey !important;
+	}
+}
+
+.mat-select-arrow {
+	display: none !important;
+}

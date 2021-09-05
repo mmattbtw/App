@@ -1,0 +1,32 @@
+<div class="store-callback">
+	<div class="notice" [style.background-color]="themingService.bg.lighten(.2)">
+		<div [ngSwitch]="gift">
+			<h1 *ngSwitchCase="false">THANK YOU FOR SUBSCRIBING!</h1>
+			<h1 *ngSwitchCase="true">Thanks for the gift sub!</h1>
+
+			<div class="thank-you-text">
+				<div>
+					<p>
+						It may take up to five minutes for your perks to activate. If this time has passed and you have 
+						not yet received your perks, please let us know and we will sort it out.
+					</p>
+					<p>
+						For the badge, it may take some extra time before showing up in chat or require a restart of your browser/chat client.
+					</p>
+				</div>
+
+				<p *ngSwitchCase="true">
+					It may take up to five minutes for the gift to be seen on the recipient's account. If this time has passed
+					and you have not yet received your perks, please let us know and we will sort it out.
+				</p>
+			</div>
+
+			<div class="ok-button">
+				<button mat-stroked-button color="primary" [routerLink]="['/subscribe']">OK</button>
+			</div>
+		</div>
+		<div class="promo-image">
+			<div></div>
+		</div>
+	</div>
+</div>

@@ -2,9 +2,8 @@ import { Overlay } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, of } from 'rxjs';
-import { delay, filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { AppComponent } from 'src/app/app.component';
+import { Observable } from 'rxjs';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { EditorDialogComponent } from 'src/app/navigation/editor-dialog.component';
 import { NotifyMenuComponent } from 'src/app/notifications/notify-menu.component';
 import { AppService } from 'src/app/service/app.service';
@@ -48,12 +47,10 @@ export class NavigationComponent implements OnInit {
 		{
 			name: 'subscribe',
 			path: '/subscribe',
-			color: '#D2B031',
-			icon: 'shopping_cart',
-			condition: of(undefined).pipe(
-				delay(0),
-				map(() => AppComponent.isBrowser.getValue() ? this.windowRef.getNativeWindow()?.location.pathname === '/subscribe' : false)
-			)
+			color: '#ffaa00',
+			icon: 'star',
+			conditionOnlyDisables: true,
+			condition: this.appService.egvaultOK.pipe(filter(ok => ok === true), take(1), map(x => x as boolean))
 		},
 		{
 			name: 'admin',
@@ -71,7 +68,6 @@ export class NavigationComponent implements OnInit {
 		private dialogRef: MatDialog,
 		private cdr: ChangeDetectorRef,
 		private dialog: MatDialog,
-		private windowRef: WindowRef,
 		private overlay: Overlay,
 		private localStorage: LocalStorageService,
 		private restService: RestService,
@@ -163,5 +159,6 @@ export namespace NavigationComponent {
 		selected?: boolean;
 		color?: string;
 		condition?: Observable<boolean>;
+		conditionOnlyDisables?: boolean;
 	}
 }

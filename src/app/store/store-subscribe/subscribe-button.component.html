@@ -1,0 +1,33 @@
+<div [matTooltip]="disabled ? 'Gifting is only available via credit card' : ''">
+	<button class="subscribe-button mat-elevation-z2" matRipple
+		[appColor]="themingService.primary.darken(.1)"
+		[isBackground]="true"
+		[disabled]="disabled || (subscribing | async)"
+	>
+		<div class="subscribe-tag" (click)="click()" >
+			<div class="sub-icon" [ngSwitch]="subscribing | async">
+				<mat-spinner [diameter]="16" color="accent" *ngSwitchCase="true"></mat-spinner>
+				<mat-icon *ngSwitchCase="false">{{icon}}</mat-icon>
+			</div>
+			<span>{{label}}</span>
+			<div class="price-point">
+				€{{price | async}} {{renewable ? renewInterval.value === 'monthly' ? '/ mo' : '/ yr' : renewInterval.value === 'monthly' ? '(1 Month)' : '(1 Year)'}}
+			</div>
+		</div>
+
+		<div class="plan-selector-button" (click)="changePlan()" *ngIf="!gift">
+			<mat-icon>arrow_drop_down</mat-icon>
+		</div>
+		<div class="plan-selector" (click)="$event.stopPropagation()">
+			<mat-form-field>
+				<mat-select #planSelector [formControl]="renewInterval">
+					<mat-option value="monthly">Monthly</mat-option>
+					<mat-option value="yearly">
+						Yearly
+						<span class="text-success">(+2 months free)</span>
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+		</div>
+	</button>
+</div>

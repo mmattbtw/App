@@ -5,6 +5,7 @@ import { BehaviorSubject, EMPTY, iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { ClientService } from 'src/app/service/client.service';
 import { LocalStorageService } from 'src/app/service/localstorage.service';
+import { EgVault } from 'src/app/service/rest/egvault.structure';
 import { RestV1 } from 'src/app/service/rest/rest-v1.structure';
 import { RestV2 } from 'src/app/service/rest/rest-v2.structure';
 import { environment } from 'src/environments/environment';
@@ -15,12 +16,14 @@ import { environment } from 'src/environments/environment';
 export class RestService {
 	BASE = {
 		v1: '',
-		v2: ''
+		v2: '',
+		egvault: ''
 	} as { [key in RestService.ApiVersion]: string };
 	private CDN_BASE = environment.cdnUrl;
 
 	public v1 = new RestV1(this);
 	public v2 = new RestV2(this);
+	public egvault = new EgVault(this);
 
 	authenticating = new BehaviorSubject<boolean>(true);
 
@@ -33,6 +36,7 @@ export class RestService {
 	) {
 		this.BASE.v1 = environment.platformApiUrl('v1');
 		this.BASE.v2 = environment.platformApiUrl('v2');
+		this.BASE.egvault = environment.platformApiUrl('egvault');
 
 		setTimeout(() => {
 			if (platformId === 'browser') {
@@ -130,7 +134,7 @@ export namespace RestService {
 	export type Method = 'get' | 'patch' | 'post' | 'put' | 'delete';
 	export type BodyMethod = 'patch' | 'post' | 'put';
 
-	export type ApiVersion = 'v1' | 'v2' | 'none';
+	export type ApiVersion = 'v1' | 'v2' | 'egvault' | 'none';
 
 	export const onlyResponse = () => <T>(source: Observable<HttpResponse<T> | HttpProgressEvent>) => source.pipe(
 		filter(x => x instanceof HttpResponse)

@@ -60,6 +60,16 @@
 		padding: .5em;
 		height: 100%;
 
+		&.disabled {
+			pointer-events: none;
+			cursor: none;
+			user-select: none;
+
+			span, mat-icon {
+				color: gray !important;
+			}
+		}
+
 		&.selected {
 			._select_indicator {
 				height: 100%;

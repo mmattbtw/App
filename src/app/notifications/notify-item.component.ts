@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { formatRelative } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -10,7 +10,8 @@ import { NotificationStructure } from 'src/app/util/notification.structure';
 @Component({
 	selector: 'app-notify-item',
 	templateUrl: 'notify-item.component.html',
-	styleUrls: ['notify-item.component.scss']
+	styleUrls: ['notify-item.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class NotifyItemComponent implements OnInit {

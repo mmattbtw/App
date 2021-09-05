@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
 	selector: 'app-store-subscribe',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class StoreSubscribeComponent implements OnInit {
-	constructor() { }
+	constructor(
+		public themingService: ThemingService
+	) { }
 
-	ngOnInit(): void { }
+	ngOnInit(): void {}
 }
 
 export namespace StoreSubscribeComponent {

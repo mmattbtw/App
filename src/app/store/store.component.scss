@@ -1,19 +1,17 @@
-.store {
-	display: block;
-	height: 100%;
-}
-
 $logosize: 18vw;
 .store-banner {
+	position: relative;
+
 	.store-logo {
 		z-index: 3;
 		position: absolute;
 		right: 0;
-		margin-top: 2em;
-		margin-right: 2em;
+		margin-top: 1em;
+		margin-right: 1em;
 		border-radius: 1em;
 		border-bottom-left-radius: 25%;
 		border-top-right-radius: 25%;
+		pointer-events: none;
 
 		.logo-image {
 			background-size: 100%;
@@ -21,12 +19,19 @@ $logosize: 18vw;
 			height: $logosize;
 			max-width: 256px;
 			max-height: 256px;
+			@media screen and (max-width: 750px) {
+				max-width: 64px;
+				max-height: 64px;
+			}
+
 			background-image: url("/assets/brand/7tv-gold.webp");
 
 		}
 	}
 
 	.store-heading {
+		display: flex;
+		flex-direction: row;
 		position: absolute;
 		z-index: 2;
 		margin-top: 2em;
@@ -37,7 +42,27 @@ $logosize: 18vw;
 
 		.store-heading-content {
 			z-index: 5 !important;
-			max-width: 16rem;
+			max-width: 32rem;
+			border-radius: 8px;
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0;
+			padding: 1em;
+
+			.promo-title {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+
+				mat-divider {
+					height: 3.5em;
+					margin-right: 1em;
+					margin-left: 1em;
+				}
+				mat-icon {
+					transform: scale(2);
+					margin-bottom: .25em;
+				}
+			}
 
 			p {
 				line-height: 1em;
@@ -47,6 +72,54 @@ $logosize: 18vw;
 			span {
 				text-shadow: 1px 1px rgb(32, 32, 32);
 			}
+
+			.sub-button-list {
+				display: flex;
+				justify-content: space-between;
+				flex-direction: column;
+				@media screen and (min-width: 900px) {
+					flex-direction: row;					
+				}
+			}
+			
+			.cancel-text-btn {
+				user-select: none;
+				cursor: pointer;
+				color: rgb(200, 80, 80);
+			}
+		}
+	}
+
+	.store-provider-switcher {
+		z-index: 1;
+		border-top-right-radius: 1em;
+		border-bottom-right-radius: 1em;
+
+		.store-provider-switcher-inner {
+			width: 4em;
+			height: 100%;
+
+			cursor: pointer;
+			user-select: none;
+		}
+
+		.store-provider-switcher-buttons {
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+			justify-content: space-around;
+			align-items: center;
+
+			mat-icon {
+				height: 50%;
+				display: flex;
+				align-items: center;
+				color: rgba(80, 80, 80, 0.5);
+
+				&.selected {
+					color: white;
+				}
+			}
 		}
 	}
 
@@ -54,15 +127,15 @@ $logosize: 18vw;
 		z-index: 1 !important;
 		position: absolute;
 		top: -130px;
+
 		left: -164px;
 		height: 28em;
-		padding-bottom: 18em;
 		width: 200%;
 		transform: rotate(-2deg);
 
-		background: linear-gradient(-22.5deg, #cca411, #f7f7f7b4, #cca411);
+		background: linear-gradient(-22.5deg, #fcc81c, #f7f7f7b4, #ddb01c);
 		background-size: 400% 400%;
-		animation: gradient 14s ease infinite;
+		animation: gradient 14s ease-in-out infinite;
 
 		@keyframes gradient {
 			0% {
@@ -75,5 +148,31 @@ $logosize: 18vw;
 				background-position: 0% 50%;
 			}
 		}
+	}
+
+	@media screen and (min-width: 1000px) {
+		.store-heading-gradient {
+			top: -14em;
+		}
+	}
+
+	@media screen and (min-width: 3000px) {
+		.store-heading-gradient {
+			top: -22em;
+		}
+	}
+}
+
+.store {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.store-content {
+	display: block;
+
+	@media screen and (max-width: 450px) {
+		margin-top: 4em;
 	}
 }

@@ -1,0 +1,64 @@
+.store-callback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	width: 100%;
+
+	h1 {
+		position: absolute;
+		font-size: 3em;
+		line-height: 1.25em;
+		font-family: 'Work Sans', sans-serif;
+		font-weight: 600;
+		color: rgb(30, 200, 70);
+	}
+
+	.notice {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		height: 100%;
+		padding: 1em;
+
+		@media screen and (min-width: 1250px) {
+			width: 50%;			
+		}
+		@media screen and (min-height: 400px) {
+			height: 50%;			
+		}
+
+		.thank-you-text {
+			display: flex;
+			height: 90%;
+			width: 50%;
+			align-items: center;
+			margin-left: 2em;
+		}
+
+		.ok-button {
+			:first-child {
+				width: 50%;
+			}
+		}
+
+		.promo-image {
+			display: flex;
+			align-self: center;
+			width: 30%;
+
+			:first-child {
+				background-size: cover;
+				background-image: url("/assets/brand/7tv-gold.webp");
+				background-repeat: no-repeat;
+				width: 16em;
+				height: 16em;
+			}
+
+			@media screen and (max-width: 500px) {
+				display: none;
+			}
+		}
+
+	}
+}

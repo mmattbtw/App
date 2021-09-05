@@ -4,6 +4,7 @@ import { map, take } from 'rxjs/operators';
 import { DataService } from 'src/app/service/data.service';
 import { Structure } from 'src/app/util/abstract.structure';
 import { EmoteStructure } from 'src/app/util/emote.structure';
+import { RoleStructure } from 'src/app/util/role.structure';
 import { UserStructure } from 'src/app/util/user.structure';
 
 export class NotificationStructure extends Structure<'notification'> {
@@ -106,6 +107,10 @@ export namespace NotificationStructure {
 			return this.data.type === DataStructure.Notification.MessagePartType.EMOTE_MENTION;
 		}
 
+		isRoleMention(): boolean {
+			return this.data.type === DataStructure.Notification.MessagePartType.ROLE_MENTION;
+		}
+
 		getText(): string {
 			return this.data.data ?? '';
 		}
@@ -122,6 +127,13 @@ export namespace NotificationStructure {
 		 */
 		getEmote(): EmoteStructure {
 			return this.dataService.get('emote', { id: this.data.data as string })[0];
+		}
+
+		/**
+		 * Get the mentioned role
+		 */
+		getRole(): RoleStructure {
+			return this.dataService.get('role', { id: this.data.data as string })[0];
 		}
 	}
 }

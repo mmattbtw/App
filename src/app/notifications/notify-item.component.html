@@ -16,7 +16,9 @@
 			<span class="mentions-user" *ngIf="part.isUserMention()">
 				<app-user-name [clickable]="false" [size]="[1, 1]" [user]="part.getUser()"></app-user-name>
 			</span>
-
+			<span class="mentions-role" *ngIf="part.isRoleMention()">
+				<span [style.color]="part.getRole().getHexColor() | async"> {{part.getRole().getName() | async}} </span>
+			</span>
 			<span class="mentions-emote" *ngIf="part.isEmoteMention()" (click)="goToEmote(part.getEmote())">
 				{{part.getEmote().getName() | async}}
 			</span>

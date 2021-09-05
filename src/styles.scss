@@ -40,7 +40,12 @@ $seventv-app-theme: mat.define-light-theme((
 html, body {
 	overflow-x: hidden;
 }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; min-height: 100%; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  height: 100%;
+}
 
 mat-icon {
   user-select: none;

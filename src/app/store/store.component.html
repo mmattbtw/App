@@ -1,4 +1,4 @@
-<div class="store" [appColor]="themingService.bg.darken(.4)" [isBackground]="true">
+<div class="store" [class.invisible]="(available | async) !== true">
 	<div class="store-banner" [style.padding-bottom.px]="bannerHeight">
 		<!-- Store Logo -->
 		<div class="store-logo mat-elevation-z3" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
@@ -7,15 +7,74 @@
 
 		<!-- Store Heading -->
 		<div class="store-heading">
-			<div class="store-heading-content">
-				<p>Become a 7TV Suscriber!</p>
-				<span>Get some cool cosmetic perks and support the developers</span>
+			<div class="store-heading-content" [appColor]="themingService.bg.opaquer(-.75).darken(.1)" [isBackground]="true" [ngSwitch]="(subscription | async) == null">
+				<div *ngSwitchCase="true">
+					<div class="promo-title">
+						<mat-icon [style.color]="themingService.colors.app_subscriber">star</mat-icon>
+						<mat-divider [vertical]="true"></mat-divider>
+						<p>Become a 7TV Subscriber!</p>
+					</div>
+					<div class="promo-description">
+						<span>Get some cool cosmetic perks, additional functionality and support the app</span>
+					</div>
+
+					<div class="my-2"></div>
+					<div [ngSwitch]="isAuth() | async">
+						<div *ngSwitchCase="false" class="mb-2 text-center">
+							<span class="text-danger">SIGN IN TO SUBSCRIBE</span>
+						</div>
+
+						<div class="sub-button-list">
+							<app-store-subscribe-button [provider]="provider | async"></app-store-subscribe-button>
+							<div class="mx-2 my-2"></div>
+							<app-store-subscribe-button [gift]="true" [disabled]="isProviderPayPal() | async" [renewable]="false" label="GIFT" icon="redeem"></app-store-subscribe-button>
+						</div>
+					</div>
+				</div>
+
+				<div *ngSwitchCase="false">
+					<p>Thank you for subscribing</p>
+					<span>
+						Need help? Reach out to us via <a target="_blank" [href]="discordInvite">Discord</a> or <a [href]="'mailto:' + appService.contactEmail">email</a>
+					</span>
+
+					<!-- Gifted -->
+					<div class="gifter-info mt-2 d-flex align-items-center" *ngIf="gifter">
+						<span class="mr-1">You were gifted by</span>
+						<app-user-name [user]="gifter"></app-user-name>
+					</div>
+
+					<!-- Ending Date -->
+					<span class="d-block mt-3 mb-2">
+						Your subscription will
+						{{ (subscription | async)?.renew ? 'automatically renew' : 'end' }}
+						on {{ (subscription | async)?.ending_at | date }}
+						
+						<span class="cancel-text-btn d-block" (click)="cancel()" *ngIf="(subscription | async)?.renew">
+							Do not renew
+						</span>
+					</span>
+
+					<app-store-subscribe-button [gift]="true" [disabled]="isProviderPayPal() | async" [renewable]="false" label="GIFT" icon="redeem"></app-store-subscribe-button>
+				</div>
+			</div>
+			<div class="store-provider-switcher" [appColor]="themingService.bg.opaquer(-.75).darken(.1)" [isBackground]="true">
+				<div class="store-provider-switcher-inner">
+					<div class="store-provider-switcher-buttons">
+						<mat-icon matTooltip="Pay with Credit Card" [class.selected]="isProviderStripe() | async" (click)="setProvider('stripe')">credit_card</mat-icon>
+						<mat-icon matTooltip="Pay via PayPal" [class.selected]="isProviderPayPal() | async" svgIcon="paypal"  (click)="setProvider('paypal')"></mat-icon>
+					</div>
+				</div>
 			</div>
 		</div>
+		
 		<div class="store-heading-gradient" #gradient></div>
 	</div>
 
 	<div class="store-content">
+		<div class="d-flex justify-content-center mb-2" *ngIf="(subscription | async) !== null">
+			As a subscriber, you can currently access these perks:
+		</div>
 		<app-store-subscribe></app-store-subscribe>
 	</div>
 </div>

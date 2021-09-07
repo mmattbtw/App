@@ -40,35 +40,17 @@ jobs:
             ghcr.io/seventv/app/stage:${{ github.sha }}
             ghcr.io/seventv/app/stage:latest
 
-  deploy:
-    name: Deploy (Staging Environment)
-    runs-on: ubuntu-latest
-    needs: # Run this after build
+    deploy:
+    name: Deploy (Stage)
+    runs-on: self-hosted
+    needs: 
       - build
 
     steps:
-        # Checkout repository
-        - uses: actions/checkout@v2
-
-        # Deploy to k8s
-        - name: Install kubectl&
-          uses: azure/setup-kubectl@v1
-
-        - name: Apply Deployment & Rollout
-          env:
-            KUBE_CONFIG_DATA: ${{ secrets.K8S_CONFIG }}
-            KUBE_RESOURCE: deployments
-            KUBE_META_NAME: 7tv-webapp-stage
-            KUBE_IMAGE_PATCH: >-
-              [
-                { "op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "ghcr.io/${{ env.REGISTRTY_IMAGE_NAME }}" }
-              ]
-          run: |
-            mkdir -p ~/.kube
-            (echo $KUBE_CONFIG_DATA | base64 -d) >> ~/.kube/config
-            kubectl config use-context 7tv-as-deployer
-
-            kubectl apply -f k8s/stage.yaml
-            kubectl patch $KUBE_RESOURCE $KUBE_META_NAME --type="json" -p="$KUBE_IMAGE_PATCH"
-
-            kubectl rollout restart -n 7tv $KUBE_RESOURCE/$KUBE_META_NAME
+      - name: Deploy Stage Server
+        uses: fifsky/ssh-action@master
+        with:
+          command: docker pull ghcr.io/seventv/autodeploy:latest && docker run --net=host -v /opt/autodeploy/config.yaml:/app/config.yaml -v /opt/autodeploy/private.key:/app/private.key ghcr.io/seventv/autodeploy:latest --service webapp-stage --tag ${{ github.sha }}
+          host: ${{ secrets.DEPLOY_HOST }}
+          user: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}

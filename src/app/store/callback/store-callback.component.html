@@ -13,11 +13,18 @@
 					<p>
 						For the badge, it may take some extra time before showing up in chat or require a restart of your browser/chat client.
 					</p>
+					<div *ngIf="provider === 'paypal'">
+						<span class="text-danger font-weight-bold">WARNING:</span>
+						<span>
+							If you'd like to cancel this subscription, please use the "Do not renew" button on the subscribe page of this website.
+							Using PayPal's interface will cause the subscription to cancel prematurely.
+						</span>
+					</div>
 				</div>
 
 				<p *ngSwitchCase="true">
 					It may take up to five minutes for the gift to be seen on the recipient's account. If this time has passed
-					and you have not yet received your perks, please let us know and we will sort it out.
+					and they have not yet received the perks, please let us know and we will sort it out.
 				</p>
 			</div>
 

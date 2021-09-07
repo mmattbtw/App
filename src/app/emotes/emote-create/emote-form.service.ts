@@ -53,6 +53,18 @@ export class EmoteFormService {
 		}
 		formData.append('tags', this.form.get('tags')?.value ?? '');
 		formData.append('emote', this.form.get('emote')?.value);
+		let visibility = 0;
+		if (this.form.get('is_private')?.value) {
+			// tslint:disable-next-line:no-bitwise
+			visibility |= DataStructure.Emote.Visibility.PRIVATE;
+		}
+		if (this.form.get('is_zerowidth')?.value) {
+			// tslint:disable-next-line:no-bitwise
+			visibility |= DataStructure.Emote.Visibility.ZERO_WIDTH;
+		}
+		if (visibility > 0) {
+			formData.append('visibility', visibility.toString());
+		}
 
 		this.form.get('name')?.disable(); // Disable the form as the emote uploads
 		this.uploading.next(true); // Set uploading state as true

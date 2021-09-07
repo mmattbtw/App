@@ -39,6 +39,7 @@
 			<span [appColor]="themingService.warning.saturate(.2)" *ngIf="emote?.isPrivate() | async">PRIVATE EMOTE</span>
 			<span [appColor]="themingService.accent" *ngIf="emote?.isGlobal() | async">GLOBAL EMOTE</span>
 			<span [appColor]="themingService.colors.twitch_purple" *ngIf="emote?.isChannel() | async">ADDED TO CHANNEL</span>
+			<span [appColor]="themingService.colors.app_subscriber" *ngIf="emote?.isZeroWidth() | async">ZERO-WIDTH</span>
 		</div>
 
 		<!-- Emote Owner -->

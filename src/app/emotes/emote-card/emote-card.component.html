@@ -35,15 +35,22 @@
 	</div>
 </div>
 
-<!-- Global / Channel Emote Indicator -->
-<div class="d-flex justify-content-center state-indicator" *ngIf="(emote?.isGlobal() | async) || (emote?.isChannel() | async)" [matTooltip]="'Global Emote'">
-	<div class="d-inline-flex justify-content-center align-items-center" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+<!-- Global / Channel Emote / Zero Width Indicator -->
+<div class="state-indicator" *ngIf="(emote?.isGlobal() | async) || (emote?.isChannel() | async)" [matTooltip]="'Global Emote'">
+	<div [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
 		<mat-icon [appColor]="globalBorderColor">star</mat-icon>
 	</div>
 </div>
 
-<div class="d-flex justify-content-center state-indicator" *ngIf="(emote?.isChannel() | async) && (emote?.isGlobal() | async) === false" [matTooltip]="'Channel Emote'">
-	<div class="d-inline-flex justify-content-center align-items-center" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+<div class="state-indicator" *ngIf="(emote?.isZeroWidth() | async)" [matTooltip]="'Zero-Width Emote'">
+	<div class="zerowidth-indicator" [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
+		<mat-icon [appColor]="themingService.colors.app_subscriber">chevron_left</mat-icon>
+		<mat-icon [appColor]="themingService.colors.app_subscriber">chevron_right</mat-icon>
+	</div>
+</div>
+
+<div class="state-indicator" *ngIf="(emote?.isChannel() | async) && (emote?.isGlobal() | async) === false" [matTooltip]="'Channel Emote'">
+	<div [appColor]="themingService.bg.darken(.1)" [isBackground]="true">
 		<mat-icon [appColor]="channelBorderColor">check_circle</mat-icon>
 	</div>
 </div>

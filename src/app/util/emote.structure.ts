@@ -170,8 +170,15 @@ export class EmoteStructure extends Structure<'emote'> {
 	/**
 	 * Whether or not the emote is global
 	 */
-	isGlobal(): Observable<boolean> {
+	 isGlobal(): Observable<boolean> {
 		return this.hasVisibility('GLOBAL');
+	}
+
+	/**
+	 * Whether or not the emote is zero width
+	 */
+	isZeroWidth(): Observable<boolean> {
+		return this.hasVisibility('ZERO_WIDTH');
 	}
 
 	getAuditActivity(): Observable<AuditLogEntry> {

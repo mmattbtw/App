@@ -46,7 +46,7 @@
     "rxjs": "~6.6.7",
     "ssr-window": "^3.0.0",
     "superagent": "^6.1.0",
-    "tslib": "^2.3.0",
+    "tslib": "^2.3.1",
     "twitch-player": "^2.0.2",
     "zone.js": "~0.11.4"
   },

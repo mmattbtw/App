@@ -1,0 +1,39 @@
+<div class="store-leaderboard" [ngSwitch]="medalists">
+	<!-- Top Three View -->
+	<div class="medalists" *ngSwitchCase="true">
+		<div class="top-gifters">
+			<mat-icon>redeem</mat-icon>
+			Top Gifters
+		</div>
+
+		<!-- 1st Place -->
+		<div class="medal-spot first-place-medal">
+			<div class="medal-icon">
+				<mat-icon [style.color]="themingService.colors.app_subscriber">emoji_events</mat-icon>
+			</div>
+
+			<app-user-name [user]="firstPlace?.user" [showAvatar]="false"></app-user-name>
+			<div class="gift-counter">{{firstPlace?.count}}</div>
+		</div>
+
+		<!-- 2nd Place -->
+		<div class="medal-spot second-place-medal">
+			<div class="medal-icon">
+				<mat-icon [style.color]="'#c0c0c0'">emoji_events</mat-icon>
+			</div>
+
+			<app-user-name [user]="secondPlace?.user" [showAvatar]="false"></app-user-name>
+			<div class="gift-counter">{{secondPlace?.count}}</div>
+		</div>
+
+		<!-- 3rd Place -->
+		<div class="medal-spot third-place-medal">
+			<div class="medal-icon">
+				<mat-icon [style.color]="'#cd7f32'">emoji_events</mat-icon>
+			</div>
+
+			<app-user-name [user]="thirdPlace?.user" [showAvatar]="false"></app-user-name>
+			<div class="gift-counter">{{thirdPlace?.count}}</div>
+		</div>
+	</div>
+</div>

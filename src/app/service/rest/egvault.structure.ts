@@ -38,7 +38,8 @@ export class EgVault {
 			},
 			Delete: (hard = false) => this.restService.createRequest<void>('delete', `/subscriptions/@me?hard=${hard}`, {
 				auth: true
-			}, 'egvault')
+			}, 'egvault'),
+			GetLeaderboards: () => this.restService.createRequest<EgVault.Response.GetLeaderboards>('get', '/subscriptions/leaderboards', {}, 'egvault')
 		};
 	}
 
@@ -62,6 +63,16 @@ export namespace EgVault {
 			renew?: boolean;
 			gifted_count: number;
 		}
+
+		export interface GetLeaderboards {
+			gift_subscriptions: GiftItem[];
+		}
+	}
+
+	export interface GiftItem {
+		user_id: string;
+		list: string[];
+		count: number;
 	}
 
 	export interface Subscription {

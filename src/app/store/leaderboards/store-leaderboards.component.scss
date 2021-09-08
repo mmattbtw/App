@@ -1,0 +1,49 @@
+.medalists {
+	.top-gifters {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		font-size: 1.25em;
+		font-weight: bolder;
+		margin-bottom: 0.3em;
+
+		color: rgba(50, 50, 50);
+		mat-icon {
+			margin-right: 0.2em;
+		}
+	}
+
+	.medal-spot {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		height: 2.5em;
+		width: 16em;
+		border-radius: 0.25em;
+		background-color: rgba(50, 50, 50, 0.75);
+		margin-bottom: 1em;
+
+		.medal-icon {
+			height: 100%;
+			display: flex;
+			align-items: center;
+			margin-left: 0.5em;
+			margin-right: 0.75em;
+		}
+
+		&.second-place-medal {
+			margin-left: 2em;
+		}
+		&.third-place-medal {
+			margin-left: 4em;
+		}
+
+		.gift-counter {
+			width: 100%;
+			margin-right: 1em;
+			display: flex;
+			justify-content: flex-end;
+			color: rgb(50, 170, 45);
+		}
+	}
+}

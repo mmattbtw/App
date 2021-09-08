@@ -88,6 +88,16 @@ $logosize: 18vw;
 				color: rgb(200, 80, 80);
 			}
 		}
+
+		.store-medalists {
+			display: flex;
+			justify-content: center;
+			width: 50%;
+
+			@media screen and (max-width: 1250px) {
+				display: none;
+			}
+		}
 	}
 
 	.store-provider-switcher {

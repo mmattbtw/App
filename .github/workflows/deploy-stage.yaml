@@ -9,9 +9,6 @@ on:
       comment:
         description: Comment on triggering this workflow
         required: false
-env:
-  REGISTRY_REPO: seventv/app
-  REGISTRTY_IMAGE_NAME: seventv/app/stage:${{ github.sha }}
 
 jobs:
   build:
@@ -50,7 +47,7 @@ jobs:
       - name: Deploy Stage Server
         uses: fifsky/ssh-action@master
         with:
-          command: docker pull ghcr.io/seventv/autodeploy:latest && docker run --net=host -v /opt/autodeploy/config.yaml:/app/config.yaml -v /opt/autodeploy/private.key:/app/private.key ghcr.io/seventv/autodeploy:latest --service webapp-stage --tag ${{ github.sha }}
+          command: docker pull ghcr.io/seventv/autodeploy:latest && docker run --rm --net=host -v /opt/autodeploy/config.yaml:/app/config.yaml -v /opt/autodeploy/private.key:/app/private.key ghcr.io/seventv/autodeploy:latest --service webapp-stage --tag ${{ github.sha }}
           host: ${{ secrets.DEPLOY_HOST }}
           user: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}

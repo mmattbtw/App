@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { asyncScheduler, BehaviorSubject, Observable, scheduled } from 'rxjs';
 import { map, mergeAll, skip, switchMap, take, tap } from 'rxjs/operators';
 import { DataService } from 'src/app/service/data.service';
@@ -10,7 +10,8 @@ import { UserStructure } from 'src/app/util/user.structure';
 @Component({
 	selector: 'app-store-leaderboards',
 	templateUrl: 'store-leaderboards.component.html',
-	styleUrls: ['store-leaderboards.component.scss']
+	styleUrls: ['store-leaderboards.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreLeaderboardsComponent implements OnInit {
 	@Input() medalists = true;
@@ -23,7 +24,8 @@ export class StoreLeaderboardsComponent implements OnInit {
 	constructor(
 		public themingService: ThemingService,
 		private restService: RestService,
-		private dataService: DataService
+		private dataService: DataService,
+		private cdr: ChangeDetectorRef
 	) {}
 
 	private getPosition(pos: number): Observable<[UserStructure, number]> {
@@ -51,7 +53,9 @@ export class StoreLeaderboardsComponent implements OnInit {
 				this.getPosition(2).pipe(tap(x => this.secondPlace = { user: x[0], count: x[1] })),
 				this.getPosition(3).pipe(tap(x => this.thirdPlace = { user: x[0], count: x[1] }))
 			], asyncScheduler).pipe(mergeAll()))
-		).subscribe();
+		).subscribe({
+			next: () => this.cdr.markForCheck()
+		});
 	}
 }
 

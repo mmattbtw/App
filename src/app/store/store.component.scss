@@ -91,10 +91,9 @@ $logosize: 18vw;
 
 		.store-medalists {
 			display: flex;
-			justify-content: center;
-			width: 50%;
+			margin-left: 2.5em;
 
-			@media screen and (max-width: 1250px) {
+			@media screen and (max-width: 1125px) {
 				display: none;
 			}
 		}
@@ -127,7 +126,7 @@ $logosize: 18vw;
 				color: rgba(80, 80, 80, 0.5);
 
 				&.selected {
-					color: white;
+					color: rgb(130, 230, 90) !important;
 				}
 			}
 		}

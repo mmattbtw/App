@@ -61,8 +61,8 @@
 			<div class="store-provider-switcher" [appColor]="themingService.bg.opaquer(-.75).darken(.1)" [isBackground]="true">
 				<div class="store-provider-switcher-inner">
 					<div class="store-provider-switcher-buttons">
-						<mat-icon matTooltip="Pay with Credit Card" [class.selected]="isProviderStripe() | async" (click)="setProvider('stripe')">credit_card</mat-icon>
-						<mat-icon matTooltip="Pay via PayPal" [class.selected]="isProviderPayPal() | async" svgIcon="paypal"  (click)="setProvider('paypal')"></mat-icon>
+						<mat-icon matTooltip="Pay with Credit Card" [style.color]="'#e8b256'" [class.selected]="isProviderStripe() | async" (click)="setProvider('stripe')">credit_card</mat-icon>
+						<mat-icon matTooltip="Pay via PayPal" [style.color]="'#3b7bbf'" [class.selected]="isProviderPayPal() | async" svgIcon="paypal"  (click)="setProvider('paypal')"></mat-icon>
 					</div>
 				</div>
 			</div>

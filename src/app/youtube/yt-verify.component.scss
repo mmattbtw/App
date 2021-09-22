@@ -1,0 +1,107 @@
+.youtube-verify {
+	padding: 10%;
+
+	.error-notice {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		padding: 0.3em;
+
+		:first-child {
+			display: flex;
+			align-items: center;
+		}
+		:last-child {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		span {
+			margin-left: 0.25em;
+		}
+
+		background-color: rgb(255, 100, 100);
+		border-radius: 0.25em;
+		margin-bottom: 1em;
+	}
+
+	.channel-info {
+		display: flex;
+		align-items: center;
+		vertical-align: middle;
+		padding: 1em;
+
+		img {
+			border-radius: 50%;
+			max-width: 4em;
+			max-height: 4em;
+		}
+		span {
+			margin-left: 0.5em;
+			font-size: 1.5em;
+		}
+	}
+
+	[step] {
+		margin-bottom: 2em;
+
+		[stepLabel] {
+			padding: 1em;
+			border-top-left-radius: 0.5em;
+			border-top-right-radius: 0.5em;
+			font-size: 1.3rem;
+		}
+
+		[stepContent] {
+			padding-top: 1em;
+			padding-left: 1em;
+			padding-bottom: 1em;
+			border-bottom-left-radius: 0.5em;
+			border-bottom-right-radius: 0.5em;
+		}
+
+		[stepActions] {
+			margin-top: 1em;
+			padding-bottom: 0.5em;
+
+			button {
+				margin-left: 1em;
+			}
+		}
+
+		&[step="sign-in"] {
+			.login-button {
+				display: flex;
+				align-items: center;
+				margin-top: 2em;
+				margin-left: 0.25em;
+			}
+		}
+
+		&[step="verify-token"] {
+			.token-copy-area {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0.6em;
+				margin-bottom: 1em;
+				max-width: 40em;
+				border-color: rgb(0, 0, 0);
+				border-radius: 1em;
+				background-color: rgb(30, 30, 30);
+
+				span {
+					text-align: center;
+				}
+			}
+
+			.desc-breadcrumb {
+				margin-top: 1em;
+			}
+		}
+
+		&.complete {
+			opacity: 0.3;
+		}
+	}
+}

@@ -21,6 +21,9 @@
                             <div class="user-button" matTooltip="Twitch Channel" (click)="openTwitchChannel()" [appColor]="themingService.colors.twitch_purple">
                                 <mat-icon [svgIcon]="(themingService.getSvgIcon('twitch') | async) || ''"></mat-icon>
                             </div>
+                            <div class="user-button" matTooltip="YouTube Channel" (click)="openYouTubeChannel()" [appColor]="themingService.warning" *ngIf="hasYouTube | async">
+                                <mat-icon [svgIcon]="(themingService.getSvgIcon('youtube') | async) || ''"></mat-icon>
+                            </div>
 
                             <div class="user-button" appColor="white" matTooltip="More..." [matMenuTriggerFor]="contextMenu.userMenu">
                                 <mat-icon>more_horiz</mat-icon>

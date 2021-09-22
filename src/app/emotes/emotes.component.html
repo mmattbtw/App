@@ -6,17 +6,28 @@
         	<span class="ml-1">Emotes</span>
 		</span>
 
-		<a href="/emotes/create" (click)="$event.preventDefault()" class="d-flex justify-content-end" [matTooltip]="(clientService.hasPermission('CREATE_EMOTE') | async) ? '' : 'You must be signed in to do that'">
-			<button mat-raised-button
-				[disabled]="(clientService.hasPermission('CREATE_EMOTE') | async) !== true"
-				
-				[routerLink]="['/emotes', 'create']"
-				color="primary"
-			>
-				<mat-icon>add</mat-icon>
-				ADD EMOTE
-			</button>
-		</a>
+		<div class="button-list">
+			<a href="/link-youtube" (click)="$event.preventDefault()" *ngIf="(clientService.getYouTubeID() | async) === null">
+				<button mat-raised-button color="warn" matTooltip="Link your YouTube Channel" [routerLink]="['/link-youtube']">
+					<div class="d-flex">
+						<mat-icon svgIcon="youtube" class="mr-2"></mat-icon>
+						LINK YOUTUBE
+					</div>
+				</button>
+			</a>
+			<div class="mx-2"></div>
+			<a href="/emotes/create" (click)="$event.preventDefault()" class="d-flex justify-content-end" [matTooltip]="(clientService.hasPermission('CREATE_EMOTE') | async) ? '' : 'You must be signed in to do that'">
+				<button mat-raised-button
+					[disabled]="(clientService.hasPermission('CREATE_EMOTE') | async) !== true"
+					
+					[routerLink]="['/emotes', 'create']"
+					color="primary"
+				>
+					<mat-icon>add</mat-icon>
+					ADD EMOTE
+				</button>
+			</a>
+		</div>
     </div>
 
 	<div class="content flex-fill">

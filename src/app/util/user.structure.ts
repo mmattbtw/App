@@ -332,6 +332,12 @@ export class UserStructure extends Structure<'user'> {
 		return `https://twitch.tv/${this?.getSnapshot()?.login}`;
 	}
 
+	getYouTubeID(): Observable<string | null> {
+		return this.dataOnce().pipe(
+			map(d => d?.youtube_id || null)
+		);
+	}
+
 	getRestService(): RestService {
 		if (!this.restService) {
 			try {

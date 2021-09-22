@@ -1,4 +1,16 @@
 <div class="h-100 d-flex flex-column w-100">
+	<div class="news-bar mat-elevation-z2">
+		<mat-icon class="news-icon" svgIcon="youtube" color="warn">
+		</mat-icon>
+		<div class="icon-fill"></div>
+		<span class="news-info">
+			7TV is now available for YouTube!
+			<a href="/link-youtube" (click)="$event.preventDefault()" [routerLink]="['/link-youtube']" *ngIf="(clientService.getYouTubeID() | async) === null">
+				Link your channel
+			</a>
+		</span>
+	</div>
+
 	<div class="d-flex flex-grow-1 flex-row justify-content-around align-items-md-start h-100">
 		<!-- Intro & Download Button -->
 		<div class="d-flex flex-column intro align-items-center justify-content-start align-self-center">
@@ -16,7 +28,7 @@
 					</h1>
 
 					<div class="slogan-explanation">
-						A new emote service and extension for Twitch. <a href [routerLink]="['/about']">Learn more.</a>
+						A new emote service and extension for Twitch and YouTube. <a href [routerLink]="['/about']">Learn more.</a>
 					</div>
 				</div>
 			</div>
@@ -108,6 +120,16 @@
 		</div>
 	</div>
 
+	<!-- Footer Links -->
+	<div class="d-flex flex-row footer-options justify-content-center">
+		<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
+			<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
+			<a *ngIf="!!btn.route" [routerLink]="btn.route"> {{btn.name}} </a>
+
+			<div *ngIf="footerOptions.length > (index + 1)" class="mx-2 separator-ball d-block"></div>
+		</span>
+	</div>
+	<div></div>
 	<!-- Discord Call To Action -->
 	<div class="d-flex flex-row flex-fill flex-grow-1">
 		<span class="social-media-cta"
@@ -159,13 +181,4 @@
 
 	<span></span>
 	<span></span>
-	<!-- Footer Links -->
-	<div class="d-flex flex-row footer-options justify-content-center" [appColor]="themingService.bg.lighten(.05)" [isBackground]="true">
-		<span class="d-flex flex-row align-items-center footer-option" *ngFor="let btn of footerOptions; let index = index;">
-			<a *ngIf="!!btn.path" target="_blank" [href]="btn.path" class="text-muted">{{btn.name}}</a>
-			<a *ngIf="!!btn.route" [routerLink]="btn.route"> {{btn.name}} </a>
-
-			<div *ngIf="footerOptions.length > (index + 1)" class="mx-2 separator-ball d-block"></div>
-		</span>
-	</div>
 </div>

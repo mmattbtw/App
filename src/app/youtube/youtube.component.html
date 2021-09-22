@@ -1,0 +1,26 @@
+<div class="youtube" [class.started]="started | async">
+	<div class="explanation" (click)="start()">
+		<div class="cta">
+			<h1 [appColor]="themingService.primary">Link your YouTube Channel with 7TV</h1>
+			<span>Click to start</span>
+		</div>
+		<div class="connect-banner"></div>
+		<div class="overkill">
+			<span>
+				While waiting for Google to approve our application to allow you to sign
+				in directly via your Google account, you'll need to insert some text into
+				your channel's description in order to verify it's you. 
+				<p class="mt-2">
+					This process currently requires a Twitch account,
+					but this will change in the near future!
+				</p>
+			</span>
+		</div>
+	</div>
+
+	<div class="flow">
+		<div>
+			<app-youtube-verify></app-youtube-verify>
+		</div>
+	</div>
+</div>

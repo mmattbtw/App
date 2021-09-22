@@ -1,0 +1,120 @@
+<div class="youtube-verify">
+	<!-- Display error notice -->
+	<div class="error-notice" *ngIf="(currentError | async) !== ''">
+		<div>
+			<mat-icon>error</mat-icon>
+			<span>
+				{{currentError | async}}
+			</span>
+		</div>
+
+		<button mat-icon-button (click)="currentError.next('')">
+			<mat-icon>close</mat-icon>
+		</button>
+	</div>
+
+	<!-- Channel Info -->
+	<div class="channel-info" *ngIf="channelRetrieved | async">
+		<img [src]="channelThumbnailURL | async">
+		<span>{{ channelTitle | async }}</span>
+	</div>
+
+	<!--
+		Step 0: Sign In With Twitch
+		(Temporary measure awaiting oauth)	
+	-->
+	<div step="sign-in" *ngIf="currentStep === 0">
+		<div stepLabel [appColor]="themingService.bg.lighten(.25)" [isBackground]="true">
+			Sign In (with Twitch)
+		</div>
+
+		<div stepContent [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+			<span>
+				For now, you must sign in with a twitch account. This is temporary, and you will soon
+				be able to sign in with your google account directly. Sorry for the inconvenience at this time.
+			</span>
+
+			<div class="login-button">
+				<app-twitch-button></app-twitch-button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Step 1: Request a token -->
+	<div step="token-request" *ngIf="currentStep === 1">
+		<div stepLabel [appColor]="themingService.bg.lighten(.25)" [isBackground]="true">
+			Channel ID or Username
+		</div>
+		
+		<div stepContent [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+			<span>
+				You can find your's channel ID from the URL<br/>
+			</span>
+
+			<div class="channel-id-form">
+				https://youtube.com/{{!channelIdentifier.value || channelIdentifier.value?.toLowerCase().startsWith('uc') ? 'channel' : 'user'}}/
+				<mat-form-field>
+					<input matInput [formControl]="channelIdentifier">
+				</mat-form-field>
+			</div>
+
+			<div stepActions>
+				<button mat-raised-button color="primary" [disabled]="(requestingVerification | async) || channelIdentifier.invalid" (click)="startVerification()">
+					START VERIFICATION
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Step 2: Verify -->
+	<div step="verify-token" *ngIf="currentStep === 2">
+		<div stepLabel [appColor]="themingService.bg.lighten(.25)" [isBackground]="true">
+			Verification
+		</div>
+		
+		<div stepContent [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+			<span>
+				<p>Let's make sure you own the channel "{{channelTitle | async}}".</p>
+				<p>Please insert this string anywhere in your channel's description. Don't worry, you can remove it right after.</p>
+			</span>
+			<div class="token-copy-area">
+				<span>{{token}}</span>
+				<button mat-icon-button (click)="copyToken()">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<span class="desc-breadcrumb">
+				You can edit the channel description under <a href="https://studio.youtube.com" target="_blank">YouTube Studio</a> -> Customization -> Basic Info
+			</span>
+
+
+			<div stepActions>
+				<button mat-raised-button color="primary" (click)="verify()">VERIFY</button>
+				<button mat-flat-button color="accent" (click)="openStudio()" matTooltip="Make sure you are logged in as the channel on youtube.com">
+					GO TO YOUTUBE STUDIO
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Step 3: Done! -->
+	<div step="verified" *ngIf="currentStep === 3">
+		<div stepLabel [appColor]="themingService.bg.lighten(.25)" [isBackground]="true">
+			<mat-icon [inline]="true" [style.color]="'lime'">done_all</mat-icon>
+			Your channel has been verified!
+		</div>
+
+		<div stepContent [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
+			<span>
+				You're now the owner of {{channelTitle | async}}!
+				Make sure you and your viewers have the 7TV Browser Extension downloaded to see the emotes you add to your channel.
+				<p>You may now remove the verification token from your channel description.</p>
+			</span>
+
+			<div stepActions>
+				<button mat-raised-button color="primary" [routerLink]="['/emotes']">ADD SOME EMOTES</button>
+				<button mat-flat-button [routerLink]="['/']">BACK TO HOME PAGE</button>
+			</div>
+		</div>
+	</div>
+</div>

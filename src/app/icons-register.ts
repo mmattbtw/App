@@ -12,5 +12,6 @@ export const iconList = [
 	['apple', 'icons/apple.svg'],
 	['twitter', 'icons/twitter.svg'],
 	['github', 'icons/github.svg'],
-	['paypal', 'icons/paypal.svg']
+	['paypal', 'icons/paypal.svg'],
+	['youtube', 'icons/youtube.svg']
 ] as [string, string][];

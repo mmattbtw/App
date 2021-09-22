@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestro
 import { FormControl } from '@angular/forms';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { asyncScheduler, BehaviorSubject, Observable, of, scheduled, Subject, throwError } from 'rxjs';
-import { concatAll, filter, map, mapTo, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { asyncScheduler, BehaviorSubject, EMPTY, Observable, of, scheduled, Subject, throwError } from 'rxjs';
+import { concatAll, filter, map, mapTo, switchMap, switchMapTo, take, takeUntil, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { AppService } from 'src/app/service/app.service';
 import { ClientService } from 'src/app/service/client.service';
@@ -28,6 +28,7 @@ export class UserComponent implements OnInit, OnDestroy {
 	user = new BehaviorSubject<UserStructure | null>(null);
 	editors = new BehaviorSubject<UserStructure[]>([]);
 	edited = new BehaviorSubject<UserStructure[]>([]);
+	hasYouTube = new BehaviorSubject<boolean>(false);
 
 	addingEditor = false;
 	editorControl = new FormControl('');
@@ -55,6 +56,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
 	openTwitchChannel(): void {
 		window.open(`https://twitch.tv/${this.user.getValue()?.getSnapshot()?.login}`, '_blank');
+	}
+
+	openYouTubeChannel(): void{
+		window.open(`https://www.youtube.com/channel/${this.user.getValue()?.getSnapshot()?.youtube_id}`, '_blank');
 	}
 
 	canEdit(): Observable<boolean> {
@@ -119,13 +124,14 @@ export class UserComponent implements OnInit, OnDestroy {
 				includeFullEmotes: true,
 				includeAuditLogs: true,
 				includeStreamData: true
-			}, ['banned']).pipe(
+			}, ['banned', 'youtube_id']).pipe(
 				map(res => this.dataService.add('user', res.user)[0])
 			)),
 			tap(user => this.user.next(user)),
 			switchMap(user => scheduled([
 				user.getEditors().pipe(map(editors => this.editors.next(editors))),
-				user.getEditorIn().pipe(map(edited => this.edited.next(edited)))
+				user.getEditorIn().pipe(map(edited => this.edited.next(edited))),
+				user.getYouTubeID().pipe(tap(ytid => this.hasYouTube.next(ytid !== null)), switchMapTo(EMPTY))
 			], asyncScheduler).pipe(concatAll(), mapTo(user))),
 			tap(user => {
 				const appURL = this.document.location.host + this.router.serializeUrl(this.router.createUrlTree(['/users', String(user.id)]));
@@ -171,5 +177,9 @@ export class UserComponent implements OnInit, OnDestroy {
 	ngOnDestroy(): void {
 		this.destroyed.next();
 		this.destroyed.complete();
+		this.user.complete();
+		this.edited.complete();
+		this.editors.complete();
+		this.hasYouTube.complete();
 	}
 }

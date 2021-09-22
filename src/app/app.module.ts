@@ -9,7 +9,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { CallbackGuard } from './navigation/callback.guard';
 import { UtilModule } from 'src/app/util/util.module';
-import { TwitchButtonComponent } from 'src/app/util/twitch-button/twitch-button.component';
 import { CookieService } from 'ngx-cookie-service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
@@ -28,7 +27,6 @@ import { NotifyButtonComponent } from 'src/app/notifications/notify-button.compo
 		AppComponent,
 		NavigationComponent,
 		EditorDialogComponent,
-		TwitchButtonComponent,
 		UpdateDialogComponent,
 		ChangelogDialogComponent,
 		NotifyButtonComponent

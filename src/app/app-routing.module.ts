@@ -41,6 +41,10 @@ const routes: Routes = [
 		loadChildren: () => import('src/app/user/user.module').then(m => m.UserModule)
 	},
 	{ path: 'user', redirectTo: 'users' },
+	{
+		path: 'link-youtube',
+		loadChildren: () => import('src/app/youtube/youtube.module').then(m => m.YouTubeModule)
+	},
 
 	{
 		path: 'callback',

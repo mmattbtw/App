@@ -9,6 +9,11 @@
         display: flex;
         align-items: center;
 		justify-content: space-between;
+
+        .button-list {
+            display: flex;
+            flex-direction: row;
+        }
     }
 
 	.content {

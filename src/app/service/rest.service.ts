@@ -46,6 +46,7 @@ export class RestService {
 					filter(x => typeof x === 'string'),
 					tap(tok => clientService.setToken(tok)),
 					switchMap(() => this.v2.GetUser('@me', { includeEditorIn: true }, [
+						'youtube_id',
 						'notification_count',
 						`notifications {
 							id, read, title, announcement,

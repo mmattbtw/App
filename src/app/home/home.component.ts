@@ -7,6 +7,7 @@ import { filter, map, mergeAll, switchMap, take, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { ChatterinoDialogComponent } from 'src/app/home/chatterino-dialog/chatterino-dialog.component';
 import { AppService } from 'src/app/service/app.service';
+import { ClientService } from 'src/app/service/client.service';
 import { DataService } from 'src/app/service/data.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { RestService } from 'src/app/service/rest.service';
@@ -151,8 +152,8 @@ export class HomeComponent implements OnInit {
 		private dataService: DataService,
 		private dialog: MatDialog,
 		private cdr: ChangeDetectorRef,
-		private router: Router,
 		private logger: LoggerService,
+		public clientService: ClientService,
 		public themingService: ThemingService,
 		public vp: ViewportService,
 		public appService: AppService

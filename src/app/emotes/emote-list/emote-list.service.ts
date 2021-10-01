@@ -89,7 +89,7 @@ export class EmoteListService {
 		},
 		{ // Make this emote global (Moderator only)
 			label: 'make global', color: this.themingService.accent, icon: 'star',
-			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
+			condition: emote => this.clientService.hasPermission('ADMINISTRATOR').pipe(
 				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
 				map(({ isGlobal, hasPermission }) => !isGlobal && hasPermission)
 			),
@@ -97,7 +97,7 @@ export class EmoteListService {
 		},
 		{ // Remove this emote's global status (Moderator only)
 			label: 'revoke global', color: this.themingService.accent.negate(), icon: 'star_half',
-			condition: emote => this.clientService.hasPermission('EDIT_EMOTE_ALL').pipe(
+			condition: emote => this.clientService.hasPermission('ADMINISTRATOR').pipe(
 				switchMap(hasPermission => (emote?.isGlobal() ?? EMPTY).pipe(map(isGlobal => ({ isGlobal, hasPermission })))),
 				map(({ isGlobal, hasPermission }) => isGlobal && hasPermission)
 			),

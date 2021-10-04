@@ -79,6 +79,6 @@
 		<div class="d-flex justify-content-center mb-2" *ngIf="(subscription | async) !== null">
 			As a subscriber, you can currently access these perks:
 		</div>
-		<app-store-subscribe></app-store-subscribe>
+		<app-store-subscribe [subscription]="subscription | async"></app-store-subscribe>
 	</div>
 </div>

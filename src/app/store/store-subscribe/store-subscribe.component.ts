@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { EgVault } from 'src/app/service/rest/egvault.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 
 @Component({
@@ -8,6 +9,8 @@ import { ThemingService } from 'src/app/service/theming.service';
 })
 
 export class StoreSubscribeComponent implements OnInit {
+	@Input() subscription: EgVault.Subscription | null = null;
+
 	constructor(
 		public themingService: ThemingService
 	) { }

@@ -1,7 +1,10 @@
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
+import { EgVault } from 'src/app/service/rest/egvault.structure';
 import { ThemingService } from 'src/app/service/theming.service';
+import { CustomAvatarDialogComponent } from 'src/app/user/dialog/custom-avatar-dialog.component';
 
 @Component({
 	selector: 'app-store-subscribe-promotion',
@@ -19,6 +22,7 @@ import { ThemingService } from 'src/app/service/theming.service';
 })
 
 export class StoreSubscribePromotionComponent implements OnInit {
+	@Input() subscription: EgVault.Subscription | null = null;
 	zeroWidthRotation = [
 		{ emoteUrl: '/assets/brand/promo/zerowidth-emote1.webp', modifierUrl: '/assets/brand/promo/zerowidth-emote1z.webp' },
 		{ emoteUrl: '/assets/brand/promo/zerowidth-emote2.webp', modifierUrl: '/assets/brand/promo/zerowidth-emote2z.webp' },
@@ -29,8 +33,14 @@ export class StoreSubscribePromotionComponent implements OnInit {
 	currentZeroWidth = new BehaviorSubject<StoreSubscribePromotionComponent.ZeroWidthCombination>(this.zeroWidthRotation[0]);
 
 	constructor(
-		public themingService: ThemingService
+		public themingService: ThemingService,
+		private dialog: MatDialog
 	) {}
+
+	uploadCustomAvatar(): void {
+		this.dialog.open(CustomAvatarDialogComponent);
+	}
+
 
 	ngOnInit(): void {
 		const nextRotation = (at: number) => {

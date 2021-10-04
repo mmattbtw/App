@@ -140,6 +140,7 @@
 
 <mat-menu #personalMenu="matMenu">
 	<button mat-menu-item [routerLink]="['/users', clientService.id]">VIEW PROFILE</button>
+	<button mat-menu-item (click)="uploadCustomAvatar()" *ngIf="canUploadCustomAvatar() | async">CHANGE AVATAR</button>
 	<button mat-menu-item (click)="clientService.logout()">
 		LOG OUT
 	</button>

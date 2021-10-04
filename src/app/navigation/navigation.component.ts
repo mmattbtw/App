@@ -12,7 +12,7 @@ import { LocalStorageService } from 'src/app/service/localstorage.service';
 import { RestService } from 'src/app/service/rest.service';
 import { ThemingService } from 'src/app/service/theming.service';
 import { ViewportService } from 'src/app/service/viewport.service';
-import { WindowRef } from 'src/app/service/window.service';
+import { CustomAvatarDialogComponent } from 'src/app/user/dialog/custom-avatar-dialog.component';
 import { ChangelogDialogComponent } from 'src/app/util/dialog/changelog/changelog-dialog.component';
 import { UserStructure } from 'src/app/util/user.structure';
 import { environment } from 'src/environments/environment';
@@ -107,6 +107,14 @@ export class NavigationComponent implements OnInit {
 				overlayRef.dispose();
 			}
 		});
+	}
+
+	canUploadCustomAvatar(): Observable<boolean> {
+		return this.clientService.hasPermission('USE_CUSTOM_AVATAR').pipe(take(1));
+	}
+
+	uploadCustomAvatar(): void {
+		this.dialog.open(CustomAvatarDialogComponent);
 	}
 
 	stopImpersonate(): void {

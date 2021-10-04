@@ -15,6 +15,25 @@
 				</div>
 			</div>
 
+			<!-- Perk: Animated Avatars -->
+			<div class="perk has-divider">
+				<span class="perk-title">
+					<div>
+						<span>Animated Profile Picture</span>
+						<span *ngTemplateOutlet="isNewPerk"></span>
+					</div>
+
+					<p class="perk-description">
+						Make yourself stand out with a custom animated profile picture on Twitch, YouTube[soon] and 7TV.APP!
+						<a *ngIf="subscription !== null" (click)="uploadCustomAvatar()">Upload one now</a>
+					</p>
+				</span>
+
+				<div class="perk-image">
+					<img src="/assets/brand/promo/anim_avatar.webp">
+				</div>
+			</div>
+
 			<!-- Perk: Zero-Width Emotes -->
 			<div class="perk perk-zerowidth has-divider">
 				<span class="perk-title">
@@ -54,18 +73,6 @@
 				</span>
 			</div>
 
-			<!-- Perk: Animated Avatars -->
-			<div class="perk has-divider coming-soon">
-				<span class="perk-title">
-					<span>Animated Profile Picture</span>
-					<span *ngTemplateOutlet="comingSoon"></span>
-
-					<p class="perk-description">
-						When this feature is ready, subscribers will have the option to animate their avatar on Twitch and other 7TV-supported platforms
-					</p>
-				</span>
-			</div>
-
 			<!-- Perk: Personal Emotes -->
 			<div class="perk coming-soon">
 				<span class="perk-title">
@@ -86,5 +93,10 @@
 <ng-template #comingSoon>
 	<span class="perk-is-coming-soon">
 		COMING SOON
+	</span>
+</ng-template>
+<ng-template #isNewPerk>
+	<span class="perk-is-new">
+		NEW!
 	</span>
 </ng-template>

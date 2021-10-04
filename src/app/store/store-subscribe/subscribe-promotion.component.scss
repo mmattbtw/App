@@ -75,6 +75,17 @@
 	font-size: 0.5em;
 }
 
+.perk-is-new {
+	background-color: rgb(66, 186, 66);
+	border-radius: 1em;
+	margin-top: 0.25em;
+	margin-left: 0.5em;
+	padding: 0.1em;
+	padding-right: 0.3em;
+	font-size: 0.75em;
+	width: min-content;
+}
+
 .perk-zerowidth {
 	.zw-emote-display {
 		position: relative;

@@ -10,12 +10,14 @@ import { EmotesModule } from 'src/app/emotes/emotes.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AdminModule } from 'src/app/admin/admin.module';
 import { UserRoleDialogComponent } from 'src/app/user/dialog/user-role-dialog.component';
+import { CustomAvatarDialogComponent } from 'src/app/user/dialog/custom-avatar-dialog.component';
 
 @NgModule({
 	declarations: [
 		UserComponent,
 		UserHomeComponent,
-		UserRoleDialogComponent
+		UserRoleDialogComponent,
+		CustomAvatarDialogComponent
 	],
 	imports: [
 		CommonModule,

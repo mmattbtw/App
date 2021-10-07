@@ -50,6 +50,9 @@
 						{{ (subscription | async)?.renew ? 'automatically renew' : 'end' }}
 						on {{ (subscription | async)?.ending_at | date }}
 						
+						<span class="update-text-btn d-block" (click)="updatePaymentDetails()" *ngIf="(subscription | async)?.renew && (isProviderStripe() | async)">
+							Update Payment Details
+						</span>
 						<span class="cancel-text-btn d-block" (click)="cancel()" *ngIf="(subscription | async)?.renew">
 							Do not renew
 						</span>

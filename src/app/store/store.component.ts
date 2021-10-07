@@ -10,6 +10,7 @@ import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
 import { EgVault } from 'src/app/service/rest/egvault.structure';
 import { ThemingService } from 'src/app/service/theming.service';
+import { WindowRef } from 'src/app/service/window.service';
 import { StoreSubscribeCancelDialogComponent } from 'src/app/store/store-subscribe/cancel-prompt.component';
 import { UserStructure } from 'src/app/util/user.structure';
 
@@ -36,6 +37,7 @@ export class StoreComponent implements OnInit {
 		private cdr: ChangeDetectorRef,
 		private router: Router,
 		private dialog: MatDialog,
+		private windowRef: WindowRef,
 		public appService: AppService,
 		public themingService: ThemingService
 	) { }
@@ -68,6 +70,13 @@ export class StoreComponent implements OnInit {
 				this.clientService.openSnackBar(err.error, 'OK', { verticalPosition: 'top' });
 			}
 		});
+	}
+
+	updatePaymentDetails(): void {
+		this.restService.egvault.Subscriptions.UpdatePaymentDetails().pipe(
+			RestService.onlyResponse(),
+			map(res => this.windowRef.getNativeDocument().location.replace(res.body?.url ?? 'about:blank'))
+		).subscribe();
 	}
 
 	isAuth(): Observable<boolean> {

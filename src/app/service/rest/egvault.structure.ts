@@ -39,7 +39,8 @@ export class EgVault {
 			Delete: (hard = false) => this.restService.createRequest<void>('delete', `/subscriptions/@me?hard=${hard}`, {
 				auth: true
 			}, 'egvault'),
-			GetLeaderboards: () => this.restService.createRequest<EgVault.Response.GetLeaderboards>('get', '/subscriptions/leaderboards', {}, 'egvault')
+			GetLeaderboards: () => this.restService.createRequest<EgVault.Response.GetLeaderboards>('get', '/subscriptions/leaderboards', {}, 'egvault'),
+			UpdatePaymentDetails: () => this.restService.createRequest<EgVault.Response.CreateSubscription>('patch', '/subscriptions/@me/payment-method', { auth: true }, 'egvault')
 		};
 	}
 

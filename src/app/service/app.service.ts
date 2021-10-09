@@ -2,7 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { asyncScheduler, BehaviorSubject, defer, scheduled, Subject } from 'rxjs';
-import { catchError, concatAll, filter, map, mapTo, mergeAll, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, mapTo, mergeAll, switchMap, tap } from 'rxjs/operators';
 import { DataService } from 'src/app/service/data.service';
 import { RestService } from 'src/app/service/rest.service';
 import { EgVault } from 'src/app/service/rest/egvault.structure';
@@ -15,7 +15,7 @@ export class AppService {
 	title = '7tv.app';
 	description = 'It\'s like a third party thing';
 	currentView = '';
-	devStage = 'beta';
+	devStage = 'the time is now!';
 	loading = false;
 
 	pageTitleSnapshot = '';

@@ -16,11 +16,12 @@
 		border-style: solid;
 		border-width: 1px;
 		border-radius: 50%;
+		overflow: clip;
 	
 		img {
 			height: 100%;
 			width: 100%;
-			clip-path: circle(50% at center);
+			object-fit: contain;
 		}
 
 		margin-right: .33em;

@@ -1,5 +1,5 @@
 <span class="user-name" (click)="onClick()" [class.clickable]="clickable">
-    <span class="user-avatar" [style.width.em]="size[0]" *ngIf="showAvatar" [style.border-color]="user?.getColor() | async">
+    <span class="user-avatar" [style.width.em]="size[0]" [style.height.em]="size[0]" *ngIf="showAvatar" [style.border-color]="user?.getColor() | async">
         <img [src]="target?.getAvatarURL() | async">
     </span>
 

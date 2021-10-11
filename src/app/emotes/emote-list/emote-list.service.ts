@@ -126,7 +126,7 @@ export class EmoteListService {
 		{
 			label: 'Transfer Ownership', color: this.themingService.primary.lighten(0.1).negate(),
 			icon: 'swap_horiz',
-			condition: emote => emote?.canEdit(this.clientService),
+			condition: () => this.clientService.hasPermission('EDIT_EMOTE_ALL'),
 			click: emote => {
 				const dialogRef = this.dialog.open(EmoteOwnershipDialogComponent, {
 					data: { emote }

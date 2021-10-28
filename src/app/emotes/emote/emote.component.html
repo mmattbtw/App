@@ -3,7 +3,7 @@
 	<div class="w-100 p-2 mat-elevation-z2 d-inline-flex justify-content-between" [appColor]="themingService.bg.darken(.2)" [isBackground]="true">
 		<!-- Emote Name / Back arrow -->
 		<div class="d-inline-flex flex-row align-items-center">
-			<button mat-icon-button class="ml-2" [routerLink]="['../']">
+			<button mat-icon-button class="ml-2" [routerLink]="['../']" (click)="goBack()">
 				<mat-icon>arrow_back</mat-icon>
 			</button>
 			<div class="emote-title-preview" [ngSwitch]="isProcessing() | async">

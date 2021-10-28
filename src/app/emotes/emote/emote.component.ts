@@ -27,6 +27,7 @@ import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 import { AuditLogEntry } from 'src/app/util/audit.structure';
 import { EmoteWarningDialogComponent } from 'src/app/emotes/emote/warning-dialog.component';
 import { environment } from 'src/environments/environment';
+import { Location } from '@angular/common';
 
 @Component({
 	selector: 'app-emote',
@@ -78,6 +79,7 @@ export class EmoteComponent implements OnInit {
 		private appService: AppService,
 		private emoteListService: EmoteListService,
 		private dataService: DataService,
+		private location: Location,
 		public themingService: ThemingService,
 		public clientService: ClientService
 	) { }
@@ -116,6 +118,13 @@ export class EmoteComponent implements OnInit {
 
 	get interactions(): ContextMenuComponent.InteractButton[] {
 		return this.emoteListService.interactions;
+	}
+
+	/**
+	 * Go back to previous route
+	 */
+	goBack(): void {
+		this.location.back();
 	}
 
 	/**

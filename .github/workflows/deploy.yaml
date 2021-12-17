@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+            token: ${{ secrets.SERVICE_PAT }}
             submodules: true
 
       - name: Log into Harbor Registry

@@ -3,8 +3,7 @@ FROM node:12-alpine as builder
 WORKDIR /tmp
 COPY package.json .
 RUN apk update \
-    && apk add git yarn curl bash \
-    && git clone https://github.com/SevenTV/Typings.git \
+    && apk add yarn curl bash \
     && curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin \
     && yarn \
     && yarn cache clean

@@ -8619,10 +8619,10 @@ sshpk@^1.7.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
-ssr-window@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/ssr-window/-/ssr-window-4.0.0.tgz#4ee82fc360c5f88a022f321740bcfec59ada1a61"
-  integrity sha512-qCg6wJNeGNTVcPK2KFNfwtHU1gA3UZDZdxogu+Ys5+Ue5PMOENxUb7sscpAWWo4mWOBkJRCwQ50IlyA7qZ0hxw==
+ssr-window@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/ssr-window/-/ssr-window-4.0.2.tgz#dc6b3ee37be86ac0e3ddc60030f7b3bc9b8553be"
+  integrity sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==
 
 ssri@^8.0.0, ssri@^8.0.1:
   version "8.0.1"

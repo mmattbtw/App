@@ -1,12 +1,12 @@
 <mat-toolbar [style.z-index]="100" class="d-flex flex-row justify-content-between is-toolbar" [appColor]="themingService.bg.darken(.4)" [isBackground]="true">
 	<!-- App Title -->
-	<a href class="d-flex align-items-center unstyled-link" [routerLink]="['/']">		
+	<a href class="d-flex align-items-center unstyled-link" [routerLink]="['/']">
 		<div class="no-select app-title" [class.is-loading]="appService.loading">
 			<!-- Logo -->
 			<div class="_logo">
 				<object data="assets/brand/7tv-light.svg" height="32" type="image/svg+xml"></object>
 			</div>
-		 	
+
 			<div class="d-none d-sm-flex">
 				<span class="_text">{{appService.title}}</span>
 
@@ -56,13 +56,6 @@
 
 	<!-- Small Buttons -->
 	<div class="align-items-center flex-grow-0 d-inline-flex h-100">
-		<!-- Changelogs -->
-		<div class="d-flex mr-2">
-			<button mat-icon-button color="accent" matTooltip="View Changelog" (click)="openChangelog()">
-				<mat-icon>announcement</mat-icon>
-			</button>
-		</div>
-
 		<div class="d-flex mr-2" *ngIf="clientService.isAuthenticated() | async">
 			<app-notify-button (click)="openNotifyMenu()" matTooltip="Notifications"></app-notify-button>
 		</div>
@@ -86,7 +79,7 @@
 			<!-- User / As Editor -->
 			<span class="h-100" *ngSwitchCase="true"  [ngSwitch]="clientService.isImpersonating">
 				<span class="user-as-editor" *ngSwitchCase="true">
-					<app-user-name [user]="clientService" [size]="[1.65, .585]" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
+					<app-user-name [user]="clientService" [size]="[1.65, .585]" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>
 
 					<span class="edited-user">
 						<mat-icon>
@@ -97,7 +90,7 @@
 				</span>
 
 				<span class="h-100 user-as-self">
-					<app-user-name [clickable]="false" [matMenuTriggerFor]="personalMenu" [user]="clientService" [size]="[2, .75]" *ngSwitchCase="false" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>	
+					<app-user-name [clickable]="false" [matMenuTriggerFor]="personalMenu" [user]="clientService" [size]="[2, .75]" *ngSwitchCase="false" [showUsername]="viewportService.isLargerThan('md') | async"></app-user-name>
 				</span>
 			</span>
 		</div>
@@ -108,7 +101,7 @@
 		<button mat-icon-button [matMenuTriggerFor]="mobileMenu">
 			<mat-icon>menu</mat-icon>
 		</button>
-		
+
 	</div>
 </mat-toolbar>
 <mat-toolbar color="warn" class="announcement-bar" *ngIf="appService.announcement | async">
@@ -120,10 +113,10 @@
 </mat-toolbar>
 
 <mat-menu #mobileMenu="matMenu" class="d-flex px-1 flex-column">
-	<app-user-name *ngIf="clientService.isAuthenticated() | async" [user]="clientService" [matMenuTriggerFor]="personalMenu"></app-user-name>	
+	<app-user-name *ngIf="clientService.isAuthenticated() | async" [user]="clientService" [matMenuTriggerFor]="personalMenu"></app-user-name>
 	<mat-divider class="my-2"></mat-divider>
 
-	<div *ngIf="(clientService.isAuthenticated() | async) === false"> 
+	<div *ngIf="(clientService.isAuthenticated() | async) === false">
 		<app-twitch-button></app-twitch-button>
 	</div>
 

@@ -8,6 +8,7 @@ import { ContextMenuComponent } from 'src/app/util/ctx-menu/ctx-menu.component';
 import { BanDialogComponent } from 'src/app/util/dialog/error-dialog/ban-dialog/ban-dialog.component';
 import { TwitchButtonComponent } from 'src/app/util/twitch-button/twitch-button.component';
 import { UserNameComponent } from 'src/app/util/user-name/user-name.component';
+import { WardrobeComponent } from 'src/app/util/wardrobe/wardrobe.component';
 import { ErrorDialogComponent } from './dialog/error-dialog/error-dialog.component';
 
 @NgModule({
@@ -20,14 +21,16 @@ import { ErrorDialogComponent } from './dialog/error-dialog/error-dialog.compone
 	exports: [
 		UserNameComponent,
 		ContextMenuComponent,
-		TwitchButtonComponent
+		TwitchButtonComponent,
+		WardrobeComponent
 	],
 	declarations: [
 		UserNameComponent,
 		ContextMenuComponent,
 		ErrorDialogComponent,
 		BanDialogComponent,
-		TwitchButtonComponent
+		TwitchButtonComponent,
+		WardrobeComponent
 	],
 	providers: [],
 })

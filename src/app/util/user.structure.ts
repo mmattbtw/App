@@ -302,6 +302,12 @@ export class UserStructure extends Structure<'user'> {
 		);
 	}
 
+	getCosmetics(): Observable<DataStructure.Cosmetic[]> {
+		return this.dataOnce().pipe(
+			map(d => d?.cosmetics ?? [])
+		);
+	}
+
 	changeRole(roleID: string, reason?: string): Observable<void> {
 		return this.getRestService().v2.gql.query<{ editUser: DataStructure.TwitchUser }>({
 			query: `

@@ -15,6 +15,7 @@ import { ViewportService } from 'src/app/service/viewport.service';
 import { CustomAvatarDialogComponent } from 'src/app/user/dialog/custom-avatar-dialog.component';
 import { ChangelogDialogComponent } from 'src/app/util/dialog/changelog/changelog-dialog.component';
 import { UserStructure } from 'src/app/util/user.structure';
+import { WardrobeComponent } from 'src/app/util/wardrobe/wardrobe.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -97,6 +98,25 @@ export class NavigationComponent implements OnInit {
 		});
 
 		const portal = new ComponentPortal(NotifyMenuComponent);
+		const component = overlayRef.attach(portal);
+
+		component.instance.closed.pipe(
+			take(1)
+		).subscribe({
+			next(): void {
+				overlayRef.detach();
+				overlayRef.dispose();
+			}
+		});
+	}
+
+	openWardrobe(): void {
+		const overlayRef = this.overlay.create({
+			panelClass: 'overlay-content-top-right',
+			hasBackdrop: false,
+		});
+
+		const portal = new ComponentPortal(WardrobeComponent);
 		const component = overlayRef.attach(portal);
 
 		component.instance.closed.pipe(

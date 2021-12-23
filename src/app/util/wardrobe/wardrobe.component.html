@@ -1,0 +1,42 @@
+<div class="wardrobe-wrapper">
+    <div class="wardrobe mat-elevation-z3" [appColor]="themingService.bg.darken(.4).opaquer(-.1)" [isBackground]="true">
+        <div class="heading">
+            <div>
+            <p class="is-title">Wardrobe</p>
+                <span>View and modify owned cosmetics</span>
+            </div>
+			<div class="close-button" (click)="close()" matRipple [matRippleRadius]="16" [matRippleCentered]="true" [matRippleUnbounded]="true">
+				<mat-icon>close</mat-icon>
+			</div>
+        </div>
+
+        <div class="content">
+            <!-- Badges -->
+            <span>Badges</span>
+            <div class="cosmetic-type-list" listName="badge">
+                <span *ngIf="paints.length === 0">
+                    You do not own any badges.
+                    <a [routerLink]="['/subscribe']" (click)="close()">Subscribe</a> to get some!
+                </span>
+                <div class="cosmetic-item" *ngFor="let badge of badges">
+                    <img [src]="getBadgeImageURL(badge)" />
+                </div>
+            </div>
+
+            <span>Paints</span>
+            <form class="cosmetic-type-list" listName="paint" [formGroup]="form">
+                <span *ngIf="paints.length === 0">
+                    You do not own any paints.
+                    <a [routerLink]="['/subscribe']" (click)="close()">Subscribe</a> to get some!
+                </span>
+                <mat-radio-group formControlName="paint">
+                    <mat-radio-button (click)="selectPaint(paint.id)" [value]="paint.id" class="d-flex align-items-center cosmetic-item" *ngFor="let paint of paints">
+                        <span #paintedText class="painted-text" [style.background-image]="getPaintBackgroundImage(paint, paintedText)">{{ paint.name }}</span>
+                    </mat-radio-button>
+                </mat-radio-group>
+            </form>
+        </div>
+
+        <span class="timing-notice">It may take up to 10 minutes, and require a refresh/restart of your browser/chat client for changes to take effect.</span>
+    </div>
+</div>

@@ -61,7 +61,8 @@ export class RestService {
 							message_parts {
 								type, data
 							}
-						}`
+						}`,
+						'cosmetics { id, name, kind, selected, data }'
 					])),
 					switchMap(res => !!res.user?.id ? of(res.user) : throwError('Unknown Account')),
 					tap(user => clientService.pushData(user))

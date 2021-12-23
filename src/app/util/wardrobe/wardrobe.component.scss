@@ -1,0 +1,77 @@
+.wardrobe-wrapper {
+	color: white;
+	min-width: 24em;
+	max-width: 34em;
+    position: relative;
+    top: 4.5em;
+    right: 3em;
+
+    .wardrobe {
+        display: block;
+		padding: 1em;
+        font-size: 1rem;
+        font-weight: normal;
+        padding: 0.6em;
+        color: white;
+        border-radius: 0.3em;
+
+        > .heading {
+            display: flex;
+            justify-content: space-between;
+
+            p.is-title { font-size: 1.25em; margin: 0; }
+            span { font-size: 0.75rem; color: rgb(170, 170, 170); }
+            .close-button {
+                cursor: pointer;
+            }
+        }
+
+        > .content {
+            margin-top: 0.5em;
+
+
+            .cosmetic-type-list {
+                > span:first-child {
+                    font-size: 0.75em;
+                }
+            }
+
+            .cosmetic-type-list[listName="badge"] {
+                display: flex;
+                .cosmetic-item {
+                    width: fit-content;
+                    display: flex;
+                    margin: 0.3em;
+                    cursor: pointer;
+                    &:hover {
+                        filter: brightness(125%);
+                    }
+
+                    > img {
+                        width: 3em;
+                        height: 3em;
+                    }
+                }
+            }
+
+            .cosmetic-type-list[listName="paint"] {
+                .cosmetic-item {
+                    margin-top: 0.2em;
+                    display: flex;
+                    align-items: center;
+
+                    span.painted-text {
+                        background-size: contain;
+                        background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                    }
+                }
+            }
+        }
+
+        > .timing-notice {
+            color: gray;
+            font-size: 0.5em;
+        }
+    }
+}

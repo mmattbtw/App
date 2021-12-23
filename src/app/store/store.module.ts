@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgParticlesModule } from 'ng-particles';
 import { MaterialModule } from 'src/app/material.module';
 import { StoreCallbackComponent } from 'src/app/store/callback/store-callback.component';
 import { StoreLeaderboardsComponent } from 'src/app/store/leaderboards/store-leaderboards.component';
@@ -20,7 +21,8 @@ import { StoreComponent } from './store.component';
 		StoreRoutingModule,
 		MaterialModule,
 		ReactiveFormsModule,
-		UtilModule
+		UtilModule,
+		NgParticlesModule
 	],
 	exports: [],
 	declarations: [

@@ -2,6 +2,13 @@ $logosize: 18vw;
 .store-banner {
 	position: relative;
 
+	.snowy {
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+	}
+
 	.store-logo {
 		z-index: 3;
 		position: absolute;
@@ -78,10 +85,10 @@ $logosize: 18vw;
 				justify-content: space-between;
 				flex-direction: column;
 				@media screen and (min-width: 900px) {
-					flex-direction: row;					
+					flex-direction: row;
 				}
 			}
-			
+
 			.cancel-text-btn {
 				user-select: none;
 				cursor: pointer;
@@ -148,20 +155,15 @@ $logosize: 18vw;
 		width: 200%;
 		transform: rotate(-2deg);
 
-		background: linear-gradient(-22.5deg, #fcc81c, #f7f7f7b4, #ddb01c);
+		background: linear-gradient(-22.5deg, #f74747b4 40%, #21882f 50%, #f74747b4 80%);
 		background-size: 400% 400%;
-		animation: gradient 14s ease-in-out infinite;
+		animation: gradient 6s ease-in-out infinite;
 
 		@keyframes gradient {
-			0% {
-				background-position: 0% 50%;
-			}
-			50% {
-				background-position: 100% 50%;
-			}
-			100% {
-				background-position: 0% 50%;
-			}
+			0% { background-position: 0% 50%; }
+			50% { background-position: 100% 50%; }
+			99.999% { background-position: 100% 50%; }
+			100% { background-position: 0% 50%; }
 		}
 	}
 

@@ -32,7 +32,7 @@ export class StoreSubscribeButtonComponent implements OnInit, OnDestroy {
 	renewInterval = new FormControl('monthly');
 	@ViewChild('planSelector', { static: true }) planSelector: MatSelect | undefined;
 
-	price = new BehaviorSubject<string>('3.99');
+	price = new BehaviorSubject<string>('2.99');
 
 	subscribing = new BehaviorSubject<boolean>(false);
 

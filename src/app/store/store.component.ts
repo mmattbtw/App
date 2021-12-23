@@ -13,6 +13,7 @@ import { ThemingService } from 'src/app/service/theming.service';
 import { WindowRef } from 'src/app/service/window.service';
 import { StoreSubscribeCancelDialogComponent } from 'src/app/store/store-subscribe/cancel-prompt.component';
 import { UserStructure } from 'src/app/util/user.structure';
+import { IOptions, RecursivePartial } from 'tsparticles';
 
 @Component({
 	selector: 'app-store',
@@ -29,6 +30,77 @@ export class StoreComponent implements OnInit {
 	subscription = new BehaviorSubject<EgVault.Subscription | null>(null);
 	gifter: UserStructure | null = null;
 	discordInvite = '';
+
+	snowParticles = {
+		particles: {
+			number: {
+				value: 100,
+				density: {
+					enable: true,
+					value_area: 1200
+				}
+			},
+			color: {
+				value: '#ffffff'
+			},
+			shape: {
+				type: 'image',
+				image: {
+					src: '/assets/icons/snowflake.png',
+					width: 100,
+					height: 100
+				}
+			},
+			opacity: {
+				value: 0.85,
+				random: false,
+				anim: {
+					enable: false,
+					speed: 1,
+					opacity_min: 0.1,
+					sync: false
+				}
+			},
+
+			size: {
+				value: 6,
+				random: true,
+				anim: {
+					enable: false,
+					speed: 20,
+					size_min: 0.1,
+					sync: false
+				}
+			},
+			move: {
+				enable: true,
+				speed: 5,
+				direction: 'bottom',
+			}
+		},
+		interactivity: {
+			detect_on: 'canvas',
+			events: {
+			  onhover: {
+				enable: true,
+				mode: 'repulse'
+			  },
+			  resize: true
+			},
+			modes: {
+				repulse: {
+					distance: 75,
+					speed: 0.3,
+					duration: 0.4
+				},
+				push: {
+				  particles_nb: 40
+				},
+			}
+		},
+
+		retina_detect: true
+	} as RecursivePartial<IOptions>;
 
 	constructor(
 		private restService: RestService,

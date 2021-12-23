@@ -2,6 +2,7 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
+import { ClientService } from 'src/app/service/client.service';
 import { EgVault } from 'src/app/service/rest/egvault.structure';
 import { ThemingService } from 'src/app/service/theming.service';
 import { CustomAvatarDialogComponent } from 'src/app/user/dialog/custom-avatar-dialog.component';
@@ -34,6 +35,7 @@ export class StoreSubscribePromotionComponent implements OnInit {
 
 	constructor(
 		public themingService: ThemingService,
+		public clientService: ClientService,
 		private dialog: MatDialog
 	) {}
 

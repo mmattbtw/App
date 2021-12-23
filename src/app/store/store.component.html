@@ -1,5 +1,8 @@
 <div class="store" [class.invisible]="(available | async) !== true">
 	<div class="store-banner" [style.padding-bottom.px]="bannerHeight">
+		<div class="snowy">
+			<ng-particles [id]="'snow'" [options]="snowParticles"></ng-particles>
+		</div>
 		<!-- Store Logo -->
 		<div class="store-logo mat-elevation-z3" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
 			<div class="logo-image"></div>
@@ -49,7 +52,7 @@
 						Your subscription will
 						{{ (subscription | async)?.renew ? 'automatically renew' : 'end' }}
 						on {{ (subscription | async)?.ending_at | date }}
-						
+
 						<span class="update-text-btn d-block" (click)="updatePaymentDetails()" *ngIf="(subscription | async)?.renew && (isProviderStripe() | async)">
 							Update Payment Details
 						</span>
@@ -58,7 +61,7 @@
 						</span>
 					</span>
 
-					<app-store-subscribe-button [gift]="true" [disabled]="isProviderPayPal() | async" [renewable]="false" label="GIFT" icon="redeem"></app-store-subscribe-button>
+					<app-store-subscribe-button [gift]="true" [provider]="provider | async" [disabled]="isProviderPayPal() | async" [renewable]="false" label="GIFT" icon="redeem"></app-store-subscribe-button>
 				</div>
 			</div>
 			<div class="store-provider-switcher" [appColor]="themingService.bg.opaquer(-.75).darken(.1)" [isBackground]="true">
@@ -69,12 +72,12 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="store-medalists">
 				<app-store-leaderboards [medalists]="true"></app-store-leaderboards>
 			</div>
 		</div>
-		
+
 		<div class="store-heading-gradient" #gradient></div>
 	</div>
 

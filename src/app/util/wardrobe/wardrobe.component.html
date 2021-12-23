@@ -14,7 +14,7 @@
             <!-- Badges -->
             <span>Badges</span>
             <div class="cosmetic-type-list" listName="badge">
-                <span *ngIf="paints.length === 0">
+                <span *ngIf="badges.length === 0">
                     You do not own any badges.
                     <a [routerLink]="['/subscribe']" (click)="close()">Subscribe</a> to get some!
                 </span>

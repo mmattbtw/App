@@ -74,12 +74,12 @@ export class StoreComponent implements OnInit {
 			},
 			move: {
 				enable: true,
-				speed: 5,
+				speed: 2,
 				direction: 'bottom',
 			}
 		},
 		interactivity: {
-			detect_on: 'canvas',
+			detect_on: 'window',
 			events: {
 			  onhover: {
 				enable: true,

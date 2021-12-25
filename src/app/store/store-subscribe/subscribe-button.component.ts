@@ -99,10 +99,10 @@ export class StoreSubscribeButtonComponent implements OnInit, OnDestroy {
 				let value = '';
 				switch (val) {
 					case 'monthly':
-						value = '3.99';
+						value = '2.99';
 						break;
 					case 'yearly':
-						value = '39.99';
+						value = '29.99';
 						break;
 					default:
 						break;

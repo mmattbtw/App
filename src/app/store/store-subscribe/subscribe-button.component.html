@@ -11,7 +11,9 @@
 			</div>
 			<span>{{label}}</span>
 			<div class="price-point">
-				<span class="real-price" [class.is-paypal]="provider === 'paypal'">€3.99</span>
+				<span class="real-price" [class.is-paypal]="provider === 'paypal'">
+					{{renewInterval.value === 'monthly' ? '3.99' : '39.99'}}
+				</span>
 				<span class="discounted" *ngIf="provider !== 'paypal'">
 					€{{price | async}}
 				</span>

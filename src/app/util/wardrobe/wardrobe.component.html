@@ -30,6 +30,9 @@
                     <a [routerLink]="['/subscribe']" (click)="close()">Subscribe</a> to get some!
                 </span>
                 <mat-radio-group formControlName="paint">
+                    <mat-radio-button (click)="selectPaint('0'.repeat(24))" [value]="'0'.repeat(24)" class="d-flex align-items-center cosmetic-item" *ngIf="paints.length > 0">
+                        <span>None</span>
+                    </mat-radio-button>
                     <mat-radio-button (click)="selectPaint(paint.id)" [value]="paint.id" class="d-flex align-items-center cosmetic-item" *ngFor="let paint of paints">
                         <span #paintedText class="painted-text" [style.background-image]="getPaintBackgroundImage(paint, paintedText)">{{ paint.name }}</span>
                     </mat-radio-button>

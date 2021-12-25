@@ -18,7 +18,7 @@ import { environment } from 'src/environments/environment';
 export class WardrobeComponent implements OnInit, OnDestroy {
 	closed = new Subject<void>();
 	form = new FormGroup({
-		paint: new FormControl('')
+		paint: new FormControl('0'.repeat(24))
 	});
 	paints = [] as WardrobeComponent.PaintCosmetic[];
 	badges = [] as WardrobeComponent.BadgeCosmetic[];

@@ -47,9 +47,24 @@
                         filter: brightness(125%);
                     }
 
+                    .badge-select-marker {
+                        position: absolute;
+                        > mat-icon {
+                            position: relative;
+                            left: 1.5em;
+                            bottom: 0.5em;
+                        }
+                    }
+
                     > img {
                         width: 3em;
                         height: 3em;
+                    }
+
+                    &.no-badge-select {
+                        height: 3em;
+                        width: 3em;
+                        border: 1px dashed rgb(235, 70, 70);
                     }
                 }
             }

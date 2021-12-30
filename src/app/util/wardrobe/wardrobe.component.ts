@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DataStructure } from '@typings/typings/DataStructure';
 import { Observable, Subject } from 'rxjs';
@@ -26,6 +26,7 @@ export class WardrobeComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private clientService: ClientService,
+		private cdr: ChangeDetectorRef,
 		private api: RestService,
 		private el: ElementRef<HTMLDivElement>,
 		public themingService: ThemingService
@@ -109,20 +110,7 @@ export class WardrobeComponent implements OnInit, OnDestroy {
 
 	selectPaint(id: string): void {
 		this.api.v2.gql.query<{ editUser: DataStructure.TwitchUser }>({
-			query: `
-				mutation SelectUserCosmetic($usr: UserInput!) {
-					editUser(user: $usr) {
-						id,
-						cosmetics {
-							id,
-							selected,
-							name,
-							kind,
-							data
-						}
-					}
-				}
-			`,
+			query: WardrobeComponent.Query,
 			auth: true,
 			variables: {
 				usr: {
@@ -138,6 +126,31 @@ export class WardrobeComponent implements OnInit, OnDestroy {
 				this.clientService.pushData(res?.body?.data.editUser as any);
 			}
 		})).subscribe();
+	}
+
+	selectBadge(id: string): void {
+		this.api.v2.gql.query<{ editUser: DataStructure.TwitchUser }>({
+			query: WardrobeComponent.Query,
+			auth: true,
+			variables: {
+				usr: {
+					id: this.clientService.id,
+					cosmetic_badge: id
+				}
+			}
+		}).pipe(tap(res => {
+			const updated = res?.body?.data.editUser.cosmetics;
+			if (Array.isArray(updated)) {
+				this.clientService.pushData(res?.body?.data.editUser as any);
+			}
+			this.parseBadges().pipe(
+				tap(x => this.badges = x)
+			).subscribe();
+		})).subscribe({ complete: () => this.cdr.markForCheck() });
+	}
+
+	isNoBadgeSelected(): boolean {
+		return !this.badges.some(b => b.selected);
 	}
 
 	close(): void {
@@ -226,4 +239,19 @@ export namespace WardrobeComponent {
 			}
 		}
 	}
+
+	export const Query = `
+		mutation SelectUserCosmetic($usr: UserInput!) {
+			editUser(user: $usr) {
+				id,
+				cosmetics {
+					id,
+					selected,
+					name,
+					kind,
+					data
+				}
+			}
+		}
+	`;
 }

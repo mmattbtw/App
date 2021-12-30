@@ -18,8 +18,16 @@
                     You do not own any badges.
                     <a [routerLink]="['/subscribe']" (click)="close()">Subscribe</a> to get some!
                 </span>
-                <div class="cosmetic-item" *ngFor="let badge of badges">
-                    <img [src]="getBadgeImageURL(badge)" />
+                <div class="cosmetic-item no-badge-select" (click)="selectBadge('0'.repeat(24))" matTooltip="No Badge">
+                    <div class="badge-select-marker" *ngIf="isNoBadgeSelected()">
+                        <mat-icon color="accent">check_circle</mat-icon>
+                    </div>
+                </div>
+                <div class="cosmetic-item" (click)="selectBadge(badge.id)" *ngFor="let badge of badges">
+                    <div class="badge-select-marker" *ngIf="badge.selected">
+                        <mat-icon color="accent">check_circle</mat-icon>
+                    </div>
+                    <img [src]="getBadgeImageURL(badge)" [matTooltip]="badge.name" />
                 </div>
             </div>
 

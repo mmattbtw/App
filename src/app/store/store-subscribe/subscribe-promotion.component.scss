@@ -38,7 +38,7 @@
 				.paint-preview {
 					font-size: 1.5em;
 					font-weight: 700;
-					animation: NametagGradientCarousel 3s infinite;
+					animation: NametagGradientCarousel 4s infinite;
 					background-size: cover;
 					background-clip: text;
 					-webkit-background-clip: text;
@@ -55,14 +55,9 @@
 						-webkit-text-fill-color: transparent;
 						filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
 
-						&[paint="candy-cane"] {
-							background-image: repeating-linear-gradient(45deg, white 10%, white 20%, rgb(255, 100, 100) 20%, rgb(255, 100, 100) 30%);
-						}
-						&[paint="tinsel"] {
-							background-image: linear-gradient(30deg, rgb(20, 230, 80), rgb(20, 230, 80) 10%, #ff513a 70%, #F8B229 90%);
-						}
-						&[paint="ice-and-snow"] {
-							background-image: radial-gradient(circle, #53bcca 20%, #2edcf3, #3f6de9 40%, #eeeeee 80%);
+						&[paint="festive-gold"] {
+							background-image: radial-gradient(circle, #d7b030 0%, #fff7b6 100%);
+							filter: drop-shadow(0 0 2px rgb(120, 120, 120));
 						}
 					}
 				}
@@ -164,13 +159,18 @@
 
 @keyframes NametagGradientCarousel {
 	0% {
-		background-image: repeating-linear-gradient(45deg, white 10%, white 20%, rgb(255, 100, 100) 20%, rgb(255, 100, 100) 30%);
+		background-image: radial-gradient(circle, #d7b030 0%, #fff7b6 100%);
+		filter: drop-shadow(0 0 2px rgb(120, 120, 120));
 	}
-	25% {
-		background-image: repeating-linear-gradient(45deg, white 10%, white 20%, rgb(255, 100, 100) 20%, rgb(255, 100, 100) 30%);
+	40% {
+		background-image: radial-gradient(circle, #d7b030 0%, #fff7b6 100%);
+		filter: drop-shadow(0 0 2px rgb(120, 120, 120));
 	}
-	50% {
-		opacity: 1;
+	60% {
+		background-image: repeating-linear-gradient(45deg, white 10%, white 20%, rgb(255, 100, 100) 20%, rgb(255, 100, 100) 30%);
+		filter: none;
+	}
+	80% {
 		background-image: linear-gradient(30deg, rgb(20, 230, 80), rgb(20, 230, 80) 10%, #ff513a 70%, #F8B229 90%);
 	}
 	100% {

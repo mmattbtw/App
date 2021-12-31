@@ -34,22 +34,17 @@ export class StoreComponent implements OnInit {
 	snowParticles = {
 		particles: {
 			number: {
-				value: 100,
+				value: 40,
 				density: {
 					enable: true,
 					value_area: 1200
 				}
 			},
 			color: {
-				value: '#ffffff'
+				value: '#fff555'
 			},
 			shape: {
-				type: 'image',
-				image: {
-					src: '/assets/icons/snowflake.png',
-					width: 100,
-					height: 100
-				}
+				type: 'circle'
 			},
 			opacity: {
 				value: 0.85,
@@ -74,8 +69,8 @@ export class StoreComponent implements OnInit {
 			},
 			move: {
 				enable: true,
-				speed: 2,
-				direction: 'bottom',
+				speed: 1,
+				direction: 'top',
 			}
 		},
 		interactivity: {

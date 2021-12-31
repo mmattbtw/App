@@ -15,7 +15,7 @@
 					{{envName | uppercase}}.
 				</span>
 				<!-- Dev Stage Indicator -->
-				<span class="text-nowrap _dev-stage-text" [class.d-none]="!appService.devStage">{{appService.devStage}}</span>
+				<span class="text-nowrap _dev-stage-text ny-h" [class.d-none]="!appService.devStage">{{appService.devStage}}</span>
 			</div>
 		</div>
 	</a>
@@ -30,11 +30,6 @@
 				[class.disabled]="btn.conditionOnlyDisables && (btn.condition | async) !== true"
 				*ngIf="btn.conditionOnlyDisables || (!btn.condition || (btn.condition | async))"
 			>
-				<div class="subscribe-discount" *ngIf="btn.name === 'subscribe'">
-					<div>
-						<span>-25%</span>
-					</div>
-				</div>
 				<!-- Icon -->
 				<div [ngSwitch]="btn.svg" class="_icon" [appColor]="btn.color">
 					<mat-icon class=" d-flex align-self-center" *ngSwitchDefault [matTooltip]="viewportService.isSmallerThan('sm') ? btn.name : ''">

@@ -12,10 +12,7 @@
 			<span>{{label}}</span>
 			<div class="price-point">
 				<span class="real-price" [class.is-paypal]="provider === 'paypal'">
-					{{renewInterval.value === 'monthly' ? '3.99' : '39.99'}}
-				</span>
-				<span class="discounted" *ngIf="provider !== 'paypal'">
-					€{{price | async}}
+					€{{renewInterval.value === 'monthly' ? '3.99' : '39.99'}}
 				</span>
 				{{renewable ? renewInterval.value === 'monthly' ? '/ mo' : '/ yr' : renewInterval.value === 'monthly' ? '(1 Month)' : '(1 Year)'}}
 			</div>

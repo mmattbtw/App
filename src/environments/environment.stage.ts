@@ -16,7 +16,7 @@ export const environment = {
 		}
 	},
 	platformApiUrl: (version: Version): string => `https://${environment.api[version].url}`,
-	cdnUrl: 'https://7tv.ams3.digitaloceanspaces.com',
+	cdnUrl: 'https://dev.7tv.gg',
 	wsUrl: 'wss://api.7tv.dev',
 
 	// Set to true if the changelog should be disabled for this deployment

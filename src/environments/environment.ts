@@ -16,11 +16,11 @@ export const environment = {
 		},
 
 		egvault: {
-			url: 'c5be35bd72de.ngrok.io/v1'
+			url: 'localhost:3444/v1'
 		}
 	},
 	platformApiUrl: (version: Version): string => `http://${environment.api[version].url}`,
-	cdnUrl: 'https://7tv.ams3.digitaloceanspaces.com',
+	cdnUrl: 'https://dev.7tv.gg',
 	wsUrl: `ws://localhost:3001`,
 
 	disableChangelog: false

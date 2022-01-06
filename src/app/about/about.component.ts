@@ -12,7 +12,7 @@ import { ThemingService } from 'src/app/service/theming.service';
 export class AboutComponent implements OnInit, OnDestroy {
 	featureList = [
 		'All core functionality is free to use',
-		'Up to 200 channel emote slots by default, free forever',
+		'Up to 250 channel emote slots by default, free forever',
 		'Support for wide and animated wide emotes (3:1 ratio)',
 		'Monthly Community Events & Contests',
 		'Downloadable for Chrome and Chromium-based browsers, Firefox, Chatterino & more',

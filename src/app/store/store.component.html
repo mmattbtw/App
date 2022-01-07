@@ -1,8 +1,5 @@
 <div class="store" [class.invisible]="(available | async) !== true">
 	<div class="store-banner" [style.padding-bottom.px]="bannerHeight">
-		<div class="snowy">
-			<ng-particles [id]="'snow'" [options]="snowParticles"></ng-particles>
-		</div>
 		<!-- Store Logo -->
 		<div class="store-logo mat-elevation-z3" [appColor]="themingService.bg.lighten(.2)" [isBackground]="true">
 			<div class="logo-image"></div>
